@@ -17,8 +17,8 @@ This repository is intended to be served from the repository root via GitHub Pag
 ## Scope
 
 - Native interactive LMS pages, not a PDF viewer.
-- Beginner Unit 1 with 6 lessons.
-- Homework Mode with localStorage progress.
-- Student, Teacher, Live Lesson, and Methodologist dashboards.
+- v0.1.1 static clickable scope for Beginner Unit 1 demo lessons.
+- Separate Homework Mode with localStorage progress.
+- Student, Teacher, Live Lesson, Methodologist, Analytics, and Integration Readiness screens.
 - Original ULC sample content.
 - External speaking widget represented only as an integration contract.
