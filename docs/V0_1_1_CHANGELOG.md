@@ -8,6 +8,7 @@ Patch goal: close the 10 Partial zones from `docs/ACCEPTANCE_AUDIT_V0_1.md` with
 - Kept a compact Beginner Unit 1 demo scope instead of expanding to six lessons.
 - Removed old v0.2 markers from the active app and README.
 - Removed the premature `docs/V0_2_CHANGELOG.md` artifact.
+- Added version query strings to CSS/JS assets in `index.html` so GitHub Pages does not serve stale v0.2 assets.
 
 ## Homework Mode
 
