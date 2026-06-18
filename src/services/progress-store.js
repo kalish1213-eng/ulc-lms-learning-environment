@@ -20,6 +20,10 @@ function clone(value) {
   return JSON.parse(JSON.stringify(value));
 }
 
+function answersEqual(a, b) {
+  return JSON.stringify(a ?? null) === JSON.stringify(b ?? null);
+}
+
 function readJson(key) {
   try {
     const raw = localStorage.getItem(key);
@@ -62,28 +66,40 @@ export function resetDemoProgress() {
 }
 
 export function getExerciseState(progress, exerciseId) {
-  return progress.exerciseState?.[exerciseId] || {
+  const stored = progress.exerciseState?.[exerciseId] || {};
+  return {
     status: "not started",
     attempts: 0,
     latestAnswer: null,
+    latestResult: null,
     bestResult: null,
+    checkedAnswer: null,
+    checkedAt: null,
+    attemptsHistory: [],
     correctAnswerShown: false,
     aiExplanationOpened: false,
     completedAt: null,
     lastActivityAt: null,
+    ...stored,
   };
 }
 
 export function saveDraftAnswer(progress, exercise, answer) {
   const current = getExerciseState(progress, exercise.exercise_id);
+  const answerChanged = !answersEqual(current.latestAnswer, answer);
   const next = {
     ...progress,
     exerciseState: {
       ...progress.exerciseState,
       [exercise.exercise_id]: {
         ...current,
-        status: current.status === "done" ? "done" : "in progress",
+        status: answerChanged ? "in progress" : current.status === "done" ? "done" : "in progress",
         latestAnswer: answer,
+        latestResult: answerChanged ? null : current.latestResult,
+        checkedAnswer: answerChanged ? null : current.checkedAnswer,
+        checkedAt: answerChanged ? null : current.checkedAt,
+        correctAnswerShown: answerChanged ? false : current.correctAnswerShown,
+        aiExplanationOpened: answerChanged ? false : current.aiExplanationOpened,
         mode: exercise.mode,
         lastActivityAt: new Date().toISOString(),
       },
@@ -98,6 +114,9 @@ export function recordExerciseCheck(progress, exercise, result) {
   const isShortWriting = exercise.exercise_type === "short_writing";
   const status = result.correct || isShortWriting ? "done" : "needs retry";
   const completedAt = status === "done" ? new Date().toISOString() : current.completedAt;
+  const checkedAt = new Date().toISOString();
+  const submittedAnswer = current.latestAnswer;
+  const evaluationResult = { ...result, submittedAnswer, checkedAt };
   const next = {
     ...progress,
     currentLessonId: exercise.lesson_id,
@@ -107,7 +126,20 @@ export function recordExerciseCheck(progress, exercise, result) {
         ...current,
         attempts,
         status,
-        bestResult: result,
+        latestResult: evaluationResult,
+        bestResult: result.correct || isShortWriting || !current.bestResult ? evaluationResult : current.bestResult,
+        checkedAnswer: submittedAnswer,
+        checkedAt,
+        attemptsHistory: [
+          ...(current.attemptsHistory || []),
+          {
+            submittedAnswer,
+            evaluationResult,
+            checkedAt,
+          },
+        ],
+        correctAnswerShown: result.correct ? false : current.correctAnswerShown,
+        aiExplanationOpened: result.correct ? false : current.aiExplanationOpened,
         mode: exercise.mode,
         completedAt,
         lastActivityAt: new Date().toISOString(),

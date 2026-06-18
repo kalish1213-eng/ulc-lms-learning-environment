@@ -1,4 +1,4 @@
-import beginnerUnit1 from "../data/beginner-unit-1.js";
+import beginnerUnit1 from "../data/beginner-unit-1.js?v=0.2-state-p0b";
 
 const course = {
   course_id: "beginner_english_for_adults",

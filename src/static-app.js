@@ -17,8 +17,8 @@ import {
   getTypicalMistakes,
   getUnit,
   getUnitStats,
-} from "./services/content-service.js";
-import { checkExercise, formatCorrectAnswer } from "./services/autocheck.js";
+} from "./services/content-service.js?v=0.2-state-p0b";
+import { checkExercise, formatCorrectAnswer, optionIdFor } from "./services/autocheck.js?v=0.2-state-p0b";
 import {
   calculateExerciseProgress,
   calculateHomeworkProgress,
@@ -35,8 +35,8 @@ import {
   saveDraftAnswer,
   setCurrentLesson,
   STORAGE_KEY,
-} from "./services/progress-store.js";
-import { getAnalyticsEvents, logEvent } from "./services/analytics-service.js";
+} from "./services/progress-store.js?v=0.2-state-p0b";
+import { getAnalyticsEvents, logEvent } from "./services/analytics-service.js?v=0.2-state-p0b";
 
 const VERSION = "v0.2 RC";
 const UNIT_ID = "beginner_u1";
@@ -181,6 +181,25 @@ function pill(text, tone = "blue") {
 
 function progressBar(percent) {
   return `<div class="progress-bar"><span style="width: ${Math.max(0, Math.min(100, Number(percent) || 0))}%"></span></div>`;
+}
+
+function answersEqual(a, b) {
+  return JSON.stringify(a ?? null) === JSON.stringify(b ?? null);
+}
+
+function inferredSubmittedAnswer(result) {
+  if (!result?.item_results?.length) return null;
+  if (result.item_results.length === 1) return result.item_results[0].submitted;
+  return Object.fromEntries(result.item_results.map((item) => [item.item_id, item.submitted]));
+}
+
+function activeExerciseResult(exerciseState) {
+  const result = exerciseState?.latestResult || exerciseState?.bestResult;
+  if (!result) return null;
+
+  const checkedAnswer = result.submittedAnswer ?? exerciseState.checkedAnswer ?? inferredSubmittedAnswer(result);
+  if (checkedAnswer === null || checkedAnswer === undefined) return result;
+  return answersEqual(checkedAnswer, exerciseState.latestAnswer) ? result : null;
 }
 
 function statusTone(status) {
@@ -479,7 +498,7 @@ function attemptsText(exercise, exerciseState) {
 }
 
 function renderFriendlyMeta(exercise, exerciseState, mode, options = {}) {
-  const result = exerciseState.latestResult || exerciseState.bestResult;
+  const result = activeExerciseResult(exerciseState);
   const isCorrect = Boolean(result?.correct);
   const labels = [`${options.stepTitle || humanExerciseType(exercise.exercise_type)} · ${formatEstimatedTime(exercise.estimated_time)}`];
   if (options.teacherLed) labels.push("Задание с преподавателем");
@@ -789,13 +808,16 @@ function renderLessonStepContent(lesson, step) {
 function renderLessonActionBar(exercise, step, totalSteps) {
   const isExercise = step.type === "exercise" && exercise;
   const exerciseState = isExercise ? getExerciseState(progress, exercise.exercise_id) : null;
-  const result = exerciseState?.latestResult || exerciseState?.bestResult;
+  const result = activeExerciseResult(exerciseState);
   if (isExercise && result?.correct) {
     return `
       <div class="lesson-action-bar success-only">
         <button class="primary-button" type="button" data-next-step="true">${icon("arrow")} Далее</button>
       </div>
     `;
+  }
+  if (isExercise && (result || exerciseState.correctAnswerShown)) {
+    return "";
   }
   const attemptsLeft = isExercise ? Math.max(0, exercise.attempts_allowed - (exerciseState.attempts || 0)) : 1;
   const mainLabel = isExercise ? ui.check : state.lessonStepIndex >= totalSteps - 1 ? "К курсу" : "Далее";
@@ -920,15 +942,21 @@ function renderExerciseInput(exercise, exerciseState) {
   const item = exercise.items[0] || {};
 
   if (exercise.exercise_type === "multiple_choice" || exercise.exercise_type === "listen_choose") {
+    const selectedOptionId = draft && typeof draft === "object" ? draft.selectedOptionId : null;
+    const selectedValue = draft && typeof draft === "object" ? draft.selectedValue : draft;
     return `
       <div class="exercise-prompt">${html(item.prompt_en || exercise.learning_content_en)}</div>
       <div class="choice-grid">
-        ${(item.options || []).map((option) => `
-          <button class="choice-tile ${draft === option ? "selected" : ""}" type="button" value="${html(option)}" data-choice="${html(exercise.exercise_id)}">
-            ${draft === option ? icon("check") : ""}
+        ${(item.options || []).map((option) => {
+          const optionId = optionIdFor(item, option);
+          const selected = selectedOptionId ? selectedOptionId === optionId : selectedValue === option;
+          return `
+          <button class="choice-tile ${selected ? "selected" : ""}" type="button" value="${html(option)}" data-choice="${html(exercise.exercise_id)}" data-option-id="${html(optionId)}" data-item-id="${html(item.item_id || "i1")}">
+            ${selected ? icon("check") : ""}
             <span>${html(option)}</span>
           </button>
-        `).join("")}
+        `;
+        }).join("")}
       </div>
     `;
   }
@@ -967,7 +995,7 @@ function renderExerciseInput(exercise, exerciseState) {
   }
 
   if (exercise.exercise_type === "fill_gap") {
-    const result = exerciseState.latestResult || exerciseState.bestResult;
+    const result = activeExerciseResult(exerciseState);
     const hasError = Boolean(result && !result.correct);
     const prompt = (item.prompt_en || exercise.learning_content_en).replace(/^Hello\.\s*___/, "Hello, ___");
     const pieces = prompt.split("___");
@@ -1025,7 +1053,7 @@ function gapPlaceholder(exercise, prompt) {
 }
 
 function renderFeedback(exercise, exerciseState) {
-  const result = exerciseState.latestResult || exerciseState.bestResult;
+  const result = activeExerciseResult(exerciseState);
   const blocks = [];
 
   if (result) {
@@ -1059,6 +1087,11 @@ function renderFeedback(exercise, exerciseState) {
 }
 
 function renderExerciseActions(exercise, exerciseState) {
+  const result = activeExerciseResult(exerciseState);
+  if (result?.correct) {
+    return `<div class="exercise-actions success-only"><button class="primary-button" type="button">${icon("arrow")} Далее</button></div>`;
+  }
+  if (result || exerciseState.correctAnswerShown) return "";
   const attemptsLeft = Math.max(0, exercise.attempts_allowed - (exerciseState.attempts || 0));
   return `
     <div class="exercise-actions">
@@ -1129,7 +1162,7 @@ function renderHomeworkMode() {
   state.selectedExerciseId = currentExercise.exercise_id;
   state.selectedMode = "homework";
   const currentExerciseState = getExerciseState(progress, currentExercise.exercise_id);
-  const currentResult = currentExerciseState.latestResult || currentExerciseState.bestResult;
+  const currentResult = activeExerciseResult(currentExerciseState);
   const homeworkActionBar = currentResult?.correct
     ? `<div class="lesson-action-bar success-only"><button class="primary-button" type="button" data-homework-next="true" ${currentIndex >= selectedExercises.length - 1 ? "data-open-homework=\"" + html(selectedLesson.lesson_id) + "\"" : ""}>${currentIndex >= selectedExercises.length - 1 ? "Готово" : "Далее"} ${icon("arrow")}</button></div>`
     : `<div class="lesson-action-bar">
@@ -1546,7 +1579,11 @@ function handleClick(event) {
   const choice = event.target.closest("[data-choice]");
   if (choice) {
     const exercise = getExercise(choice.dataset.choice);
-    progress = saveDraftAnswer(progress, exercise, choice.value);
+    progress = saveDraftAnswer(progress, exercise, {
+      itemId: choice.dataset.itemId || exercise.items[0]?.item_id || "i1",
+      selectedOptionId: choice.dataset.optionId,
+      selectedValue: choice.value,
+    });
     logEvent("exercise_answered", { lesson_id: exercise.lesson_id, exercise_id: exercise.exercise_id, mode: exercise.mode, metadata: { answer_type: "choice" } });
     render();
     return;

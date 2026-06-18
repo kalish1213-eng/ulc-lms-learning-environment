@@ -32,6 +32,16 @@ function valuesEqual(a, b, rules) {
   return normalizeAnswer(a, rules) === normalizeAnswer(b, rules);
 }
 
+export function optionIdFor(item, option) {
+  const options = item?.options || [];
+  const index = options.findIndex((candidate) => candidate === option);
+  return `${item?.item_id || "i1"}_option_${index >= 0 ? index + 1 : "custom"}`;
+}
+
+function isChoiceExercise(exercise) {
+  return exercise.exercise_type === "multiple_choice" || exercise.exercise_type === "listen_choose";
+}
+
 function variantsFor(correctAnswer, acceptedAnswers = []) {
   const variants = [correctAnswer.value, correctAnswer.display_en];
   acceptedAnswers
@@ -44,7 +54,31 @@ function answerForItem(exercise, answer, correctAnswer) {
   if (exercise.exercise_type === "matching") {
     return answer?.[correctAnswer.item_id];
   }
+  if (isChoiceExercise(exercise)) {
+    return answer && typeof answer === "object" ? answer.selectedValue : answer;
+  }
+  if (exercise.exercise_type === "word_order" && Array.isArray(answer)) {
+    return answer.join(" ");
+  }
   return answer;
+}
+
+function choicePayloadForAnswer(exercise, answer, item) {
+  if (answer && typeof answer === "object" && answer.selectedOptionId) return answer;
+  const selectedValue = String(answer ?? "");
+  const option = (item?.options || []).find((candidate) => valuesEqual(candidate, selectedValue, exercise.normalization_rules || {}));
+  return {
+    itemId: item?.item_id || "i1",
+    selectedOptionId: option ? optionIdFor(item, option) : null,
+    selectedValue,
+  };
+}
+
+function correctOptionIdFor(exercise, correctAnswer, item) {
+  const rules = exercise.normalization_rules || {};
+  const variants = variantsFor(correctAnswer, exercise.accepted_answers);
+  const option = (item?.options || []).find((candidate) => variants.some((variant) => valuesEqual(candidate, variant, rules)));
+  return option ? optionIdFor(item, option) : null;
 }
 
 export function formatCorrectAnswer(exercise) {
@@ -74,6 +108,22 @@ export function checkExercise(exercise, answer) {
   }
 
   const itemResults = exercise.correct_answers.map((correctAnswer) => {
+    if (isChoiceExercise(exercise)) {
+      const item = exercise.items.find((candidate) => candidate.item_id === correctAnswer.item_id) || exercise.items[0];
+      const submittedChoice = choicePayloadForAnswer(exercise, answer, item);
+      const correctOptionId = correctOptionIdFor(exercise, correctAnswer, item);
+      const correct = Boolean(submittedChoice.selectedOptionId && correctOptionId && submittedChoice.selectedOptionId === correctOptionId);
+      return {
+        item_id: correctAnswer.item_id,
+        submitted: submittedChoice.selectedValue,
+        submitted_option_id: submittedChoice.selectedOptionId,
+        correct_option_id: correctOptionId,
+        correct,
+        expected: correctAnswer.display_en,
+        explanation_ru: correctAnswer.explanation_ru,
+      };
+    }
+
     const submitted = answerForItem(exercise, answer, correctAnswer);
     const variants = variantsFor(correctAnswer, exercise.accepted_answers);
     const correct = variants.some((variant) => valuesEqual(submitted, variant, rules));
