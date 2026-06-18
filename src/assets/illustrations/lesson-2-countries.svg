@@ -1,9 +1,15 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 360" role="img" aria-label="Map and city route">
-  <rect width="520" height="360" rx="34" fill="#E3F8EF"/>
-  <path d="M70 90h150l48 34h180v166H70z" fill="#fff"/>
-  <path d="M96 128c44 22 82 24 116 6s76-11 126 20 84 36 126 14" fill="none" stroke="#3C4AF5" stroke-width="12" stroke-linecap="round"/>
-  <circle cx="146" cy="150" r="18" fill="#FFF0E8" stroke="#17182B" stroke-width="8"/>
-  <circle cx="380" cy="212" r="18" fill="#EEF0FF" stroke="#17182B" stroke-width="8"/>
-  <path d="M150 246h96M290 104h84M312 254h108" stroke="#17182B" stroke-width="9" stroke-linecap="round" opacity=".5"/>
-  <path d="M256 194c26-44 54-72 84-86" stroke="#20A873" stroke-width="10" stroke-linecap="round" stroke-dasharray="1 22"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 380" role="img" aria-label="Adults talking about cities on a map">
+  <rect width="560" height="380" rx="34" fill="#E3F8EF"/>
+  <rect x="70" y="66" width="420" height="252" rx="34" fill="#fff"/>
+  <path d="M112 134c50 22 92 23 126 2s72-12 116 18 82 34 122 13" fill="none" stroke="#3C4AF5" stroke-width="11" stroke-linecap="round"/>
+  <path d="M152 238c42-54 88-83 138-86s92 16 136 56" fill="none" stroke="#20A873" stroke-width="9" stroke-linecap="round" stroke-dasharray="1 20"/>
+  <g fill="none" stroke="#17182B" stroke-linecap="round" stroke-linejoin="round" stroke-width="8">
+    <circle cx="146" cy="244" r="25"/>
+    <path d="M106 306c12-34 25-51 40-51s28 17 40 51"/>
+    <circle cx="420" cy="226" r="25"/>
+    <path d="M380 306c12-34 25-51 40-51s28 17 40 51"/>
+  </g>
+  <circle cx="178" cy="132" r="16" fill="#FFF0E8" stroke="#17182B" stroke-width="7"/>
+  <circle cx="410" cy="166" r="16" fill="#EEF0FF" stroke="#17182B" stroke-width="7"/>
+  <path d="M112 94h124M330 94h96" stroke="#3C4AF5" stroke-width="8" stroke-linecap="round" opacity=".28"/>
 </svg>

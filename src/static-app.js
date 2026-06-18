@@ -154,8 +154,8 @@ const lessonIllustrations = {
 };
 
 const lessonScenes = {
-  beg_u1_l1: "Встреча",
-  beg_u1_l2: "Города",
+  beg_u1_l1: "Знакомство",
+  beg_u1_l2: "Город",
   beg_u1_l3: "Работа",
   beg_u1_l4: "Контакты",
   beg_u1_l5: "Профиль",
@@ -259,6 +259,16 @@ function renderShell(content) {
     return renderStaffShell(content);
   }
 
+  if (state.view === "lesson" || (state.view === "homework" && state.homeworkStarted)) {
+    return `
+      <div class="focus-shell">
+        <main class="focus-workspace">
+          ${content}
+        </main>
+      </div>
+    `;
+  }
+
   const stats = calculateUnitProgress(progress, allExercises());
   const studentNav = [
     ["student", "Сегодня", "home"],
@@ -272,7 +282,7 @@ function renderShell(content) {
       <header class="student-topbar">
         <button class="brand-button" type="button" data-route="student" aria-label="ULC">
           <span class="brand-mark">ULC</span>
-          <span>Learning</span>
+          <span>Учимся</span>
         </button>
         <nav class="student-nav" aria-label="Student navigation">
           ${studentNav.map(([view, label, iconName]) => {
@@ -288,9 +298,9 @@ function renderShell(content) {
             <div class="profile-popover">
               <strong>Анна</strong>
               <span>${stats.percent}% Unit 1</span>
-              <button type="button" data-route="teacher">${icon("users")} Teacher demo</button>
-              <button type="button" data-open-live="${html(state.selectedLessonId)}">${icon("microphone")} Live demo</button>
-              <button type="button" data-route="methodologist">${icon("settings")} Methodologist</button>
+              <button type="button" data-route="teacher">${icon("users")} Кабинет преподавателя</button>
+              <button type="button" data-open-live="${html(state.selectedLessonId)}">${icon("microphone")} Live-урок</button>
+              <button type="button" data-route="methodologist">${icon("settings")} Методист</button>
               <button type="button" data-reset-progress="true">${icon("progress")} ${html(ui.reset)}</button>
             </div>
           </details>
@@ -389,6 +399,28 @@ function deadlineForLesson(lesson) {
   return `2026-06-${String(day).padStart(2, "0")} 22:00`;
 }
 
+function humanDeadlineForLesson(lesson) {
+  return lesson.lesson_number === 1 ? "До завтра, 22:00" : `До ${18 + lesson.lesson_number} июня, 22:00`;
+}
+
+function formatEstimatedTime(value) {
+  const minutes = String(value || "").match(/\d+/)?.[0] || "3";
+  return `${minutes} ${minutes === "1" ? "минута" : Number(minutes) > 1 && Number(minutes) < 5 ? "минуты" : "минут"}`;
+}
+
+function lessonShortTitle(lesson) {
+  return lesson.title.replace(/^Lesson\s+\d+:\s*/i, "");
+}
+
+function lessonRouteMeta(lesson) {
+  return `Урок ${lesson.lesson_number} · ${lessonScenes[lesson.lesson_id] || "Разговор"}`;
+}
+
+function clippedOutcome(lesson) {
+  const outcome = lessonOutcome(lesson);
+  return outcome.length > 118 ? `${outcome.slice(0, 115).trim()}...` : outcome;
+}
+
 function lessonIllustration(lesson) {
   return lessonIllustrations[lesson.lesson_id] || "./src/assets/illustrations/unit-1-cover.svg";
 }
@@ -429,6 +461,20 @@ function attemptsText(exercise, exerciseState) {
   if (attemptsLeft === 1) return "Осталась 1 попытка";
   if (attemptsLeft > 1 && attemptsLeft < 5) return `Осталось ${attemptsLeft} попытки`;
   return `Осталось ${attemptsLeft} попыток`;
+}
+
+function renderFriendlyMeta(exercise, exerciseState, mode, options = {}) {
+  const result = exerciseState.latestResult || exerciseState.bestResult;
+  const isCorrect = Boolean(result?.correct);
+  const labels = [`${options.stepTitle || humanExerciseType(exercise.exercise_type)} · ${formatEstimatedTime(exercise.estimated_time)}`];
+  if (options.teacherLed) labels.push("Задание с преподавателем");
+  if (!isCorrect && !options.teacherLed) labels.push(attemptsText(exercise, exerciseState));
+
+  return `
+    <div class="friendly-meta">
+      ${labels.slice(0, 2).map((label, index) => `<span>${icon(index === 0 ? "calendar" : "progress")} ${html(label)}</span>`).join("")}
+    </div>
+  `;
 }
 
 function renderProgressRing(percent, label = "") {
@@ -474,7 +520,7 @@ function renderStudentDashboard() {
     <section class="student-dashboard">
       <div class="learning-hero">
         <div class="hero-copy-block">
-          <span class="soft-label">Lesson ${lesson.lesson_number} · ${html(lesson.estimated_time || "18 min")}</span>
+          <span class="soft-label">Урок ${lesson.lesson_number} · ${html(formatEstimatedTime(lesson.estimated_time || "18 min"))}</span>
           <h1>Привет, Анна!</h1>
           <p>${html(lessonOutcome(lesson))}</p>
           <button class="primary-button large-cta" type="button" data-open-lesson="${html(lesson.lesson_id)}">
@@ -493,7 +539,7 @@ function renderStudentDashboard() {
         <button class="quick-card" type="button" data-open-homework="${html(homework.lesson_id)}">
           ${icon("checklist")}
           <span>Домашка</span>
-          <strong>${homeworkStats.percent}% · ${html(deadlineForLesson(lesson).slice(0, 10))}</strong>
+          <strong>${homeworkStats.percent}% · ${html(humanDeadlineForLesson(lesson))}</strong>
         </button>
         <button class="quick-card" type="button" data-route="review">
           ${icon("cards")}
@@ -521,15 +567,20 @@ function renderStudentDashboard() {
 function renderLessonTile(lesson) {
   const stats = calculateLessonProgress(progress, lesson.lesson_id, getLessonExercises);
   const active = lesson.lesson_id === state.selectedLessonId;
+  const status = stats.percent >= 100 ? "done" : stats.percent > 0 ? "in-progress" : "not-started";
 
   return `
-    <button class="lesson-route-card ${active ? "active" : ""}" type="button" data-open-lesson="${html(lesson.lesson_id)}">
+    <button class="learning-path-card ${active ? "active" : ""} ${status}" type="button" data-open-lesson="${html(lesson.lesson_id)}">
+      <span class="path-marker">${stats.percent >= 100 ? icon("check") : lesson.lesson_number}</span>
       <img src="${html(lessonIllustration(lesson))}" alt="" />
-      <span>Lesson ${lesson.lesson_number} · ${html(lessonScenes[lesson.lesson_id] || "Speaking")}</span>
-      <strong>${html(lesson.title)}</strong>
-      <small>${html(lessonOutcome(lesson))}</small>
-      ${progressBar(stats.percent)}
-      <em>${stats.percent}%</em>
+      <span class="path-meta">${html(lessonRouteMeta(lesson))}</span>
+      <strong>${html(lessonShortTitle(lesson))}</strong>
+      <small>${html(clippedOutcome(lesson))}</small>
+      <div class="path-card-footer">
+        ${progressBar(stats.percent)}
+        <span>${stats.percent}%</span>
+      </div>
+      <em>Продолжить</em>
     </button>
   `;
 }
@@ -547,14 +598,22 @@ function renderPathNode(lesson) {
 }
 
 function renderUnitMap() {
+  const unitStats = calculateUnitProgress(progress, allExercises());
   return `
     <section class="unit-map-screen">
-      <div class="screen-intro">
-        <span class="soft-label">Beginner English for Adults</span>
-        <h1>${html(unit.title)}</h1>
-        <p>${html(unit.unit_goal_ru)}</p>
+      <div class="unit-route-hero">
+        <div>
+          <span class="soft-label">Английский для начинающих</span>
+          <h1>Unit 1 · Nice to meet you</h1>
+          <p>Научитесь знакомиться, рассказывать о себе и обмениваться контактами</p>
+          <div class="unit-compact-progress">
+            <span>${unitStats.percent}% пройдено</span>
+            ${progressBar(unitStats.percent)}
+          </div>
+        </div>
+        <img src="./src/assets/illustrations/unit-1-cover.svg" alt="" />
       </div>
-      <div class="visual-unit-route">
+      <div class="learning-path" aria-label="Unit 1 learning path">
         ${lessons().map(renderLessonTile).join("")}
       </div>
     </section>
@@ -605,7 +664,7 @@ function renderLessonPage() {
       <div class="lesson-player-top">
         <button class="ghost-button compact" type="button" data-route="student">${icon("back")} Назад</button>
         <div>
-          <span>Unit 1 · Lesson ${lesson.lesson_number}</span>
+          <span>Урок ${lesson.lesson_number}</span>
           <strong>${html(lesson.title)}</strong>
         </div>
         <div class="lesson-step-meter">
@@ -615,8 +674,8 @@ function renderLessonPage() {
         <button class="ghost-button compact" type="button" data-route="unit">Выйти</button>
       </div>
 
-      <div class="lesson-player-layout">
-        <article class="lesson-stage">
+      <div class="lesson-player-layout focus-layout">
+        <article class="lesson-stage focus-stage">
           <div class="stage-visual">
             <img src="${html(lessonIllustration(lesson))}" alt="" />
           </div>
@@ -626,7 +685,7 @@ function renderLessonPage() {
           </div>
         </article>
 
-        <details class="lesson-drawer">
+        <details class="lesson-drawer focus-drawer">
           <summary>${icon("book")} Структура урока</summary>
           <div class="lesson-step-list">
             ${steps.map((item, index) => `
@@ -700,7 +759,7 @@ function renderLessonStepContent(lesson, step) {
   if (step.exercise) {
     state.selectedExerciseId = step.exercise.exercise_id;
     state.selectedMode = step.exercise.mode;
-    return renderExercisePlayer(lesson.lesson_id, step.exercise.mode, { includeActions: false, compactHeader: true });
+    return renderExercisePlayer(lesson.lesson_id, step.exercise.mode, { includeActions: false, compactHeader: true, stepTitle: step.title });
   }
 
   return "";
@@ -709,6 +768,14 @@ function renderLessonStepContent(lesson, step) {
 function renderLessonActionBar(exercise, step, totalSteps) {
   const isExercise = step.type === "exercise" && exercise;
   const exerciseState = isExercise ? getExerciseState(progress, exercise.exercise_id) : null;
+  const result = exerciseState?.latestResult || exerciseState?.bestResult;
+  if (isExercise && result?.correct) {
+    return `
+      <div class="lesson-action-bar success-only">
+        <button class="primary-button" type="button" data-next-step="true">${icon("arrow")} Далее</button>
+      </div>
+    `;
+  }
   const attemptsLeft = isExercise ? Math.max(0, exercise.attempts_allowed - (exerciseState.attempts || 0)) : 1;
   const mainLabel = isExercise ? ui.check : state.lessonStepIndex >= totalSteps - 1 ? "К курсу" : "Далее";
   const mainAttrs = isExercise
@@ -803,11 +870,7 @@ function renderExercisePlayer(lessonId = state.selectedLessonId, mode = state.se
         </div>
         ${pill(humanStatus(getExerciseStatus(progress, exercise.exercise_id)), statusTone(getExerciseStatus(progress, exercise.exercise_id)))}
       </div>`}
-      <div class="friendly-meta">
-        <span>${icon(mode === "homework" ? "checklist" : "book")} ${mode === "homework" ? "Домашняя практика" : "Задание с преподавателем"}</span>
-        <span>${icon("calendar")} ${html(exercise.estimated_time)}</span>
-        <span>${icon("progress")} ${html(attemptsText(exercise, exerciseState))}</span>
-      </div>
+      ${renderFriendlyMeta(exercise, exerciseState, mode, options)}
       ${renderExerciseMediaNotice(exercise)}
       <p class="exercise-instruction">${html(exercise.instruction_ru)}</p>
       ${renderExerciseInput(exercise, exerciseState)}
@@ -883,15 +946,20 @@ function renderExerciseInput(exercise, exerciseState) {
   }
 
   if (exercise.exercise_type === "fill_gap") {
-    const prompt = item.prompt_en || exercise.learning_content_en;
+    const result = exerciseState.latestResult || exerciseState.bestResult;
+    const hasError = Boolean(result && !result.correct);
+    const prompt = (item.prompt_en || exercise.learning_content_en).replace(/^Hello\.\s*___/, "Hello, ___");
     const pieces = prompt.split("___");
     if (pieces.length > 1) {
       return `
-        <label class="inline-gap">
-          <span>${html(pieces[0])}</span>
-          <input data-answer="${html(exercise.exercise_id)}" value="${html(typeof draft === "string" ? draft : "")}" placeholder="answer" />
-          <span>${html(pieces.slice(1).join("___"))}</span>
-        </label>
+        <div class="dialogue-gap-card ${hasError ? "has-error" : ""}">
+          <div class="dialogue-person" aria-hidden="true"><span></span></div>
+          <label class="inline-gap speech-line">
+            <span>${html(pieces[0])}</span>
+            <input data-answer="${html(exercise.exercise_id)}" value="${html(typeof draft === "string" ? draft : "")}" placeholder="${html(gapPlaceholder(exercise, prompt))}" size="5" />
+            <span>${html(pieces.slice(1).join("___"))}</span>
+          </label>
+        </div>
       `;
     }
   }
@@ -916,6 +984,16 @@ function renderExerciseInput(exercise, exerciseState) {
   `;
 }
 
+function successExplanation(exercise, result) {
+  if (formatCorrectAnswer(exercise).includes("I'm")) return "I’m — короткая форма I am.";
+  return result?.item_results?.[0]?.explanation_ru || exercise.ai_explanation?.example_en || "Хорошо. Можно идти дальше.";
+}
+
+function gapPlaceholder(exercise, prompt) {
+  if (exercise.exercise_id === "beg_u1_l1_ex1" || /^Hello,\s*___/.test(prompt)) return "I'm";
+  return "...";
+}
+
 function renderFeedback(exercise, exerciseState) {
   const result = exerciseState.latestResult || exerciseState.bestResult;
   const blocks = [];
@@ -923,27 +1001,27 @@ function renderFeedback(exercise, exerciseState) {
   if (result) {
     blocks.push(`
       <div class="feedback-card ${result.correct ? "correct" : result.partial ? "partial" : "incorrect"}">
-        <strong>${icon(result.correct ? "check" : "hint")} ${html(result.correct ? "Отлично, идём дальше" : result.partial ? "Почти получилось" : "Нужно чуть поправить")}</strong>
-        <p>${html(result.preliminary_feedback_ru || result.item_results?.[0]?.explanation_ru || "Посмотрите на подсказку и попробуйте ещё раз.")}</p>
-        ${result.correct ? `<button class="ghost-button" type="button" data-next-step="true">${icon("arrow")} Далее</button>` : `<div class="feedback-actions"><button class="ghost-button" type="button" data-open-ai="${html(exercise.exercise_id)}">${icon("hint")} Разобрать ошибку</button><button class="ghost-button" type="button" data-clear-answer="${html(exercise.exercise_id)}">${icon("back")} Попробовать ещё раз</button></div>`}
+        <strong>${icon(result.correct ? "check" : "hint")} ${html(result.correct ? "Правильно!" : result.partial ? "Почти получилось" : "Нужно чуть поправить")}</strong>
+        <p>${html(result.correct ? successExplanation(exercise, result) : result.preliminary_feedback_ru || result.item_results?.[0]?.explanation_ru || "Посмотрите на подсказку и попробуйте снова.")}</p>
+        ${result.correct ? "" : `<div class="feedback-actions"><button class="ghost-button" type="button">${icon("hint")} Подсказка</button><button class="ghost-button" type="button" data-clear-answer="${html(exercise.exercise_id)}">${icon("back")} Попробовать снова</button><button class="ghost-button" type="button" data-open-ai="${html(exercise.exercise_id)}">${icon("hint")} Разобрать ошибку</button></div>`}
       </div>
     `);
   } else if (exerciseState.latestAnswer) {
     blocks.push(`<p class="mode-note">${html(ui.saved)}.</p>`);
   }
 
-  if (exerciseState.correctAnswerShown) {
+  if (exerciseState.correctAnswerShown && !result?.correct) {
     blocks.push(`<div class="answer-card"><strong>Правильный вариант</strong><p>${html(formatCorrectAnswer(exercise))}</p></div>`);
   }
 
   if (exerciseState.aiExplanationOpened) {
     blocks.push(`
-      <div class="ai-card">
-        <strong>${icon("hint")} Разбор ошибки</strong>
+      <details class="ai-explanation-drawer" open>
+        <summary>${icon("hint")} Разбор ошибки</summary>
         <div><span>Что не так</span><p>${html(exercise.ai_explanation.text_ru)}</p></div>
         <div><span>Как правильно</span><p>${html(formatCorrectAnswer(exercise))}</p></div>
         <div><span>Пример</span><p>${html(exercise.ai_explanation.example_en || formatCorrectAnswer(exercise))}</p></div>
-      </div>
+      </details>
     `);
   }
 
@@ -975,37 +1053,42 @@ function renderHomeworkMode() {
       <section class="homework-start-screen">
         <div class="homework-hero-card">
           <div>
-            <span class="soft-label">Unit 1 · Lesson ${selectedLesson.lesson_number}</span>
-            <h1>${html(selectedTask.title_ru)}</h1>
+            <span class="soft-label">Домашка после урока ${selectedLesson.lesson_number}</span>
+            <h1>${html(lessonShortTitle(selectedLesson))}</h1>
             <p>${html(selectedTask.purpose_ru)}</p>
             <div class="homework-facts">
-              <span>${icon("calendar")} ${html(deadlineForLesson(selectedLesson))}</span>
-              <span>${icon("checklist")} ${selectedExercises.length} задания</span>
-              <span>${icon("progress")} 12 минут</span>
+              <span>${icon("calendar")} ${html(humanDeadlineForLesson(selectedLesson))}</span>
+              <span>${icon("checklist")} ${selectedExercises.length} задания · около 12 минут</span>
             </div>
-            <button class="primary-button large-cta" type="button" data-start-homework="${html(selectedLesson.lesson_id)}">${icon("arrow")} Начать</button>
+            <button class="primary-button large-cta" type="button" data-start-homework="${html(selectedLesson.lesson_id)}">${icon("arrow")} Начать домашку</button>
           </div>
-          ${renderProgressRing(selectedStats.percent, "домашка")}
-        </div>
-
-        <div class="homework-route">
-          ${selectedExercises.map((exercise, index) => `
-            <button class="homework-step-card" type="button" data-open-homework-exercise="${html(selectedLesson.lesson_id)}" data-exercise-id="${html(exercise.exercise_id)}">
-              <span>${index + 1}</span>
-              ${icon(index === 0 ? "cards" : index === 1 ? "book" : index === 2 ? "headphones" : "message")}
-              <strong>${html(humanExerciseType(exercise.exercise_type))}</strong>
-              ${pill(humanStatus(getExerciseStatus(progress, exercise.exercise_id)), statusTone(getExerciseStatus(progress, exercise.exercise_id)))}
-            </button>
-          `).join("")}
+          <div class="homework-illustration-card">
+            <img src="${html(lessonIllustration(selectedLesson))}" alt="" />
+            <strong>${selectedStats.percent === 0 ? "Вы ещё не начали" : `${selectedStats.completed} из ${selectedStats.total} заданий`}</strong>
+            ${selectedStats.percent > 0 ? progressBar(selectedStats.percent) : ""}
+          </div>
         </div>
 
         <details class="homework-history">
+          <summary>Что внутри</summary>
+          <div class="homework-route compact-homework-route">
+            ${selectedExercises.map((exercise, index) => `
+              <button class="homework-step-card" type="button" data-open-homework-exercise="${html(selectedLesson.lesson_id)}" data-exercise-id="${html(exercise.exercise_id)}">
+                <span>${index + 1}</span>
+                ${icon(index === 0 ? "cards" : index === 1 ? "book" : index === 2 ? "headphones" : "message")}
+                <strong>${html(humanExerciseType(exercise.exercise_type))}</strong>
+              </button>
+            `).join("")}
+          </div>
+        </details>
+
+        <details class="homework-history subtle-history">
           <summary>Другие домашки Unit 1</summary>
           <div class="homework-list compact">
             ${homeworkTasks.map((task) => {
               const lesson = getLesson(task.lesson_id);
               const stats = calculateExerciseProgress(progress, getHomeworkExercises(task.lesson_id));
-              return `<button type="button" data-open-homework="${html(task.lesson_id)}"><strong>${html(task.title_ru)}</strong><span>${stats.percent}% · Lesson ${lesson.lesson_number}</span></button>`;
+              return `<button type="button" data-open-homework="${html(task.lesson_id)}"><strong>${html(task.title_ru)}</strong><span>${stats.percent}% · Урок ${lesson.lesson_number}</span></button>`;
             }).join("")}
           </div>
         </details>
@@ -1015,29 +1098,34 @@ function renderHomeworkMode() {
 
   state.selectedExerciseId = currentExercise.exercise_id;
   state.selectedMode = "homework";
+  const currentExerciseState = getExerciseState(progress, currentExercise.exercise_id);
+  const currentResult = currentExerciseState.latestResult || currentExerciseState.bestResult;
+  const homeworkActionBar = currentResult?.correct
+    ? `<div class="lesson-action-bar success-only"><button class="primary-button" type="button" data-homework-next="true" ${currentIndex >= selectedExercises.length - 1 ? "data-open-homework=\"" + html(selectedLesson.lesson_id) + "\"" : ""}>${currentIndex >= selectedExercises.length - 1 ? "Готово" : "Далее"} ${icon("arrow")}</button></div>`
+    : `<div class="lesson-action-bar">
+        <button class="ghost-button" type="button" data-homework-prev="true" ${currentIndex <= 0 ? "disabled" : ""}>${icon("back")} Назад</button>
+        <button class="ghost-button" type="button" data-show-answer="${html(currentExercise.exercise_id)}">${icon("check")} Показать ответ</button>
+        <button class="primary-button" type="button" data-check-exercise="${html(currentExercise.exercise_id)}">${icon("check")} Проверить</button>
+        <button class="ghost-button" type="button" data-homework-next="true" ${currentIndex >= selectedExercises.length - 1 ? "disabled" : ""}>Далее ${icon("arrow")}</button>
+      </div>`;
 
   return `
     <section class="homework-player-screen">
       <div class="lesson-player-top">
         <button class="ghost-button compact" type="button" data-open-homework="${html(selectedLesson.lesson_id)}">${icon("back")} Домашка</button>
         <div>
-          <span>Lesson ${selectedLesson.lesson_number}</span>
+          <span>Урок ${selectedLesson.lesson_number}</span>
           <strong>${html(selectedTask.title_ru)}</strong>
         </div>
         <div class="lesson-step-meter">
-          <span>Задание ${currentIndex + 1} из ${selectedExercises.length}</span>
+          <span>${currentIndex + 1} из ${selectedExercises.length} заданий</span>
           ${progressBar(((currentIndex + 1) / selectedExercises.length) * 100)}
         </div>
       </div>
       <article class="homework-stage">
         ${renderExercisePlayer(selectedLesson.lesson_id, "homework", { includeActions: false })}
       </article>
-      <div class="lesson-action-bar">
-        <button class="ghost-button" type="button" data-homework-prev="true" ${currentIndex <= 0 ? "disabled" : ""}>${icon("back")} Назад</button>
-        <button class="ghost-button" type="button" data-show-answer="${html(currentExercise.exercise_id)}">${icon("check")} Показать ответ</button>
-        <button class="primary-button" type="button" data-check-exercise="${html(currentExercise.exercise_id)}">${icon("check")} Проверить</button>
-        <button class="ghost-button" type="button" data-homework-next="true" ${currentIndex >= selectedExercises.length - 1 ? "disabled" : ""}>Далее ${icon("arrow")}</button>
-      </div>
+      ${homeworkActionBar}
     </section>
   `;
 }
