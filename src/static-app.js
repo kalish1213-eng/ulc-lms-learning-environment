@@ -282,7 +282,6 @@ function renderShell(content) {
       <header class="student-topbar">
         <button class="brand-button" type="button" data-route="student" aria-label="ULC">
           <span class="brand-mark">ULC</span>
-          <span>Учимся</span>
         </button>
         <nav class="student-nav" aria-label="Student navigation">
           ${studentNav.map(([view, label, iconName]) => {
@@ -412,6 +411,10 @@ function lessonShortTitle(lesson) {
   return lesson.title.replace(/^Lesson\s+\d+:\s*/i, "");
 }
 
+function lessonHeaderTitle(lesson) {
+  return `Урок ${lesson.lesson_number} · ${lessonShortTitle(lesson)}`;
+}
+
 function lessonRouteMeta(lesson) {
   return `Урок ${lesson.lesson_number} · ${lessonScenes[lesson.lesson_id] || "Разговор"}`;
 }
@@ -427,6 +430,18 @@ function lessonIllustration(lesson) {
 
 function lessonOutcome(lesson) {
   return lesson.speaking_outcome?.can_do_statement_ru || lesson.lesson_goal || "";
+}
+
+function studentLessonOutcome(lesson) {
+  const outcomes = {
+    beg_u1_l1: "Вы научитесь представляться и начинать разговор.",
+    beg_u1_l2: "Вы научитесь говорить, откуда вы, и задавать этот вопрос.",
+    beg_u1_l3: "Вы научитесь называть профессию и спрашивать о работе.",
+    beg_u1_l4: "Вы научитесь диктовать имя, телефон и простой email.",
+    beg_u1_l5: "Вы научитесь задавать простые вопросы о личной информации.",
+    beg_u1_l6: "После урока вы сможете провести короткий разговор при первой встрече.",
+  };
+  return outcomes[lesson.lesson_id] || lessonOutcome(lesson).replace(/^Студент может\s*/i, "Вы сможете ");
 }
 
 function humanStatus(status) {
@@ -522,7 +537,7 @@ function renderStudentDashboard() {
         <div class="hero-copy-block">
           <span class="soft-label">Урок ${lesson.lesson_number} · ${html(formatEstimatedTime(lesson.estimated_time || "18 min"))}</span>
           <h1>Привет, Анна!</h1>
-          <p>${html(lessonOutcome(lesson))}</p>
+          <p>${html(studentLessonOutcome(lesson))}</p>
           <button class="primary-button large-cta" type="button" data-open-lesson="${html(lesson.lesson_id)}">
             ${icon("arrow")} ${html(ui.continueLesson)}
           </button>
@@ -534,7 +549,7 @@ function renderStudentDashboard() {
         <button class="quick-card" type="button" data-open-lesson="${html(next.lesson_id)}">
           ${icon("calendar")}
           <span>Следующий урок</span>
-          <strong>${html(next.title)}</strong>
+          <strong>${html(lessonHeaderTitle(next))}</strong>
         </button>
         <button class="quick-card" type="button" data-open-homework="${html(homework.lesson_id)}">
           ${icon("checklist")}
@@ -573,14 +588,16 @@ function renderLessonTile(lesson) {
     <button class="learning-path-card ${active ? "active" : ""} ${status}" type="button" data-open-lesson="${html(lesson.lesson_id)}">
       <span class="path-marker">${stats.percent >= 100 ? icon("check") : lesson.lesson_number}</span>
       <img src="${html(lessonIllustration(lesson))}" alt="" />
-      <span class="path-meta">${html(lessonRouteMeta(lesson))}</span>
-      <strong>${html(lessonShortTitle(lesson))}</strong>
-      <small>${html(clippedOutcome(lesson))}</small>
-      <div class="path-card-footer">
+      <div class="path-card-main">
+        <span class="path-meta">${html(lessonRouteMeta(lesson))}</span>
+        <strong>${html(lessonShortTitle(lesson))}</strong>
+        <small>${html(studentLessonOutcome(lesson))}</small>
+        <em>${active ? "Продолжить" : "Открыть →"}</em>
+      </div>
+      <div class="path-card-progress">
         ${progressBar(stats.percent)}
         <span>${stats.percent}%</span>
       </div>
-      <em>Продолжить</em>
     </button>
   `;
 }
@@ -607,7 +624,7 @@ function renderUnitMap() {
           <h1>Unit 1 · Nice to meet you</h1>
           <p>Научитесь знакомиться, рассказывать о себе и обмениваться контактами</p>
           <div class="unit-compact-progress">
-            <span>${unitStats.percent}% пройдено</span>
+            <span>Прогресс юнита · ${unitStats.percent}%</span>
             ${progressBar(unitStats.percent)}
           </div>
         </div>
@@ -664,13 +681,30 @@ function renderLessonPage() {
       <div class="lesson-player-top">
         <button class="ghost-button compact" type="button" data-route="student">${icon("back")} Назад</button>
         <div>
-          <span>Урок ${lesson.lesson_number}</span>
-          <strong>${html(lesson.title)}</strong>
+          <strong>${html(lessonHeaderTitle(lesson))}</strong>
         </div>
         <div class="lesson-step-meter">
           <span>Шаг ${state.lessonStepIndex + 1} из ${steps.length}</span>
           ${progressBar(((state.lessonStepIndex + 1) / steps.length) * 100)}
         </div>
+        <details class="lesson-structure-menu">
+          <summary class="ghost-button compact">${icon("book")} Структура</summary>
+          <div class="lesson-structure-sheet">
+            <div class="lesson-step-list">
+              ${steps.map((item, index) => {
+                const current = index === state.lessonStepIndex;
+                const completed = index < state.lessonStepIndex;
+                const locked = index > state.lessonStepIndex;
+                return `
+                  <button class="${current ? "active" : ""} ${completed ? "completed" : ""}" type="button" data-lesson-step="${index}" ${locked ? "disabled" : ""}>
+                    ${icon(completed ? "check" : item.icon)}
+                    <span>${html(item.title)}</span>
+                  </button>
+                `;
+              }).join("")}
+            </div>
+          </div>
+        </details>
         <button class="ghost-button compact" type="button" data-route="unit">Выйти</button>
       </div>
 
@@ -680,22 +714,9 @@ function renderLessonPage() {
             <img src="${html(lessonIllustration(lesson))}" alt="" />
           </div>
           <div class="stage-content">
-            <span class="soft-label">${html(step.title)}</span>
             ${renderLessonStepContent(lesson, step)}
           </div>
         </article>
-
-        <details class="lesson-drawer focus-drawer">
-          <summary>${icon("book")} Структура урока</summary>
-          <div class="lesson-step-list">
-            ${steps.map((item, index) => `
-              <button class="${index === state.lessonStepIndex ? "active" : ""}" type="button" data-lesson-step="${index}">
-                ${icon(item.icon)}
-                <span>${html(item.title)}</span>
-              </button>
-            `).join("")}
-          </div>
-        </details>
       </div>
 
       ${renderLessonActionBar(exercise, step, steps.length)}
@@ -706,8 +727,8 @@ function renderLessonPage() {
 function renderLessonStepContent(lesson, step) {
   if (step.type === "context") {
     return `
-      <h1>${html(lesson.title)}</h1>
-      <p>${html(lessonOutcome(lesson))}</p>
+      <h1>${html(lessonShortTitle(lesson))}</h1>
+      <p>${html(studentLessonOutcome(lesson))}</p>
       <div class="phrase-bubbles">
         ${lesson.target_vocabulary.slice(0, 4).map((item) => `<span>${html(item)}</span>`).join("")}
       </div>
@@ -738,7 +759,7 @@ function renderLessonStepContent(lesson, step) {
     const activity = getSpeakingActivities(lesson.lesson_id)[0];
     return `
       <h2>Скажите вслух</h2>
-      <p>${html(activity?.instruction_ru || lessonOutcome(lesson))}</p>
+      <p>${html(activity?.instruction_ru || studentLessonOutcome(lesson))}</p>
       <div class="speaking-card">
         ${icon("microphone")}
         <strong>${html(activity?.target_phrases_en?.slice(0, 3).join(" · ") || lesson.learning_content_en || lesson.title)}</strong>
@@ -749,7 +770,7 @@ function renderLessonStepContent(lesson, step) {
   if (step.type === "summary") {
     return `
       <h2>Готово на сегодня</h2>
-      <p>${html(lessonOutcome(lesson))}</p>
+      <p>${html(studentLessonOutcome(lesson))}</p>
       <div class="summary-actions">
         <button class="primary-button" type="button" data-open-homework="${html(lesson.lesson_id)}">${icon("checklist")} Перейти к домашке</button>
       </div>
@@ -1060,7 +1081,7 @@ function renderHomeworkMode() {
               <span>${icon("calendar")} ${html(humanDeadlineForLesson(selectedLesson))}</span>
               <span>${icon("checklist")} ${selectedExercises.length} задания · около 12 минут</span>
             </div>
-            <button class="primary-button large-cta" type="button" data-start-homework="${html(selectedLesson.lesson_id)}">${icon("arrow")} Начать домашку</button>
+            <button class="primary-button large-cta" type="button" data-start-homework="${html(selectedLesson.lesson_id)}">${icon("arrow")} Начать</button>
           </div>
           <div class="homework-illustration-card">
             <img src="${html(lessonIllustration(selectedLesson))}" alt="" />
@@ -1154,7 +1175,7 @@ function renderReviewPractice() {
         <div class="review-words-card mint">
           ${icon("microphone")}
           <h2>Сказать вслух</h2>
-          <p>${html(lessonOutcome(lesson))}</p>
+          <p>${html(studentLessonOutcome(lesson))}</p>
         </div>
         ${exercises.slice(0, 2).map((exercise) => `
           <button class="review-task-card" type="button" data-open-exercise="${html(exercise.exercise_id)}" data-mode="${html(exercise.mode)}">
