@@ -653,3 +653,6 @@ if (typeof globalThis !== "undefined") {
 if (typeof module !== "undefined" && module.exports) {
   module.exports = beginnerUnit1;
 }
+
+export { beginnerUnit1 };
+export default beginnerUnit1;

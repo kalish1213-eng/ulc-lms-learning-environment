@@ -1,202 +1,98 @@
-const VERSION = "v0.1.1";
-const STORAGE_KEY = "ulc_mvp_v0_1_1_progress";
+import {
+  getAllExercises,
+  getAllMediaSpecifications,
+  getClassworkExercises,
+  getCourse,
+  getExercise,
+  getExerciseModeCounts,
+  getHomeworkExercises,
+  getHomeworkTasks,
+  getLesson,
+  getLessonExercises,
+  getLessonHomework,
+  getLessonMedia,
+  getLessons,
+  getSpeakingActivities,
+  getTeacherNotes,
+  getTypicalMistakes,
+  getUnit,
+  getUnitStats,
+} from "./services/content-service.js";
+import { checkExercise, formatCorrectAnswer } from "./services/autocheck.js";
+import {
+  calculateExerciseProgress,
+  calculateHomeworkProgress,
+  calculateLessonProgress,
+  calculateUnitProgress,
+  getExerciseState,
+  getExerciseStatus,
+  getLastActivity,
+  loadProgress,
+  markAiExplanationOpened,
+  markCorrectAnswerShown,
+  recordExerciseCheck,
+  resetDemoProgress,
+  saveDraftAnswer,
+  setCurrentLesson,
+  STORAGE_KEY,
+} from "./services/progress-store.js";
+import { getAnalyticsEvents, logEvent } from "./services/analytics-service.js";
 
-const COURSE = {
-  title: "Beginner English for Adults",
-  school: "ULC.by",
-  group: "Beginner A1 Evening",
-  level: "Beginner",
-  currentUnit: "Unit 1",
-  currentLessonId: "beg_u1_l2",
-  certificateTarget: 70,
+const VERSION = "v0.2 RC";
+const UNIT_ID = "beginner_u1";
+const DEMO_USER_ID = "student_demo_anna";
+
+const root = document.getElementById("root");
+const course = getCourse();
+const unit = getUnit(UNIT_ID);
+const lessons = () => getLessons(UNIT_ID);
+const allExercises = () => getAllExercises(UNIT_ID);
+
+const ui = {
+  student: "\u0421\u0442\u0443\u0434\u0435\u043d\u0442",
+  unitMap: "\u041a\u0430\u0440\u0442\u0430 Unit",
+  lesson: "\u0423\u0440\u043e\u043a",
+  homework: "\u0414\u043e\u043c\u0430\u0448\u043a\u0430",
+  teacher: "\u041f\u0440\u0435\u043f\u043e\u0434\u0430\u0432\u0430\u0442\u0435\u043b\u044c",
+  methodologist: "\u041c\u0435\u0442\u043e\u0434\u0438\u0441\u0442",
+  continueLesson: "\u041f\u0440\u043e\u0434\u043e\u043b\u0436\u0438\u0442\u044c \u0443\u0440\u043e\u043a",
+  continueHomework: "\u041f\u0440\u043e\u0434\u043e\u043b\u0436\u0438\u0442\u044c \u0434\u043e\u043c\u0430\u0448\u043a\u0443",
+  currentLesson: "\u0422\u0435\u043a\u0443\u0449\u0438\u0439 \u0443\u0440\u043e\u043a",
+  nextLesson: "\u0421\u043b\u0435\u0434\u0443\u044e\u0449\u0438\u0439 \u0443\u0440\u043e\u043a",
+  progress: "\u041f\u0440\u043e\u0433\u0440\u0435\u0441\u0441",
+  check: "\u041f\u0440\u043e\u0432\u0435\u0440\u0438\u0442\u044c",
+  showAnswer: "\u041f\u043e\u043a\u0430\u0437\u0430\u0442\u044c \u043e\u0442\u0432\u0435\u0442",
+  choose: "\u0412\u044b\u0431\u0435\u0440\u0438\u0442\u0435",
+  answer: "\u041e\u0442\u0432\u0435\u0442",
+  reset: "\u0421\u0431\u0440\u043e\u0441\u0438\u0442\u044c \u0434\u0435\u043c\u043e-\u043f\u0440\u043e\u0433\u0440\u0435\u0441\u0441",
+  saved: "\u041e\u0442\u0432\u0435\u0442 \u0441\u043e\u0445\u0440\u0430\u043d\u0451\u043d",
 };
 
-const lessons = [
-  {
-    id: "beg_u1_l1",
-    unit: "Unit 1",
-    lessonNo: "1.1",
-    title: "Hello, I'm Anna",
-    status: "published",
-    duration: "45 min",
-    focus: "be: I am / you are",
-    summary: "Первый контакт: имя, приветствие, короткая вежливая реакция.",
-    speakingOutcome: "Студент может поздороваться, назвать имя и ответить на Nice to meet you.",
-    targetLanguage: ["Hello, I'm Anna.", "Nice to meet you.", "I'm from Minsk."],
-    teacherNote: "Начать с парной практики: name cards, slow model, repeat with confidence.",
-  },
-  {
-    id: "beg_u1_l2",
-    unit: "Unit 1",
-    lessonNo: "1.2",
-    title: "Where are you from?",
-    status: "published",
-    duration: "50 min",
-    focus: "be: am / are + from",
-    summary: "Страна, город, короткий диалог знакомства.",
-    speakingOutcome: "Студент может спросить и ответить, откуда он или другой человек.",
-    targetLanguage: ["Where are you from?", "I'm from Belarus.", "Are you from Poland?"],
-    teacherNote: "Следить, чтобы students did not translate every word; use chunks.",
-  },
-  {
-    id: "beg_u1_l3",
-    unit: "Unit 1",
-    lessonNo: "1.3",
-    title: "My job, my city",
-    status: "draft",
-    duration: "50 min",
-    focus: "a / an + jobs",
-    summary: "Профессия, город и простая мини-презентация.",
-    speakingOutcome: "Студент может сказать профессию и задать короткий вопрос партнеру.",
-    targetLanguage: ["I'm a manager.", "Are you a teacher?", "I work in Minsk."],
-    teacherNote: "Draft lesson: needs methodist and language review before publishing.",
-  },
-  {
-    id: "beg_u1_l4",
-    unit: "Unit 1",
-    lessonNo: "1.4",
-    title: "Cafe English",
-    status: "review",
-    duration: "45 min",
-    focus: "Can I have ...?",
-    summary: "Практичная мини-сцена в кафе без перегруза грамматикой.",
-    speakingOutcome: "Студент может заказать напиток и вежливо уточнить цену.",
-    targetLanguage: ["Can I have tea, please?", "How much is it?", "Here you are."],
-    teacherNote: "Review lesson: check pacing and keep the role-play short.",
-  },
-];
+let progress = loadProgress();
 
-const exerciseTypes = [
-  "fill-gap",
-  "multiple-choice",
-  "matching",
-  "drag-drop",
-  "word-order",
-  "listen-choose",
-  "listen-type",
-  "short-writing",
-];
-
-const exercises = [
-  {
-    id: "ex_fill_from",
-    lessonId: "beg_u1_l2",
-    type: "fill-gap",
-    title: "1A. Complete the sentence",
-    skill: "Grammar",
-    instruction: "Впишите пропущенное слово.",
-    prompt: "I am ___ Minsk.",
-    correct: "from",
-    ai: "После am используем from, когда говорим, откуда человек: I am from Minsk.",
-  },
-  {
-    id: "ex_choice_meet",
-    lessonId: "beg_u1_l2",
-    type: "multiple-choice",
-    title: "1B. Choose the reply",
-    skill: "Functional language",
-    instruction: "Выберите лучший ответ.",
-    prompt: "A: Nice to meet you. B: ...",
-    options: ["I'm coffee.", "Nice to meet you, too.", "From Minsk?"],
-    correct: "Nice to meet you, too.",
-    ai: "Фраза too показывает взаимность: Nice to meet you, too = мне тоже приятно познакомиться.",
-  },
-  {
-    id: "ex_match_words",
-    lessonId: "beg_u1_l2",
-    type: "matching",
-    title: "1C. Match words",
-    skill: "Vocabulary",
-    instruction: "Соедините английские слова с русскими значениями.",
-    prompt: "Match the words.",
-    pairs: [
-      ["city", "город"],
-      ["country", "страна"],
-      ["name", "имя"],
-    ],
-    choices: ["имя", "город", "страна"],
-    correct: { city: "город", country: "страна", name: "имя" },
-    ai: "Country - это страна, city - город. В вопросе Where are you from? можно назвать и страну, и город.",
-  },
-  {
-    id: "ex_drag_chunk",
-    lessonId: "beg_u1_l2",
-    type: "drag-drop",
-    title: "1D. Build the chunk",
-    skill: "Sentence chunk",
-    instruction: "Нажимайте слова в правильном порядке.",
-    prompt: "Соберите фразу: Я из Беларуси.",
-    words: ["Belarus", "from", "I'm"],
-    correct: "I'm from Belarus",
-    ai: "В английском порядок фиксированный: I'm + from + place.",
-  },
-  {
-    id: "ex_word_order_question",
-    lessonId: "beg_u1_l2",
-    type: "word-order",
-    title: "1E. Make a question",
-    skill: "Grammar",
-    instruction: "Соберите вопрос.",
-    prompt: "Откуда вы?",
-    words: ["you", "Where", "from", "are"],
-    correct: "Where are you from",
-    ai: "В вопросе с are порядок такой: Where + are + you + from?",
-  },
-  {
-    id: "ex_listen_choose",
-    lessonId: "beg_u1_l2",
-    type: "listen-choose",
-    title: "1F. Listen and choose",
-    skill: "Listening",
-    instruction: "Аудио пока mock: прочитайте реплику и выберите смысл.",
-    prompt: "Audio mock: 'I'm from Vilnius.'",
-    options: ["The person says a city.", "The person says a job.", "The person asks a question."],
-    correct: "The person says a city.",
-    ai: "Vilnius - город. Фраза I'm from Vilnius сообщает, откуда человек.",
-  },
-  {
-    id: "ex_listen_type",
-    lessonId: "beg_u1_l2",
-    type: "listen-type",
-    title: "1G. Listen and type",
-    skill: "Listening",
-    instruction: "Аудио пока mock: напечатайте услышанную фразу.",
-    prompt: "Audio mock: 'Hello'",
-    correct: "Hello",
-    ai: "Hello пишется с двойной l. Регистр не важен для проверки.",
-  },
-  {
-    id: "ex_short_intro",
-    lessonId: "beg_u1_l2",
-    type: "short-writing",
-    title: "1H. Write a mini-introduction",
-    skill: "Writing to speaking",
-    instruction: "Напишите 2 коротких предложения о себе.",
-    prompt: "Use: I'm ... / I'm from ...",
-    mustInclude: ["I'm", "from"],
-    correct: "I'm Anna. I'm from Minsk.",
-    ai: "Для Beginner достаточно двух коротких фраз: имя и место. Потом это можно сказать вслух.",
-  },
-];
-
-const homeworkAssignment = {
-  id: "hw_u1_l2",
-  title: "Homework: Where are you from?",
-  unit: "Unit 1",
-  lessonId: "beg_u1_l2",
-  deadline: "2026-06-21 20:00",
-  teacherVisible: true,
-  exerciseIds: exercises.map((exercise) => exercise.id),
+const state = {
+  view: "student",
+  selectedLessonId: progress.currentLessonId || lessons()[0].lesson_id,
+  selectedExerciseId: null,
+  selectedMode: "classwork",
+  liveLessonId: progress.currentLessonId || lessons()[0].lesson_id,
+  liveExerciseId: null,
+  liveMode: "group",
+  liveLocked: false,
+  liveShowAnswers: true,
+  selectedStudentId: DEMO_USER_ID,
+  methodStatusFilter: "all",
+  selectedMethodExerciseId: null,
 };
 
-const students = [
-  { id: "stu_001", name: "Анна", progress: 46, score: 82, homework: 75, risk: "low", lastSeen: "сегодня", mistake: "from / are order" },
-  { id: "stu_002", name: "Мария", progress: 28, score: 64, homework: 38, risk: "medium", lastSeen: "2 дня назад", mistake: "question order" },
-  { id: "stu_003", name: "Ирина", progress: 18, score: 51, homework: 20, risk: "high", lastSeen: "6 дней назад", mistake: "missed homework" },
-  { id: "stu_004", name: "Екатерина", progress: 52, score: 88, homework: 90, risk: "low", lastSeen: "сегодня", mistake: "country/city stress" },
+const demoStudents = [
+  { id: DEMO_USER_ID, name: "Anna", source: "localStorage demo", nps: 9, retention: "active", inactiveDays: 0, missedHomework: 0, depth: "high" },
+  { id: "student_demo_maria", name: "Maria", source: "mock cohort", progress: 38, classwork: 46, homework: 28, nps: 8, retention: "watch", inactiveDays: 2, missedHomework: 1, depth: "medium", mistake: "question_order" },
+  { id: "student_demo_irina", name: "Irina", source: "mock cohort", progress: 18, classwork: 24, homework: 8, nps: 6, retention: "risk", inactiveDays: 8, missedHomework: 2, depth: "low", mistake: "missing_be" },
+  { id: "student_demo_ekaterina", name: "Ekaterina", source: "mock cohort", progress: 72, classwork: 78, homework: 66, nps: 10, retention: "active", inactiveDays: 0, missedHomework: 0, depth: "high", mistake: "email_at_dot" },
 ];
 
-const workflowStatuses = [
+const statusWorkflow = [
   "draft",
   "AI-generated",
   "methodist review",
@@ -209,209 +105,98 @@ const workflowStatuses = [
   "archived",
 ];
 
-const contentItems = [
-  { title: "Lesson 1.2 exercise pack", type: "Exercise set", status: "published", owner: "Methodist", note: "Active student homework" },
-  { title: "Lesson 1.3 job cards", type: "Vocabulary", status: "draft", owner: "AI + methodist", note: "Needs examples for adult students" },
-  { title: "Cafe role-play", type: "Live lesson slide", status: "UX review", owner: "Teacher team", note: "Check mobile readability" },
-  { title: "Country/city listening set", type: "Listening", status: "language review", owner: "Language editor", note: "Check pronunciation script" },
-  { title: "Old PDF import: greetings page", type: "Legacy material", status: "archived", owner: "Methodist", note: "Hidden from students; kept in history" },
-];
+const methodMaterials = allExercises().map((exercise, index) => ({
+  id: exercise.exercise_id,
+  title: `${getLesson(exercise.lesson_id).title} / ${exercise.exercise_type}`,
+  status: statusWorkflow[index % (statusWorkflow.length - 1)],
+  owner: index % 2 ? "language reviewer" : "methodist",
+  updated: `2026-06-${String(10 + index).padStart(2, "0")}`,
+}));
 
-const analyticsMetrics = [
-  ["NPS", "62", "+8 vs pilot"],
-  ["Retention", "84%", "4-week cohort"],
-  ["Depth of usage", "3.8 screens/session", "Student + homework"],
-  ["Homework completion", "71%", "current group"],
-  ["Active students", "18", "last 7 days"],
-  ["Group progress", "43%", "Unit 1 demo"],
-  ["Student progress", "46%", "Anna mock profile"],
-  ["Live mode usage", "6 sessions", "teacher-led lessons"],
-  ["AI explanation usage", "24 requests", "after mistakes"],
-];
+methodMaterials.push({
+  id: "archived_sample_u1_l0",
+  title: "Archived pilot card: old greeting drill",
+  status: "archived",
+  owner: "methodist",
+  updated: "2026-06-01",
+});
 
-const highErrorExercises = [
-  ["1E. Make a question", "48% error rate", "Where + are + you + from"],
-  ["1C. Match words", "31% error rate", "city / country"],
-  ["1H. Mini-introduction", "27% needs retry", "missing from"],
-];
-
-const riskSignals = [
-  ["Ирина", "missed homework + 6 days inactive", "high"],
-  ["Мария", "low homework completion", "medium"],
-  ["Анна", "question order errors", "low"],
-];
-
-const integrationCards = [
-  {
-    name: "1C",
-    purpose: "schedule, groups, students, teachers, lessons",
-    endpoint: "GET /mock/1c/schedule",
-    status: "mock only",
-    payload: { groupId: "beg-a1-evening", lessonId: "beg_u1_l2", teacherId: "t_102" },
-  },
-  {
-    name: "Revizor / BI",
-    purpose: "analytics events, dashboards, risk signals",
-    endpoint: "POST /mock/revizor/events",
-    status: "mock only",
-    payload: { event: "exercise_checked", correct: false, riskSignal: "question_order" },
-  },
-  {
-    name: "Bitrix24",
-    purpose: "tasks for service/team",
-    endpoint: "POST /mock/bitrix/tasks",
-    status: "mock only",
-    payload: { title: "Call student after missed homework", responsible: "service_team" },
-  },
-  {
-    name: "Telegram",
-    purpose: "student/teacher notifications",
-    endpoint: "POST /mock/telegram/messages",
-    status: "mock only",
-    payload: { chatType: "student", template: "homework_deadline_reminder" },
-  },
-  {
-    name: "Speaking widget",
-    purpose: "future embedded speaking practice",
-    endpoint: "POST /mock/speaking-widget/session",
-    status: "mock only",
-    payload: { lessonId: "beg_u1_l2", mode: "external_embed" },
-  },
-];
-
-const defaultProgress = {
-  answers: {},
-  results: {},
-  correctShown: {},
-  aiRequested: {},
-  metadataDraft: {},
-  events: [],
-};
-
-const state = {
-  view: "student",
-  selectedLessonId: COURSE.currentLessonId,
-  exerciseIndex: 0,
-  statusFilter: "all",
-  selectedStudentId: "stu_001",
-};
-
-const root = document.getElementById("root");
-let progress = loadProgress();
-
-function loadProgress() {
-  try {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    return stored ? { ...defaultProgress, ...JSON.parse(stored) } : { ...defaultProgress };
-  } catch {
-    return { ...defaultProgress };
-  }
-}
-
-function saveProgress() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
-}
-
-function trackEvent(name, payload = {}) {
-  progress.events = [
-    {
-      event: name,
-      timestamp: new Date().toISOString(),
-      userId: "student_demo_anna",
-      ...payload,
-    },
-    ...(progress.events || []),
-  ].slice(0, 30);
-  saveProgress();
+function html(value) {
+  return String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
 }
 
 function icon(label) {
-  return `<span class="ui-icon" aria-hidden="true">${label}</span>`;
+  return `<span class="icon-circle" aria-hidden="true">${html(label)}</span>`;
 }
 
 function pill(text, tone = "blue") {
-  return `<span class="tag ${tone}">${text}</span>`;
+  return `<span class="status-pill ${html(tone)}">${html(text)}</span>`;
 }
 
-function getLesson(id = state.selectedLessonId) {
-  return lessons.find((lesson) => lesson.id === id) || lessons[1];
+function progressBar(percent) {
+  return `<div class="progress-bar"><span style="width: ${Math.max(0, Math.min(100, Number(percent) || 0))}%"></span></div>`;
 }
 
-function getLessonExercises(lessonId = state.selectedLessonId) {
-  return exercises.filter((exercise) => exercise.lessonId === lessonId);
+function statusTone(status) {
+  if (status === "done" || status === "published" || status === "approved") return "green";
+  if (status === "needs retry" || status === "risk" || status === "needs revision") return "danger";
+  if (status === "in progress" || status === "methodist review" || status === "language review" || status === "UX review") return "amber";
+  if (status === "archived") return "gray";
+  return "blue";
 }
 
-function getCurrentExercises() {
-  const lessonExercises = getLessonExercises();
-  return lessonExercises.length ? lessonExercises : exercises;
+function routeFor(view, extra = {}) {
+  if (view === "lesson") return `#lesson/${extra.lessonId || state.selectedLessonId}`;
+  if (view === "exercise") return `#exercise/${extra.lessonId || state.selectedLessonId}/${extra.exerciseId || state.selectedExerciseId}/${extra.mode || state.selectedMode}`;
+  if (view === "homework") return `#homework/${extra.lessonId || state.selectedLessonId}`;
+  if (view === "live") return `#live/${extra.lessonId || state.liveLessonId}`;
+  if (view === "teacher") return "#teacher";
+  if (view === "methodologist") return "#methodologist";
+  if (view === "unit") return "#unit";
+  return "#student";
 }
 
-function getCurrentExercise() {
-  const currentExercises = getCurrentExercises();
-  return currentExercises[Math.min(state.exerciseIndex, currentExercises.length - 1)];
+function navigate(view, extra = {}) {
+  window.location.hash = routeFor(view, extra);
+  parseHash();
+  render();
 }
 
-function normalize(value) {
-  return String(value || "")
-    .toLowerCase()
-    .replace(/[’']/g, "'")
-    .replace(/[?.!,]/g, "")
-    .replace(/\s+/g, " ")
-    .trim();
-}
+function parseHash() {
+  const parts = window.location.hash.replace(/^#/, "").split("/").filter(Boolean);
+  const [view, lessonId, exerciseId, mode] = parts;
+  if (!view) return;
 
-function hasAnswer(exercise) {
-  const answer = progress.answers[exercise.id];
-  if (Array.isArray(answer)) return answer.length > 0;
-  if (answer && typeof answer === "object") return Object.keys(answer).length > 0;
-  return String(answer || "").trim().length > 0;
-}
-
-function isCorrect(exercise, answer = progress.answers[exercise.id]) {
-  if (exercise.type === "matching") {
-    return Object.entries(exercise.correct).every(([key, value]) => normalize(answer?.[key]) === normalize(value));
+  if (["student", "unit", "teacher", "methodologist"].includes(view)) {
+    state.view = view;
   }
 
-  if (exercise.type === "short-writing") {
-    const normalized = normalize(answer);
-    return exercise.mustInclude.every((chunk) => normalized.includes(normalize(chunk)));
+  if (view === "lesson" && getLesson(lessonId)) {
+    state.view = "lesson";
+    state.selectedLessonId = lessonId;
   }
 
-  if (exercise.type === "drag-drop" || exercise.type === "word-order") {
-    return normalize(Array.isArray(answer) ? answer.join(" ") : answer) === normalize(exercise.correct);
+  if (view === "homework" && getLesson(lessonId)) {
+    state.view = "homework";
+    state.selectedLessonId = lessonId;
+    state.selectedMode = "homework";
   }
 
-  return normalize(answer) === normalize(exercise.correct);
-}
-
-function correctAnswerText(exercise) {
-  if (exercise.type === "matching") {
-    return Object.entries(exercise.correct).map(([key, value]) => `${key} = ${value}`).join("; ");
+  if (view === "exercise" && getLesson(lessonId) && getExercise(exerciseId)) {
+    state.view = "lesson";
+    state.selectedLessonId = lessonId;
+    state.selectedExerciseId = exerciseId;
+    state.selectedMode = mode || getExercise(exerciseId).mode || "classwork";
   }
-  return exercise.correct;
-}
 
-function exerciseStatus(exercise) {
-  const result = progress.results[exercise.id];
-  if (result?.correct) return "done";
-  if (result && !result.correct) return "needs retry";
-  if (hasAnswer(exercise)) return "in progress";
-  return "not started";
-}
-
-function homeworkPercent() {
-  const homeworkExercises = homeworkAssignment.exerciseIds.map((id) => exercises.find((exercise) => exercise.id === id));
-  const done = homeworkExercises.filter((exercise) => exercise && exerciseStatus(exercise) === "done").length;
-  return Math.round((done / homeworkExercises.length) * 100);
-}
-
-function certificatePercent() {
-  return Math.min(100, Math.round((homeworkPercent() * 0.55) + 18));
-}
-
-function checkHomeworkCompletion() {
-  if (homeworkPercent() === 100) {
-    trackEvent("homework_completed", { homeworkId: homeworkAssignment.id, percent: 100 });
+  if (view === "live" && getLesson(lessonId)) {
+    state.view = "live";
+    state.liveLessonId = lessonId;
   }
 }
 
@@ -421,55 +206,57 @@ function render() {
 
 function renderShell(content) {
   const navItems = [
-    ["student", "Студент", "Dashboard"],
-    ["units", "Unit Map", "Beginner"],
-    ["lesson", "Lesson", "Native page"],
-    ["homework", "Homework", "localStorage"],
-    ["teacher", "Teacher", "Dashboard"],
-    ["live", "Live", "Lesson Mode"],
-    ["methodologist", "Methodist", "Workflow"],
-    ["analytics", "Analytics", "Revizor mock"],
-    ["integrations", "API", "Readiness"],
+    ["student", ui.student, "Dashboard"],
+    ["unit", ui.unitMap, "6 lessons"],
+    ["lesson", ui.lesson, "Lesson page"],
+    ["homework", ui.homework, "Homework"],
+    ["teacher", ui.teacher, "Teacher"],
+    ["live", "Live", "Session"],
+    ["methodologist", ui.methodologist, "Data layer"],
   ];
+
+  const stats = calculateUnitProgress(progress, allExercises());
 
   return `
     <div class="app-shell">
       <aside class="sidebar">
-        <div class="brand-block">
+        <div class="brand">
           <div class="brand-mark">ULC</div>
           <div>
-            <p class="eyebrow">Digital LMS ${VERSION}</p>
-            <h1>${COURSE.title}</h1>
+            <strong>ULC LMS</strong>
+            <span>${html(VERSION)}</span>
           </div>
         </div>
-        <nav class="nav-list" aria-label="Primary navigation">
-          ${navItems.map(([view, label, hint]) => `
-            <button class="nav-item ${state.view === view ? "active" : ""}" type="button" data-view="${view}">
-              ${icon(label.slice(0, 2))}
-              <span><strong>${label}</strong><small>${hint}</small></span>
-            </button>
-          `).join("")}
+        <nav class="nav-list" aria-label="Main navigation">
+          ${navItems
+            .map(([view, label, meta]) => {
+              const active = state.view === view || (view === "lesson" && state.view === "exercise");
+              return `<button class="${active ? "active" : ""}" type="button" data-route="${view}">${icon(label.slice(0, 1))}<span>${html(label)}<small>${html(meta)}</small></span></button>`;
+            })
+            .join("")}
         </nav>
-        <div class="sidebar-status">
-          <strong>${homeworkPercent()}% homework</strong>
-          <span>Mock progress is stored in localStorage and visible in Teacher Dashboard.</span>
+        <div class="sidebar-card">
+          <small>${html(ui.progress)} Unit 1</small>
+          <strong>${stats.percent}%</strong>
+          ${progressBar(stats.percent)}
+          <span>${stats.completed}/${stats.total} exercises - ${html(STORAGE_KEY)}</span>
         </div>
       </aside>
       <main class="workspace">
         <div class="topbar">
           <div>
-            <p class="eyebrow">ULC static clickable prototype</p>
-            <h2>${COURSE.group}</h2>
+            <p class="eyebrow">ULC v0.2 release candidate - data layer connected</p>
+            <h2>${html(unit.title)}</h2>
           </div>
           <div class="topbar-actions">
-            ${pill("not a PDF viewer", "green")}
-            ${pill("original demo content", "blue")}
-            ${pill("mock APIs only", "amber")}
+            ${pill("6 lessons", "green")}
+            ${pill("24 exercises", "blue")}
+            ${pill("12/12 classwork/homework", "amber")}
           </div>
         </div>
         ${content}
         <div class="footer-note">
-          ${icon("i")} Russian UI for Beginner students; English content for learning tasks. No real external requests are sent.
+          ${icon("i")} Static prototype: mock backend, localStorage progress, prepared AI explanations, and speaking-widget placeholder. No external requests.
         </div>
       </main>
     </div>
@@ -477,246 +264,373 @@ function renderShell(content) {
 }
 
 function renderCurrentView() {
-  if (state.view === "units") return renderUnitMap();
+  if (state.view === "unit") return renderUnitMap();
   if (state.view === "lesson") return renderLessonPage();
   if (state.view === "homework") return renderHomeworkMode();
   if (state.view === "teacher") return renderTeacherDashboard();
   if (state.view === "live") return renderLiveLessonMode();
   if (state.view === "methodologist") return renderMethodologistDashboard();
-  if (state.view === "analytics") return renderAnalyticsView();
-  if (state.view === "integrations") return renderIntegrationsView();
   return renderStudentDashboard();
-}
-
-function renderStudentDashboard() {
-  const lesson = getLesson(COURSE.currentLessonId);
-  return `
-    <section class="screen-grid">
-      <article class="hero-panel ulc-hero">
-        <div>
-          <p class="eyebrow">личный кабинет студента</p>
-          <h2>Сегодня учимся говорить: “Where are you from?”</h2>
-          <p class="hero-copy">Короткие задания ведут к разговору: сначала chunks, потом auto-check, затем практика вслух через внешний speaking widget.</p>
-        </div>
-        <div class="hero-actions">
-          <button class="primary-button" type="button" data-view="lesson">${icon("▶")} Продолжить урок</button>
-          <button class="ghost-button hero-ghost" type="button" data-view="homework">${icon("HW")} Открыть домашку</button>
-        </div>
-      </article>
-      <aside class="metric-strip">
-        ${renderMetric("Unit progress", `${homeworkPercent()}%`, "Homework-based mock")}
-        ${renderMetric("Certificate", `${certificatePercent()}%`, "target 70%")}
-        ${renderMetric("Weak area", "Question order", "Where are you from?")}
-        ${renderMetric("Next live", "Thu 19:00", "from 1C mock")}
-      </aside>
-      <article class="content-panel progress-panel">
-        <div class="section-heading">
-          <div><p class="eyebrow">current lesson</p><h3>${lesson.lessonNo}. ${lesson.title}</h3></div>
-          ${pill(lesson.status, lesson.status === "published" ? "green" : "amber")}
-        </div>
-        <p>${lesson.summary}</p>
-        <div class="lesson-line">
-          <div><strong>Speaking outcome</strong><span>${lesson.speakingOutcome}</span></div>
-          <button class="ghost-button" type="button" data-view="lesson">${icon("→")} Lesson Page</button>
-        </div>
-      </article>
-      <article class="content-panel homework-panel">
-        <div class="section-heading">
-          <div><p class="eyebrow">homework mode</p><h3>${homeworkAssignment.title}</h3></div>
-          ${pill(`${homeworkPercent()}%`, homeworkPercent() >= 70 ? "green" : "amber")}
-        </div>
-        <p>Deadline: ${homeworkAssignment.deadline}. Статусы упражнений сохраняются в localStorage и видны в Teacher Dashboard mock.</p>
-        <span class="progress-track"><span style="width:${homeworkPercent()}%"></span></span>
-        <div class="hero-actions panel-actions">
-          <button class="primary-button" type="button" data-view="homework">${icon("HW")} Продолжить домашку</button>
-          <button class="ghost-button" type="button" data-view="teacher">${icon("T")} Teacher link</button>
-        </div>
-      </article>
-      <article class="content-panel">
-        <p class="eyebrow">vocabulary review</p>
-        <h3>Chunks for today</h3>
-        <div class="word-grid">
-          ${lesson.targetLanguage.map((phrase) => `<span>${phrase}</span>`).join("")}
-        </div>
-      </article>
-      <article class="content-panel certificate-panel">
-        <div class="section-heading">
-          <div><p class="eyebrow">risk and support</p><h3>Мягкая помощь после ошибок</h3></div>
-          ${pill("AI explanations", "blue")}
-        </div>
-        <ul class="clean-list">
-          <li><span class="dot medium"></span><span>Если ответ неверный, студент видит короткое объяснение на русском.</span></li>
-          <li><span class="dot ready"></span><span>Correct answer доступен по кнопке, чтобы ученик мог сравнить без PDF.</span></li>
-          <li><span class="dot low"></span><span>Teacher Dashboard получает mock signal по домашке и ошибкам.</span></li>
-        </ul>
-      </article>
-    </section>
-  `;
 }
 
 function renderMetric(label, value, note) {
   return `
-    <div class="metric-item">
-      <span>${label}</span>
-      <strong>${value}</strong>
-      <small>${note}</small>
+    <div class="metric-card">
+      <span>${html(label)}</span>
+      <strong>${html(value)}</strong>
+      <small>${html(note)}</small>
     </div>
   `;
 }
 
-function renderUnitMap() {
+function currentLesson() {
+  return getLesson(state.selectedLessonId) || lessons()[0];
+}
+
+function nextLessonAfter(lesson) {
+  return lessons().find((item) => item.lesson_number > lesson.lesson_number) || lessons()[0];
+}
+
+function deadlineForLesson(lesson) {
+  const day = 18 + lesson.lesson_number;
+  return `2026-06-${String(day).padStart(2, "0")} 22:00`;
+}
+
+function getDemoStudentMetrics() {
+  const localStats = calculateUnitProgress(progress, allExercises());
+  return demoStudents.map((student) => {
+    if (student.id !== DEMO_USER_ID) return student;
+    const classwork = calculateExerciseProgress(progress, allExercises().filter((exercise) => exercise.mode === "classwork"));
+    const homework = calculateHomeworkProgress(progress, getHomeworkTasks(), getHomeworkExercises);
+    return {
+      ...student,
+      progress: localStats.percent,
+      classwork: classwork.percent,
+      homework: homework.percent,
+      retention: localStats.percent > 35 ? "active" : "watch",
+      mistake: "live localStorage data",
+    };
+  });
+}
+
+function renderStudentDashboard() {
+  const lesson = currentLesson();
+  const next = nextLessonAfter(lesson);
+  const unitStats = calculateUnitProgress(progress, allExercises());
+  const homework = getLessonHomework(lesson.lesson_id) || getHomeworkTasks()[0];
+  const homeworkStats = calculateHomeworkProgress(progress, getHomeworkTasks(), getHomeworkExercises);
+  const classworkStats = calculateExerciseProgress(progress, allExercises().filter((exercise) => exercise.mode === "classwork"));
+
   return `
-    <section class="unit-map">
-      <div class="screen-title">
-        <div><p class="eyebrow">Beginner Unit Map</p><h2>Unit 1 demo scope: 4 native lessons</h2></div>
-        ${pill("no six-lesson expansion yet", "amber")}
+    <section class="hero-panel dashboard-hero">
+      <div>
+        <p class="eyebrow">${html(ui.student)} - ${html(course.group)}</p>
+        <h1>${html(course.title)}</h1>
+        <p>${html(unit.unit_goal_ru)}</p>
+        <div class="hero-actions">
+          <button class="primary-button" type="button" data-open-lesson="${html(lesson.lesson_id)}">${icon(">")} ${html(ui.continueLesson)}</button>
+          <button class="ghost-button hero-ghost" type="button" data-open-homework="${html(homework.lesson_id)}">${icon("HW")} ${html(ui.continueHomework)}</button>
+        </div>
       </div>
-      <article class="unit-band">
-        <div class="unit-summary">
-          <div class="unit-index">U1</div>
-          <div>
-            <h3>First contacts</h3>
-            <p>v0.1.1 keeps a compact clickable scope: enough to audit learning flow, homework, live mode and dashboards without starting the full six-lesson Unit 1 build.</p>
-          </div>
-          <div class="mini-progress">
-            <strong>${homeworkPercent()}%</strong>
-            <span class="progress-track"><span style="width:${homeworkPercent()}%"></span></span>
-          </div>
+      <div class="hero-progress">
+        <strong>${unitStats.percent}%</strong>
+        <span>Unit 1 progress</span>
+        ${progressBar(unitStats.percent)}
+      </div>
+    </section>
+
+    <section class="metrics-grid">
+      ${renderMetric(ui.currentLesson, lesson.title, lesson.speaking_outcome?.can_do_statement_ru || "")}
+      ${renderMetric(ui.nextLesson, next.title, next.lesson_goal)}
+      ${renderMetric("Classwork", `${classworkStats.completed}/${classworkStats.total}`, "interactive lesson exercises")}
+      ${renderMetric("Homework", `${homeworkStats.percent}%`, "visible Homework Mode with auto-check")}
+    </section>
+
+    <section class="content-panel">
+      <div class="panel-heading">
+        <div><p class="eyebrow">Beginner Unit 1</p><h3>${html(ui.unitMap)}</h3></div>
+        <button class="ghost-button" type="button" data-route="unit">${icon("U")} Open map</button>
+      </div>
+      <div class="lesson-rail six-lessons">
+        ${lessons().map(renderLessonTile).join("")}
+      </div>
+    </section>
+
+    <section class="two-column">
+      <div class="content-panel homework-panel">
+        <div class="panel-heading">
+          <div><p class="eyebrow">${html(ui.homework)}</p><h3>${html(homework.title_ru)}</h3></div>
+          ${pill(`${homeworkStats.percent}%`, homeworkStats.percent > 60 ? "green" : "amber")}
         </div>
-        <div class="lesson-rail">
-          ${lessons.map((lesson) => `
-            <button class="lesson-node ${state.selectedLessonId === lesson.id ? "active" : ""}" type="button" data-lesson="${lesson.id}" data-open-lesson="true">
-              ${pill(lesson.status, lesson.status === "published" ? "green" : lesson.status === "draft" ? "draft" : "amber")}
-              <small>${lesson.lessonNo} · ${lesson.duration}</small>
-              <h3>${lesson.title}</h3>
-              <span>${lesson.focus}</span>
-              <strong>Open native lesson</strong>
-            </button>
-          `).join("")}
+        <p>${html(homework.purpose_ru)}</p>
+        <ul class="compact-list">
+          ${homework.exercise_ids.map((id) => {
+            const exercise = getExercise(id);
+            return `<li><span>${html(exercise.exercise_type)} - ${html(exercise.estimated_time)}</span>${pill(getExerciseStatus(progress, id), statusTone(getExerciseStatus(progress, id)))}</li>`;
+          }).join("")}
+        </ul>
+        <button class="primary-button" type="button" data-open-homework="${html(homework.lesson_id)}">${icon(">")} ${html(ui.continueHomework)}</button>
+      </div>
+
+      <div class="content-panel">
+        <div class="panel-heading">
+          <div><p class="eyebrow">localStorage</p><h3>Demo progress</h3></div>
+          ${pill(progress.legacy.detected ? "v0.1.1 detected" : "v0.2 store", progress.legacy.detected ? "amber" : "green")}
         </div>
-      </article>
-      <article class="content-panel full-width">
-        <div class="section-heading">
-          <div><p class="eyebrow">methodology note</p><h3>Speaking-first, original ULC sample material</h3></div>
-          ${pill("English File-like pacing, no copied content", "green")}
-        </div>
-        <p>Each lesson moves from short English chunks to controlled practice and a practical speaking outcome. No PDF viewer, no copied workbook page, no external stock hero image.</p>
-      </article>
+        <p>Progress is stored locally and is not synced to a backend in this static prototype.</p>
+        <p><strong>Last activity:</strong> ${html(getLastActivity(progress))}</p>
+        <button class="ghost-button" type="button" data-reset-progress="true">${icon("R")} ${html(ui.reset)}</button>
+      </div>
+    </section>
+  `;
+}
+
+function renderLessonTile(lesson) {
+  const stats = calculateLessonProgress(progress, lesson.lesson_id, getLessonExercises);
+  const active = lesson.lesson_id === state.selectedLessonId;
+  const counts = getExerciseModeCounts(lesson.lesson_id);
+
+  return `
+    <button class="lesson-card ${active ? "active" : ""}" type="button" data-open-lesson="${html(lesson.lesson_id)}">
+      <span>Lesson ${lesson.lesson_number}</span>
+      <strong>${html(lesson.title)}</strong>
+      <small>${html(lesson.lesson_goal)}</small>
+      ${progressBar(stats.percent)}
+      <em>${stats.percent}% - ${counts.classwork} classwork / ${counts.homework} homework</em>
+    </button>
+  `;
+}
+
+function renderUnitMap() {
+  const stats = getUnitStats(UNIT_ID);
+  const lesson4 = getLesson("beg_u1_l4");
+
+  return `
+    <section class="content-panel">
+      <div class="panel-heading">
+        <div><p class="eyebrow">${html(unit.unit_id)} - data model</p><h3>${html(unit.title)}</h3></div>
+        ${pill(`${stats.lessons} lessons / ${stats.exercises} exercises`, "green")}
+      </div>
+      <p>${html(unit.unit_goal_ru)}</p>
+      <div class="lesson-rail six-lessons">
+        ${lessons().map(renderLessonTile).join("")}
+      </div>
+    </section>
+
+    <section class="content-panel">
+      <div class="panel-heading">
+        <div><p class="eyebrow">Lesson 4 guardrail</p><h3>${html(lesson4.title)}</h3></div>
+        ${pill("scope limited", "green")}
+      </div>
+      <div class="language-focus">
+        <div><strong>Included</strong>${lesson4.production_scope.included.map((item) => `<span>${html(item)}</span>`).join("")}</div>
+        <div><strong>Excluded</strong>${lesson4.production_scope.excluded.map((item) => `<span>${html(item)}</span>`).join("")}</div>
+      </div>
     </section>
   `;
 }
 
 function renderLessonPage() {
-  const lesson = getLesson();
+  const lesson = currentLesson();
+  const classwork = getClassworkExercises(lesson.lesson_id);
+  const homework = getHomeworkExercises(lesson.lesson_id);
+  const stats = calculateLessonProgress(progress, lesson.lesson_id, getLessonExercises);
+
+  if (!state.selectedExerciseId || !getExercise(state.selectedExerciseId) || getExercise(state.selectedExerciseId).lesson_id !== lesson.lesson_id) {
+    state.selectedExerciseId = classwork[0]?.exercise_id || homework[0]?.exercise_id || null;
+    state.selectedMode = getExercise(state.selectedExerciseId)?.mode || "classwork";
+  }
+
   return `
+    <section class="content-panel lesson-overview">
+      <div class="panel-heading">
+        <div><p class="eyebrow">Lesson Page - Lesson ${lesson.lesson_number}</p><h2>${html(lesson.title)}</h2></div>
+        ${pill(`${stats.percent}% complete`, stats.percent > 60 ? "green" : "amber")}
+      </div>
+      <p>${html(lesson.lesson_goal)}</p>
+      <p><strong>Speaking outcome:</strong> ${html(lesson.speaking_outcome?.can_do_statement_ru || lesson.speaking_outcome)}</p>
+      <div class="language-focus">
+        <div><strong>Vocabulary</strong>${lesson.target_vocabulary.map((item) => `<span>${html(item)}</span>`).join("")}</div>
+        <div><strong>Grammar</strong>${lesson.target_grammar.map((item) => `<span>${html(item)}</span>`).join("")}</div>
+        <div><strong>Pronunciation</strong>${lesson.pronunciation_focus.map((item) => `<span>${html(item)}</span>`).join("")}</div>
+      </div>
+    </section>
+
     <section class="lesson-workspace">
-      <article class="lesson-page">
-        <div class="lesson-header">
-          <div>
-            <p class="eyebrow">Lesson Page · native interactive page</p>
-            <h2>${lesson.lessonNo}. ${lesson.title}</h2>
-            <p>${lesson.summary}</p>
-          </div>
-          <div class="speaking-outcome">
-            <span>Speaking outcome</span>
-            <strong>${lesson.speakingOutcome}</strong>
-          </div>
-        </div>
-        <div class="language-focus">
-          <div>
-            <p class="eyebrow">Target language</p>
-            <div class="phrase-row">${lesson.targetLanguage.map((phrase) => `<span>${phrase}</span>`).join("")}</div>
-          </div>
-          <div>
-            <p class="eyebrow">Teacher book note</p>
-            <p>${lesson.teacherNote}</p>
-          </div>
+      <div class="content-panel structure-panel">
+        <div class="panel-heading">
+          <div><p class="eyebrow">Native lesson sections</p><h3>Class flow</h3></div>
+          <button class="ghost-button" type="button" data-open-live="${html(lesson.lesson_id)}">${icon("L")} Live mode</button>
         </div>
         <div class="lesson-sections">
-          <div class="lesson-section">${icon("1")}<div><h3>Warm-up</h3><p>Русская инструкция, английские фразы. Студент отвечает коротко и уверенно.</p></div></div>
-          <div class="lesson-section">${icon("2")}<div><h3>Practice</h3><p>Auto-check, correct answer, AI explanation after mistake.</p></div></div>
-          <div class="lesson-section">${icon("3")}<div><h3>Speak</h3><p class="english-line">Ask your partner: Where are you from?</p></div></div>
-          <div class="lesson-section">${icon("4")}<div><h3>Speaking widget</h3><p>Внешний модуль будет встроен позже; здесь только integration point.</p></div></div>
+          ${(lesson.sections || []).map((section) => `
+            <div>
+              <span>${html(section.section_type)}</span>
+              <strong>${html(section.title_ru)}</strong>
+              <p>${html(section.student_instruction_ru)}</p>
+              <small>${html(section.estimated_time)} - ${html(section.mode)}</small>
+            </div>
+          `).join("")}
         </div>
-      </article>
-      ${renderExercisePlayer()}
+
+        <div class="exercise-card-grid">
+          ${classwork.map((exercise) => renderExerciseCard(exercise, "classwork")).join("")}
+          ${homework.map((exercise) => renderExerciseCard(exercise, "homework")).join("")}
+        </div>
+
+        ${renderMediaSpecs(lesson.lesson_id)}
+        ${renderTeacherNotes(lesson.lesson_id)}
+      </div>
+
+      <div class="content-panel exercise-panel">
+        ${renderExercisePlayer(lesson.lesson_id, state.selectedMode)}
+      </div>
     </section>
   `;
 }
 
-function renderExercisePlayer() {
-  const currentExercises = getCurrentExercises();
-  const exercise = getCurrentExercise();
-  const completed = currentExercises.filter((item) => exerciseStatus(item) === "done").length;
-  const percent = Math.round((completed / currentExercises.length) * 100);
-
+function renderExerciseCard(exercise, mode) {
+  const status = getExerciseStatus(progress, exercise.exercise_id);
+  const selected = exercise.exercise_id === state.selectedExerciseId;
   return `
-    <article class="exercise-player">
-      <div class="player-header">
-        <div>
-          <p class="eyebrow">Exercise Player</p>
-          <h2>${exercise.title}</h2>
-        </div>
-        <div class="player-progress">
-          <strong>${percent}%</strong>
-          <span class="progress-track"><span style="width:${percent}%"></span></span>
-        </div>
-      </div>
-      <div class="type-strip">
-        ${exerciseTypes.map((type) => `<span>${type}</span>`).join("")}
-      </div>
-      <div class="exercise-tabs">
-        ${currentExercises.map((item, index) => `
-          <button class="exercise-tab ${index === state.exerciseIndex ? "active" : ""}" type="button" data-ex-tab="${index}">
-            ${icon(String(index + 1))}
-            <span>${item.type}</span>
-            <small>${exerciseStatus(item)}</small>
-          </button>
-        `).join("")}
-      </div>
-      <div class="exercise-surface">
-        <div class="exercise-copy">
-          <p class="eyebrow">${exercise.skill} · ${exercise.type}</p>
-          <h3>${exercise.instruction}</h3>
-          <strong class="prompt">${exercise.prompt}</strong>
-        </div>
-        ${renderExerciseInput(exercise)}
-        <div class="exercise-actions">
-          <button class="primary-button" type="button" data-check="${exercise.id}">${icon("✓")} Auto-check</button>
-          <button class="ghost-button" type="button" data-show-answer="${exercise.id}">${icon("A")} Show correct answer</button>
-          <button class="ghost-button" type="button" data-ai="${exercise.id}" ${progress.results[exercise.id] && !progress.results[exercise.id].correct ? "" : "disabled"}>${icon("AI")} AI explanation</button>
-        </div>
-        ${renderFeedback(exercise)}
-      </div>
-    </article>
+    <button class="exercise-card ${selected ? "selected" : ""}" type="button" data-open-exercise="${html(exercise.exercise_id)}" data-mode="${html(mode)}">
+      <span>${html(mode)} - ${html(exercise.exercise_type)}</span>
+      <strong>${html(exercise.instruction_ru)}</strong>
+      <small>${html(exercise.estimated_time)} - attempts ${exercise.attempts_allowed}</small>
+      ${pill(status, statusTone(status))}
+    </button>
   `;
 }
 
-function renderExerciseInput(exercise) {
-  const answer = progress.answers[exercise.id];
+function renderMediaSpecs(lessonId) {
+  const media = getLessonMedia(lessonId);
+  const speaking = getSpeakingActivities(lessonId);
+  if (!media.length && !speaking.length) return "";
 
-  if (exercise.type === "multiple-choice" || exercise.type === "listen-choose") {
+  return `
+    <div class="media-spec-grid">
+      ${media.map((item) => `
+        <div class="media-mini">
+          <p class="eyebrow">listening media specification</p>
+          <strong>${html(item.media_type)} - ${html(item.duration)}</strong>
+          <p>${html(item.script)}</p>
+          <small>${html(item.accent)} - ${html(item.speed)} - no audio file in v0.2</small>
+        </div>
+      `).join("")}
+      ${speaking.map((activity) => `
+        <div class="media-mini">
+          <p class="eyebrow">speaking widget placeholder</p>
+          <strong>${html(activity.activity_id)}</strong>
+          <p>${html(activity.instruction_ru)}</p>
+          <small>${activity.target_phrases_en.map(html).join(" - ")}</small>
+        </div>
+      `).join("")}
+    </div>
+  `;
+}
+
+function renderTeacherNotes(lessonId) {
+  const notes = getTeacherNotes(lessonId);
+  const mistakes = getTypicalMistakes(lessonId);
+  return `
+    <div class="lesson-mini-grid">
+      <div class="mini-card">
+        <h4>Teacher notes</h4>
+        ${notes.map((note) => `<p>${html(note.text)} <small>${html(note.priority)}</small></p>`).join("")}
+      </div>
+      <div class="mini-card">
+        <h4>Typical mistakes</h4>
+        ${mistakes.map((mistake) => `<p><strong>${html(mistake.mistake_en)}</strong> -> ${html(mistake.correction_en)}<br><small>${html(mistake.explanation_ru)}</small></p>`).join("")}
+      </div>
+    </div>
+  `;
+}
+
+function renderExercisePlayer(lessonId = state.selectedLessonId, mode = state.selectedMode) {
+  const pool = mode === "homework" ? getHomeworkExercises(lessonId) : getClassworkExercises(lessonId);
+  const fallback = pool[0] || getLessonExercises(lessonId)[0];
+  const exercise = getExercise(state.selectedExerciseId) || fallback;
+  if (!exercise) return `<p>No exercise selected.</p>`;
+
+  state.selectedExerciseId = exercise.exercise_id;
+  state.selectedMode = mode || exercise.mode;
+
+  const exerciseState = getExerciseState(progress, exercise.exercise_id);
+  const attemptsLeft = Math.max(0, exercise.attempts_allowed - (exerciseState.attempts || 0));
+
+  return `
+    <div class="exercise-player">
+      <div class="panel-heading">
+        <div>
+          <p class="eyebrow">Exercise Player - ${html(mode)}</p>
+          <h3>${html(exercise.exercise_type)}</h3>
+        </div>
+        ${pill(getExerciseStatus(progress, exercise.exercise_id), statusTone(getExerciseStatus(progress, exercise.exercise_id)))}
+      </div>
+      <div class="exercise-meta">
+        <span>${html(exercise.estimated_time)}</span>
+        <span>attempts left ${attemptsLeft}</span>
+        <span>autocheck ${exercise.autocheck ? "on" : "off"}</span>
+        <span>show correct answer ${exercise.show_correct_answer ? "on" : "off"}</span>
+      </div>
+      ${renderExerciseMediaNotice(exercise)}
+      <p class="instruction-ru">${html(exercise.instruction_ru)}</p>
+      <p class="english-line">${html(exercise.learning_content_en)}</p>
+      ${renderExerciseInput(exercise, exerciseState)}
+      <div class="exercise-actions">
+        <button class="primary-button" type="button" data-check-exercise="${html(exercise.exercise_id)}" ${attemptsLeft <= 0 ? "disabled" : ""}>${icon("?")} ${html(ui.check)}</button>
+        <button class="ghost-button" type="button" data-show-answer="${html(exercise.exercise_id)}">${icon("A")} ${html(ui.showAnswer)}</button>
+        <button class="ghost-button" type="button" data-open-ai="${html(exercise.exercise_id)}">${icon("AI")} AI explanation</button>
+      </div>
+      ${renderFeedback(exercise, exerciseState)}
+      <div class="hint-list">
+        ${exercise.hints_ru.map((hint) => `<span>${html(hint.text_ru || hint)}</span>`).join("")}
+      </div>
+    </div>
+  `;
+}
+
+function renderExerciseMediaNotice(exercise) {
+  const refs = exercise.items.map((item) => item.media_ref).filter(Boolean);
+  if (!refs.length) return "";
+  const media = getAllMediaSpecifications().find((item) => item.media_id === refs[0]);
+  if (!media) return "";
+  return `
+    <div class="mock-audio-controls">
+      ${icon("AU")}
+      <span>Audio spec only: ${html(media.duration)} - ${html(media.speed)} - ${html(media.accent)}</span>
+    </div>
+  `;
+}
+
+function renderExerciseInput(exercise, exerciseState) {
+  const draft = exerciseState.latestAnswer ?? "";
+  const item = exercise.items[0] || {};
+
+  if (exercise.exercise_type === "multiple_choice" || exercise.exercise_type === "listen_choose") {
     return `
       <div class="choice-grid">
-        ${exercise.options.map((option) => `
-          <button class="choice-option ${answer === option ? "selected" : ""}" type="button" data-choice="${exercise.id}" data-value="${option}">
-            ${option}
-          </button>
+        ${(item.options || []).map((option) => `
+          <label class="choice-card">
+            <input type="radio" name="${html(exercise.exercise_id)}" value="${html(option)}" data-choice="${html(exercise.exercise_id)}" ${draft === option ? "checked" : ""} />
+            <span>${html(option)}</span>
+          </label>
         `).join("")}
       </div>
     `;
   }
 
-  if (exercise.type === "matching") {
-    const selected = answer || {};
+  if (exercise.exercise_type === "matching") {
+    const options = exercise.correct_answers.map((answer) => answer.value);
+    const current = typeof draft === "object" && !Array.isArray(draft) ? draft : {};
     return `
-      <div class="matching-grid">
-        ${exercise.pairs.map(([left]) => `
+      <div class="matching-list">
+        ${exercise.items.map((matchItem) => `
           <label>
-            <span>${left}</span>
-            <select data-match-key="${left}" data-exercise="${exercise.id}">
-              <option value="">Выберите значение</option>
-              ${exercise.choices.map((choice) => `<option value="${choice}" ${selected[left] === choice ? "selected" : ""}>${choice}</option>`).join("")}
+            <span>${html(matchItem.prompt_en)}</span>
+            <select data-match="${html(exercise.exercise_id)}" data-item="${html(matchItem.item_id)}">
+              <option value="">${html(ui.choose)}</option>
+              ${options.map((option) => `<option value="${html(option)}" ${current[matchItem.item_id] === option ? "selected" : ""}>${html(option)}</option>`).join("")}
             </select>
           </label>
         `).join("")}
@@ -724,591 +638,549 @@ function renderExerciseInput(exercise) {
     `;
   }
 
-  if (exercise.type === "drag-drop" || exercise.type === "word-order") {
-    const placed = Array.isArray(answer) ? answer : [];
-    const available = exercise.words.filter((word) => !placed.includes(word));
+  if (exercise.exercise_type === "word_order" || exercise.exercise_type === "drag_drop") {
+    const placed = Array.isArray(draft) ? draft : [];
+    const bank = item.word_bank || [];
+    const available = bank.filter((word) => !placed.includes(word));
     return `
-      <div class="word-builder">
-        <div class="drop-zone">
-          ${placed.length ? placed.map((word, index) => `<button class="word-chip placed" type="button" data-remove-word="${exercise.id}" data-index="${index}">${word}</button>`).join("") : "<span>Нажмите слова ниже</span>"}
-        </div>
+      <div class="word-order">
         <div class="word-bank">
-          ${available.map((word) => `<button class="word-chip" type="button" data-word="${exercise.id}" data-value="${word}">${word}</button>`).join("")}
+          ${available.map((word) => `<button class="word-chip" type="button" data-add-word="${html(exercise.exercise_id)}" data-word="${html(word)}">${html(word)}</button>`).join("")}
+        </div>
+        <div class="word-answer">
+          ${placed.length ? placed.map((word, index) => `<button class="word-chip placed" type="button" data-remove-word="${html(exercise.exercise_id)}" data-index="${index}">${html(word)}</button>`).join("") : `<span>${html(ui.answer)}</span>`}
         </div>
       </div>
     `;
   }
 
-  if (exercise.type === "short-writing") {
-    return `<textarea class="writing-area" data-answer="${exercise.id}" placeholder="I'm ...">${answer || ""}</textarea>`;
-  }
-
-  return `<input class="answer-input" data-answer="${exercise.id}" value="${answer || ""}" placeholder="Введите ответ" />`;
-}
-
-function renderFeedback(exercise) {
-  const result = progress.results[exercise.id];
-  const showCorrect = progress.correctShown[exercise.id];
-  const showAi = progress.aiRequested[exercise.id] || (result && !result.correct);
-
-  if (!result && !showCorrect) {
-    return `<div class="mode-note">Введите ответ, затем нажмите Auto-check. Correct answer и AI explanation доступны как отдельные действия.</div>`;
-  }
-
   return `
-    <div class="feedback ${result?.correct ? "correct" : "needs-work"}">
-      ${result ? `<div class="feedback-title">${icon(result.correct ? "OK" : "!")}<strong>${result.correct ? "Верно" : "Нужно повторить"}</strong></div>` : ""}
-      ${showCorrect ? `<div class="answer-line"><strong>Correct answer</strong><span>${correctAnswerText(exercise)}</span></div>` : ""}
-      ${showAi ? `<div class="ai-note">${icon("AI")}<p><strong>AI explanation:</strong> ${exercise.ai}<small>Короткое объяснение на русском, привязанное к текущему заданию.</small></p></div>` : ""}
-    </div>
+    <label class="answer-field">
+      <span>${html(ui.answer)}</span>
+      <textarea data-answer="${html(exercise.exercise_id)}" rows="4" placeholder="${html(exercise.items[0]?.prompt_en || "")}">${html(typeof draft === "string" ? draft : "")}</textarea>
+    </label>
   `;
 }
 
+function renderFeedback(exercise, exerciseState) {
+  const result = exerciseState.latestResult || exerciseState.bestResult;
+  const blocks = [];
+
+  if (result) {
+    blocks.push(`
+      <div class="feedback-card ${result.correct ? "correct" : result.partial ? "partial" : "incorrect"}">
+        <strong>${html(result.correct ? "Correct" : result.status === "submitted" ? "Submitted" : result.partial ? "Partly correct" : "Needs retry")}</strong>
+        <p>${html(result.preliminary_feedback_ru || result.item_results?.[0]?.explanation_ru || "Review the model answer and try again.")}</p>
+        ${result.score !== null && result.score !== undefined ? `<small>score ${Math.round(result.score * 100)}%</small>` : ""}
+      </div>
+    `);
+  } else if (exerciseState.latestAnswer) {
+    blocks.push(`<p class="mode-note">${html(ui.saved)}. Click Auto-check when ready.</p>`);
+  }
+
+  if (exerciseState.correctAnswerShown) {
+    blocks.push(`<div class="answer-card"><strong>Correct answer</strong><p>${html(formatCorrectAnswer(exercise))}</p></div>`);
+  }
+
+  if (exerciseState.aiExplanationOpened || (result && !result.correct)) {
+    blocks.push(`
+      <div class="ai-card">
+        <strong>AI explanation mock</strong>
+        <p>${html(exercise.ai_explanation.text_ru)}</p>
+        <small>Prepared methodology response. No real AI call in v0.2.</small>
+      </div>
+    `);
+  }
+
+  return blocks.join("");
+}
+
 function renderHomeworkMode() {
-  const lesson = getLesson(homeworkAssignment.lessonId);
-  const homeworkExercises = homeworkAssignment.exerciseIds.map((id) => exercises.find((exercise) => exercise.id === id));
-  const percent = homeworkPercent();
+  const selectedLesson = currentLesson();
+  const homeworkTasks = getHomeworkTasks();
+  const selectedTask = getLessonHomework(selectedLesson.lesson_id) || homeworkTasks[0];
+  const selectedExercises = getHomeworkExercises(selectedTask.lesson_id);
+  const selectedStats = calculateExerciseProgress(progress, selectedExercises);
 
   return `
-    <section class="wide-stack">
-      <div class="screen-title">
-        <div><p class="eyebrow">Homework Mode</p><h2>${homeworkAssignment.title}</h2></div>
-        ${pill(`${percent}% complete`, percent >= 70 ? "green" : "amber")}
-      </div>
-      <div class="homework-grid">
-        <article class="content-panel">
-          <div class="section-heading">
-            <div><p class="eyebrow">current homework</p><h3>${homeworkAssignment.unit} · ${lesson.lessonNo}. ${lesson.title}</h3></div>
-            ${pill("deadline " + homeworkAssignment.deadline, "blue")}
-          </div>
-          <p>Отдельный режим домашки: статусы упражнений, auto-check, correct answer и AI explanation after mistake сохраняются в localStorage.</p>
-          <span class="progress-track"><span style="width:${percent}%"></span></span>
-          <div class="hero-actions panel-actions">
-            <button class="primary-button" type="button" data-continue-homework="true">${icon("▶")} Продолжить домашку</button>
-            <button class="ghost-button" type="button" data-view="teacher">${icon("T")} Связь с Teacher Dashboard</button>
-          </div>
-          <div class="homework-proof">
-            <span>${icon("✓")} Auto-check: включен</span>
-            <span>${icon("A")} Show correct answer: доступен</span>
-            <span>${icon("AI")} AI explanation after mistake: доступен</span>
-          </div>
-        </article>
-        <article class="content-panel">
-          <div class="section-heading">
-            <div><p class="eyebrow">teacher visibility</p><h3>Как это видит преподаватель</h3></div>
-            ${pill("mock localStorage sync", "amber")}
-          </div>
-          <p>В статическом прототипе Teacher Dashboard читает тот же локальный прогресс: ${percent}% по домашке, статусы и последние ошибки.</p>
-          <ul class="clean-list">
-            <li><span class="dot low"></span><span>done: ${homeworkExercises.filter((exercise) => exerciseStatus(exercise) === "done").length}</span></li>
-            <li><span class="dot medium"></span><span>in progress: ${homeworkExercises.filter((exercise) => exerciseStatus(exercise) === "in progress").length}</span></li>
-            <li><span class="dot danger"></span><span>needs retry: ${homeworkExercises.filter((exercise) => exerciseStatus(exercise) === "needs retry").length}</span></li>
-          </ul>
-        </article>
-      </div>
-      <article class="content-panel full-width">
-        <div class="section-heading">
-          <div><p class="eyebrow">exercise list</p><h3>Статусы домашнего задания</h3></div>
-          <button class="ghost-button" type="button" data-reset-progress="true">${icon("↺")} Reset local progress</button>
+    <section class="homework-grid">
+      <div class="content-panel">
+        <div class="panel-heading">
+          <div><p class="eyebrow">Homework Mode - Unit 1</p><h2>${html(ui.homework)}</h2></div>
+          ${pill(`${selectedStats.percent}%`, selectedStats.percent > 60 ? "green" : "amber")}
         </div>
         <div class="homework-list">
-          ${homeworkExercises.map((exercise, index) => `
-            <button type="button" data-homework-ex="${index}" class="${state.exerciseIndex === index ? "selected" : ""}">
-              <strong>${exercise.title}</strong>
-              <span>${exercise.type} · status: ${exerciseStatus(exercise)}</span>
-            </button>
-          `).join("")}
+          ${homeworkTasks.map((task) => {
+            const lesson = getLesson(task.lesson_id);
+            const stats = calculateExerciseProgress(progress, getHomeworkExercises(task.lesson_id));
+            const active = task.lesson_id === selectedTask.lesson_id;
+            return `
+              <button class="${active ? "selected" : ""}" type="button" data-open-homework="${html(task.lesson_id)}">
+                <strong>${html(task.title_ru)}</strong>
+                <span>Unit 1 / Lesson ${lesson.lesson_number} - deadline ${html(deadlineForLesson(lesson))}</span>
+                ${progressBar(stats.percent)}
+                ${pill(`${stats.percent}%`, stats.percent > 60 ? "green" : "amber")}
+              </button>
+            `;
+          }).join("")}
         </div>
-      </article>
-      ${renderExercisePlayer()}
+      </div>
+
+      <div class="content-panel">
+        <div class="panel-heading">
+          <div><p class="eyebrow">Current homework</p><h3>${html(selectedTask.title_ru)}</h3></div>
+          ${pill(`deadline ${deadlineForLesson(selectedLesson)}`, "amber")}
+        </div>
+        <p>${html(selectedTask.purpose_ru)}</p>
+        <ul class="compact-list">
+          ${selectedExercises.map((exercise) => `<li><span>${html(exercise.exercise_type)} - ${html(exercise.estimated_time)}</span>${pill(getExerciseStatus(progress, exercise.exercise_id), statusTone(getExerciseStatus(progress, exercise.exercise_id)))}</li>`).join("")}
+        </ul>
+        <button class="primary-button" type="button" data-open-homework-exercise="${html(selectedLesson.lesson_id)}">${icon(">")} ${html(ui.continueHomework)}</button>
+        <button class="ghost-button" type="button" data-route="teacher">${icon("T")} Teacher Dashboard link</button>
+      </div>
+    </section>
+
+    <section class="lesson-workspace">
+      <div class="content-panel structure-panel">
+        <h3>Homework proof points</h3>
+        <div class="homework-proof">
+          <span>auto-check: ${selectedExercises.every((exercise) => exercise.autocheck) ? "on" : "mixed"}</span>
+          <span>show correct answer: ${selectedExercises.every((exercise) => exercise.show_correct_answer) ? "on" : "mixed"}</span>
+          <span>AI explanation after mistake: prepared per exercise</span>
+        </div>
+      </div>
+      <div class="content-panel exercise-panel">
+        ${renderExercisePlayer(selectedLesson.lesson_id, "homework")}
+      </div>
     </section>
   `;
 }
 
 function renderTeacherDashboard() {
-  const percent = homeworkPercent();
+  const students = getDemoStudentMetrics();
   const selected = students.find((student) => student.id === state.selectedStudentId) || students[0];
-  const localNeedsRetry = exercises.filter((exercise) => exerciseStatus(exercise) === "needs retry").map((exercise) => exercise.title);
+  const analyticsEvents = getAnalyticsEvents();
+  const classStats = calculateExerciseProgress(progress, allExercises().filter((exercise) => exercise.mode === "classwork"));
+  const homeworkStats = calculateHomeworkProgress(progress, getHomeworkTasks(), getHomeworkExercises);
+  const unitStats = calculateUnitProgress(progress, allExercises());
+  const riskStudents = students.filter((student) => student.retention === "risk" || student.missedHomework > 1);
 
   return `
+    <section class="content-panel">
+      <div class="panel-heading">
+        <div><p class="eyebrow">Teacher Dashboard - desktop-first</p><h2>${html(course.group)}</h2></div>
+        <button class="primary-button" type="button" data-open-live="${html(progress.currentLessonId)}">${icon("L")} Start live lesson</button>
+      </div>
+      <p>Local demo student reads progress from localStorage; other students are mock cohort data.</p>
+    </section>
+
+    <section class="metrics-grid">
+      ${renderMetric("Group progress", `${Math.round(students.reduce((sum, student) => sum + student.progress, 0) / students.length)}%`, "mixed local/mock")}
+      ${renderMetric("Local student", `${unitStats.percent}%`, `${classStats.percent}% classwork / ${homeworkStats.percent}% homework`)}
+      ${renderMetric("Risk signals", riskStudents.length, "inactive days, missed homework, low depth")}
+      ${renderMetric("Analytics events", analyticsEvents.length, "stored locally only")}
+    </section>
+
     <section class="teacher-grid">
-      <article class="content-panel full-width">
-        <div class="section-heading">
-          <div><p class="eyebrow">Teacher Dashboard</p><h2>${COURSE.group}</h2></div>
-          <div class="teacher-actions">
-            ${pill("desktop-first", "blue")}
-            ${pill("homework linked", "green")}
-            ${pill("mock data", "amber")}
-          </div>
-        </div>
-        <p>Преподаватель видит группу, домашку, типичные ошибки, risk signals и локальный прогресс текущего студента из Homework Mode.</p>
-      </article>
-      <article class="content-panel teacher-table-panel">
-        <div class="section-heading">
-          <div><p class="eyebrow">group roster</p><h3>Students and homework</h3></div>
-          ${pill(`${percent}% local student homework`, percent >= 70 ? "green" : "amber")}
-        </div>
-        <div class="student-table">
-          <div class="table-head"><span>Student</span><span>Progress</span><span>Homework</span><span>Risk</span><span>Typical mistake</span></div>
-          ${students.map((student) => `
-            <button class="student-row ${state.selectedStudentId === student.id ? "selected" : ""}" type="button" data-student="${student.id}">
-              <strong>${student.name}</strong>
-              <span class="table-progress"><span class="progress-track"><span style="width:${student.progress}%"></span></span><small>${student.progress}%</small></span>
-              <span>${student.id === "stu_001" ? percent : student.homework}%</span>
-              <span class="risk ${student.risk}">${student.risk}<small>${student.lastSeen}</small></span>
-              <span>${student.id === "stu_001" && localNeedsRetry.length ? localNeedsRetry.join(", ") : student.mistake}</span>
-            </button>
-          `).join("")}
-        </div>
-      </article>
-      <article class="content-panel">
-        <p class="eyebrow">selected student</p>
-        <h3>${selected.name}</h3>
-        <div class="detail-grid">
-          <span>Group</span><strong>${COURSE.group}</strong>
-          <span>Homework</span><strong>${selected.id === "stu_001" ? percent : selected.homework}%</strong>
-          <span>Score</span><strong>${selected.score}%</strong>
-          <span>Risk</span><strong>${selected.risk}</strong>
-          <span>Next action</span><strong>${selected.risk === "high" ? "Telegram reminder + service task" : "Review weak area in live lesson"}</strong>
-        </div>
-      </article>
-      <article class="content-panel">
-        <div class="section-heading">
-          <div><p class="eyebrow">homework mode connection</p><h3>Local progress bridge</h3></div>
-          ${pill("static prototype", "amber")}
-        </div>
-        <ul class="clean-list">
-          ${exercises.slice(0, 5).map((exercise) => `<li><span class="dot ${exerciseStatus(exercise) === "done" ? "low" : exerciseStatus(exercise) === "needs retry" ? "danger" : "medium"}"></span><span>${exercise.title}</span><small>${exerciseStatus(exercise)}</small></li>`).join("")}
+      <div class="content-panel teacher-table-panel">
+        <div class="panel-heading"><h3>Students</h3>${pill("mock + local", "blue")}</div>
+        <table class="data-table">
+          <thead><tr><th>Name</th><th>Progress</th><th>Homework</th><th>Retention</th><th>Depth</th></tr></thead>
+          <tbody>
+            ${students.map((student) => `
+              <tr class="${student.id === selected.id ? "selected-row" : ""}" data-student="${html(student.id)}">
+                <td><button class="link-button" type="button" data-student="${html(student.id)}">${html(student.name)}</button><small>${html(student.source)}</small></td>
+                <td>${html(student.progress)}%</td>
+                <td>${html(student.homework)}%</td>
+                <td>${pill(student.retention, statusTone(student.retention))}</td>
+                <td>${html(student.depth)}</td>
+              </tr>
+            `).join("")}
+          </tbody>
+        </table>
+      </div>
+
+      <div class="content-panel">
+        <div class="panel-heading"><h3>Selected student</h3>${pill(selected.retention, statusTone(selected.retention))}</div>
+        <p><strong>${html(selected.name)}</strong> - NPS ${html(selected.nps)} - inactive ${html(selected.inactiveDays)} days</p>
+        ${progressBar(selected.progress)}
+        <ul class="compact-list">
+          <li><span>Classwork</span><strong>${html(selected.classwork)}%</strong></li>
+          <li><span>Homework</span><strong>${html(selected.homework)}%</strong></li>
+          <li><span>Risk clue</span><strong>${html(selected.mistake || "none")}</strong></li>
         </ul>
-      </article>
-      <article class="content-panel full-width">
-        <div class="section-heading">
-          <div><p class="eyebrow">teacher actions</p><h3>Support queue</h3></div>
-          ${pill("Bitrix24 task mock", "blue")}
-        </div>
-        <div class="analytics-grid">
-          <div class="analytics-card"><span>Missed homework</span><strong>1</strong><small>Create service task if repeated.</small></div>
-          <div class="analytics-card"><span>High error exercise</span><strong>1E</strong><small>Use live board for question order.</small></div>
-          <div class="analytics-card"><span>AI explanations requested</span><strong>${Object.keys(progress.aiRequested).length}</strong><small>Shows where students need simpler explanations.</small></div>
-          <div class="analytics-card"><span>Correct answers shown</span><strong>${Object.keys(progress.correctShown).length}</strong><small>Good signal for self-review.</small></div>
-        </div>
-      </article>
+      </div>
+
+      <div class="content-panel">
+        <div class="panel-heading"><h3>Lesson readiness</h3>${pill("Unit 1", "green")}</div>
+        <ul class="compact-list">
+          ${lessons().map((lesson) => {
+            const stats = calculateLessonProgress(progress, lesson.lesson_id, getLessonExercises);
+            return `<li><span>${html(lesson.title)}</span><strong>${stats.percent}%</strong></li>`;
+          }).join("")}
+        </ul>
+      </div>
+
+      <div class="content-panel">
+        <div class="panel-heading"><h3>Revizor / BI mock</h3>${pill("local events", "amber")}</div>
+        <ul class="compact-list">
+          <li><span>NPS</span><strong>8.2</strong></li>
+          <li><span>Retention</span><strong>75%</strong></li>
+          <li><span>Depth of usage</span><strong>${html(selected.depth)}</strong></li>
+          <li><span>High error rate</span><strong>question_order</strong></li>
+          <li><span>AI explanations used</span><strong>${analyticsEvents.filter((event) => event.event_name.includes("ai")).length}</strong></li>
+        </ul>
+      </div>
     </section>
   `;
 }
 
 function renderLiveLessonMode() {
-  const lesson = getLesson(COURSE.currentLessonId);
+  const lesson = getLesson(state.liveLessonId) || currentLesson();
+  const classwork = getClassworkExercises(lesson.lesson_id);
+  const selectedExercise = getExercise(state.liveExerciseId) || classwork[0] || getLessonExercises(lesson.lesson_id)[0];
+  state.liveExerciseId = selectedExercise?.exercise_id || null;
+
   return `
+    <section class="content-panel live-hero">
+      <div class="panel-heading">
+        <div><p class="eyebrow">Live Lesson Mode mockup</p><h2>${html(lesson.title)}</h2></div>
+        ${pill(state.liveLocked ? "locked" : "teacher controlled", state.liveLocked ? "danger" : "green")}
+      </div>
+      <p>${html(lesson.speaking_outcome?.can_do_statement_ru || lesson.lesson_goal)}</p>
+      <div class="teacher-actions">
+        <button class="ghost-button ${state.liveMode === "group" ? "active" : ""}" type="button" data-live-mode="group">${icon("G")} Group</button>
+        <button class="ghost-button ${state.liveMode === "pair" ? "active" : ""}" type="button" data-live-mode="pair">${icon("P")} Pairs</button>
+        <button class="ghost-button ${state.liveMode === "individual" ? "active" : ""}" type="button" data-live-mode="individual">${icon("I")} Individual</button>
+        <button class="ghost-button" type="button" data-live-toggle="hint">${icon("H")} Send hint</button>
+        <button class="ghost-button" type="button" data-live-toggle="answers">${icon("A")} Toggle answers</button>
+        <button class="ghost-button" type="button" data-live-toggle="lock">${icon("L")} Lock inputs</button>
+      </div>
+    </section>
+
     <section class="live-grid">
-      <article class="shared-space">
-        <div class="section-heading">
-          <div><p class="eyebrow">Live Lesson Mode mockup</p><h2>${lesson.title}</h2></div>
-          ${pill("shared learning space", "green")}
+      <div class="content-panel">
+        <h3>Lesson queue</h3>
+        <div class="lesson-list">
+          ${lessons().map((item) => `<button class="${item.lesson_id === lesson.lesson_id ? "active" : ""}" type="button" data-live-lesson="${html(item.lesson_id)}"><strong>${html(item.title)}</strong><span>Lesson ${item.lesson_number}</span></button>`).join("")}
         </div>
-        <div class="shared-toolbar">
-          <button class="primary-button live-on" type="button">${icon("●")} Session live</button>
-          <button class="ghost-button" type="button" data-send-hint="true">${icon("→")} Send teacher hint</button>
-          <button class="ghost-button" type="button" data-view="integrations">${icon("API")} Speaking widget contract</button>
+      </div>
+
+      <div class="content-panel">
+        <h3>Exercise stage</h3>
+        <div class="lesson-list">
+          ${classwork.map((exercise) => `<button class="${exercise.exercise_id === selectedExercise.exercise_id ? "active" : ""}" type="button" data-live-exercise="${html(exercise.exercise_id)}"><strong>${html(exercise.exercise_type)}</strong><span>${html(exercise.instruction_ru)}</span></button>`).join("")}
         </div>
-        <div class="lesson-canvas">
-          <span class="teacher-cursor">Teacher cursor</span>
-          <span class="student-cursor">Anna cursor</span>
-          <p class="eyebrow">Board prompt</p>
-          <h3>Where are you from?</h3>
-          <p>Students update answers in a shared space. Teacher sees live answer state and can send a hint.</p>
-          <div class="live-answer-demo">
-            <span>Student input</span>
-            <strong>I'm from Minsk.</strong>
-            <small>Updated 4 seconds ago · live_answer_updated</small>
-          </div>
+      </div>
+
+      <div class="content-panel shared-space">
+        <div class="shared-board">
+          <p class="eyebrow">Shared learning space</p>
+          <h3>${html(selectedExercise.learning_content_en)}</h3>
+          <p>${html(selectedExercise.instruction_ru)}</p>
+          ${state.liveShowAnswers ? `<div class="answer-card"><strong>Model</strong><p>${html(formatCorrectAnswer(selectedExercise))}</p></div>` : ""}
+          <div class="live-answer-demo"><span>Simulated live answer - no real WebSocket</span><strong>${html(selectedExercise.items[0]?.prompt_en || selectedExercise.learning_content_en)}</strong><small>${html(state.liveMode)} mode</small></div>
         </div>
-      </article>
-      <article class="content-panel">
-        <p class="eyebrow">student answer visibility</p>
-        <h3>Live answers</h3>
+      </div>
+
+      <div class="content-panel">
+        <h3>Participants</h3>
         <ul class="live-student-list">
-          <li><span>Анна</span>${pill("ready", "green")}</li>
-          <li><span>Мария</span>${pill("typing", "amber")}</li>
-          <li><span>Ирина</span>${pill("needs hint", "danger")}</li>
+          ${getDemoStudentMetrics().map((student) => `<li><span>${html(student.name)}</span>${pill(student.id === DEMO_USER_ID ? "online local" : student.retention, statusTone(student.retention))}</li>`).join("")}
         </ul>
-      </article>
-      <article class="content-panel">
-        <p class="eyebrow">lesson pacing</p>
-        <h3>Teacher flow</h3>
-        <div class="pacing-steps">
-          <span class="done">1. Warm-up: hello chunks</span>
-          <span class="done">2. Board: Where are you from?</span>
-          <span>3. Pair speaking</span>
-          <span>4. External speaking widget</span>
-        </div>
-      </article>
-      <article class="content-panel full-width">
-        <div class="api-contract">
-          <code>POST /mock/live-sessions</code>
-          <code>POST /mock/speaking-widget/session</code>
-          <span>Widget is external: MVP shows an embed point and event contract only.</span>
-        </div>
-      </article>
+      </div>
     </section>
   `;
 }
 
 function renderMethodologistDashboard() {
-  const filtered = state.statusFilter === "all" ? contentItems : contentItems.filter((item) => item.status === state.statusFilter);
-  const currentExercise = getCurrentExercise();
+  const filtered = state.methodStatusFilter === "all" ? methodMaterials : methodMaterials.filter((item) => item.status === state.methodStatusFilter);
+  const selected = methodMaterials.find((item) => item.id === state.selectedMethodExerciseId) || methodMaterials[0];
+  const selectedExercise = getExercise(selected.id);
+  const media = getAllMediaSpecifications();
 
   return `
+    <section class="content-panel">
+      <div class="panel-heading">
+        <div><p class="eyebrow">Methodologist Dashboard - content ops</p><h2>${html(unit.title)}</h2></div>
+        ${pill("mock workflow", "amber")}
+      </div>
+      <p>All screens read from the Unit 1 data layer. Editing remains mock-only for v0.2.</p>
+      <p><strong>Archived</strong> means the material is hidden from students but remains available to methodologists in history.</p>
+    </section>
+
     <section class="methodologist-grid">
-      <article class="content-panel full-width">
-        <div class="section-heading">
-          <div><p class="eyebrow">Methodologist Dashboard</p><h2>Content workflow and metadata</h2></div>
-          ${pill("archived visible", "green")}
+      <div class="content-panel">
+        <h3>Status workflow</h3>
+        <div class="status-filter-list">
+          <button class="${state.methodStatusFilter === "all" ? "active" : ""}" type="button" data-method-status="all">all</button>
+          ${statusWorkflow.map((status) => `<button class="${state.methodStatusFilter === status ? "active" : ""}" type="button" data-method-status="${html(status)}">${html(status)}</button>`).join("")}
         </div>
-        <p>Workflow is explicit from draft to published and archived. Archived material is hidden from students, but remains available to methodologists in history.</p>
-      </article>
-      <article class="content-panel structure-panel">
-        <div class="section-heading">
-          <div><p class="eyebrow">status workflow</p><h3>Full material lifecycle</h3></div>
-          ${pill("10 statuses", "blue")}
-        </div>
-        <div class="workflow-grid">
-          ${workflowStatuses.map((status, index) => `<span class="workflow-step ${status === "archived" ? "archived-step" : ""}"><strong>${index + 1}</strong>${status}</span>`).join("")}
-        </div>
-        <div class="status-filter">
-          ${["all", ...workflowStatuses].map((status) => `<button class="${state.statusFilter === status ? "selected" : ""}" type="button" data-status-filter="${status}">${status}</button>`).join("")}
-        </div>
-        <div class="content-status-grid">
+      </div>
+
+      <div class="content-panel structure-panel">
+        <div class="panel-heading"><h3>Materials</h3>${pill(`${filtered.length} shown`, "blue")}</div>
+        <div class="material-list">
           ${filtered.map((item) => `
-            <div class="status-row">
-              <div>
-                ${pill(item.status, statusTone(item.status))}
-                <h4>${item.title}</h4>
-                <p>${item.type} · ${item.owner} · ${item.note}</p>
-              </div>
-              <button class="ghost-button" type="button">${icon("M")} History</button>
-            </div>
-          `).join("") || `<div class="status-row"><p>No materials with this status in mock data.</p></div>`}
-        </div>
-      </article>
-      <article class="content-panel">
-        <p class="eyebrow">archived rule</p>
-        <h3>Что значит archived</h3>
-        <p>Archived = материал скрыт от студентов и преподавательского live flow, но доступен методисту в истории для аудита, миграции и сравнения версий.</p>
-        <div class="tag-cloud">
-          <span>student hidden</span>
-          <span>methodist history</span>
-          <span>no PDF reuse</span>
-        </div>
-      </article>
-      <article class="content-panel">
-        <p class="eyebrow">editable metadata mock</p>
-        <h3>${currentExercise.title}</h3>
-        <div class="metadata-form">
-          <label>Type <input data-meta-field="type" value="${progress.metadataDraft.type || currentExercise.type}" /></label>
-          <label>Skill <input data-meta-field="skill" value="${progress.metadataDraft.skill || currentExercise.skill}" /></label>
-          <label>Status
-            <select data-meta-field="status">
-              ${workflowStatuses.map((status) => `<option value="${status}" ${(progress.metadataDraft.status || "methodist review") === status ? "selected" : ""}>${status}</option>`).join("")}
-            </select>
-          </label>
-          <button class="primary-button" type="button" data-meta-save="true">${icon("✓")} Save metadata mock</button>
-        </div>
-        <p class="mode-note">Mock edit writes to localStorage only; no backend request is sent.</p>
-      </article>
-      <article class="content-panel full-width">
-        <div class="section-heading">
-          <div><p class="eyebrow">course structure</p><h3>Course / Unit / Lesson / Exercise</h3></div>
-          ${pill("native pages", "green")}
-        </div>
-        <div class="content-tree">
-          <div class="tree-unit"><strong>${COURSE.title}</strong><span>${COURSE.currentUnit}</span>${lessons.map((lesson) => `<span>${lesson.lessonNo} ${lesson.title} · ${lesson.status}</span>`).join("")}</div>
-          <div class="tree-unit"><strong>Lesson 1.2 exercises</strong>${exercises.map((exercise) => `<span>${exercise.title} · ${exercise.type} · ${exercise.skill}</span>`).join("")}</div>
-        </div>
-      </article>
-    </section>
-  `;
-}
-
-function statusTone(status) {
-  if (["approved", "published"].includes(status)) return "green";
-  if (["draft", "AI-generated"].includes(status)) return "draft";
-  if (status === "archived") return "archived";
-  if (status === "needs revision") return "danger";
-  return "amber";
-}
-
-function renderAnalyticsView() {
-  return `
-    <section class="wide-stack">
-      <div class="screen-title">
-        <div><p class="eyebrow">Analytics / Revizor mockup</p><h2>Learning analytics without real BI calls</h2></div>
-        ${pill("mock data", "amber")}
-      </div>
-      <article class="content-panel">
-        <div class="section-heading">
-          <div><p class="eyebrow">dashboard metrics</p><h3>NPS, retention, depth and progress</h3></div>
-          <button class="ghost-button" type="button" data-view="integrations">${icon("API")} Event contracts</button>
-        </div>
-        <div class="analytics-grid analytics-grid-wide">
-          ${analyticsMetrics.map(([label, value, note]) => `
-            <div class="analytics-card">
-              <span>${label}</span>
-              <strong>${value}</strong>
-              <small>${note}</small>
-            </div>
+            <button class="${item.id === selected.id ? "selected" : ""}" type="button" data-method-exercise="${html(item.id)}">
+              <span><strong>${html(item.id)}</strong><small>${html(item.title)}</small></span>
+              ${pill(item.status, statusTone(item.status))}
+            </button>
           `).join("")}
         </div>
-      </article>
-      <div class="homework-grid">
-        <article class="content-panel">
-          <div class="section-heading">
-            <div><p class="eyebrow">exercises with high error rate</p><h3>Teacher-methodist loop</h3></div>
-            ${pill("Revizor / BI", "blue")}
-          </div>
-          <ul class="clean-list">
-            ${highErrorExercises.map(([name, rate, note]) => `<li><span class="dot danger"></span><span>${name}</span><small>${rate} · ${note}</small></li>`).join("")}
-          </ul>
-        </article>
-        <article class="content-panel">
-          <div class="section-heading">
-            <div><p class="eyebrow">students with risk signals</p><h3>Risk queue</h3></div>
-            ${pill("teacher + service", "amber")}
-          </div>
-          <ul class="clean-list">
-            ${riskSignals.map(([name, signal, risk]) => `<li><span class="dot ${risk}"></span><span>${name}</span><small>${signal}</small></li>`).join("")}
-          </ul>
-        </article>
       </div>
-      <article class="content-panel">
-        <div class="section-heading">
-          <div><p class="eyebrow">recent local events</p><h3>Events stored for demo</h3></div>
-          ${pill(`${(progress.events || []).length} events`, "blue")}
-        </div>
-        <div class="event-log">
-          ${(progress.events || []).slice(0, 8).map((event) => `<code>${event.timestamp} · ${event.event}</code>`).join("") || "<p>No local events yet. Try an exercise check or homework action.</p>"}
-        </div>
-      </article>
-    </section>
-  `;
-}
 
-function renderIntegrationsView() {
-  return `
-    <section class="wide-stack">
-      <div class="screen-title">
-        <div><p class="eyebrow">Integration Readiness</p><h2>API-ready contracts, no real requests</h2></div>
-        ${pill("mock only", "amber")}
+      <div class="content-panel">
+        <h3>Selected material</h3>
+        <p><strong>${html(selected.title)}</strong></p>
+        <p>Status: ${pill(selected.status, statusTone(selected.status))}</p>
+        <p>Owner: ${html(selected.owner)} - updated ${html(selected.updated)}</p>
+        ${selectedExercise ? `<p>${html(selectedExercise.instruction_ru)}</p><p class="english-line">${html(selectedExercise.learning_content_en)}</p>` : "<p>Archived sample retained in history only.</p>"}
       </div>
-      <article class="content-panel">
-        <p>Cards show integration boundaries for future backend work. Current status for every connector is mock only; the static prototype never calls external systems.</p>
-        <div class="integration-grid readiness-grid">
-          ${integrationCards.map((card) => `
-            <div class="integration-card">
-              <span>${card.name}</span>
-              <strong>${card.purpose}</strong>
-              <code>${card.endpoint}</code>
-              ${pill(card.status, "amber")}
-              <small>Example payload: ${JSON.stringify(card.payload)}</small>
-            </div>
-          `).join("")}
-        </div>
-      </article>
-      <article class="content-panel">
-        <div class="section-heading">
-          <div><p class="eyebrow">coverage note</p><h3>Acceptance integrations mapped</h3></div>
-          ${pill("static boundary", "blue")}
-        </div>
-        <ul class="integration-list">
-          <li><span class="dot ready"></span><strong>Scheduling</strong><span>1C schedule mock</span></li>
-          <li><span class="dot ready"></span><strong>Feedback / NPS</strong><span>Revizor / BI metrics and events</span></li>
-          <li><span class="dot mock"></span><strong>Payments</strong><span>future 1C/Bitrix24 account status field, documented as mock only</span></li>
-          <li><span class="dot ready"></span><strong>Speaking</strong><span>external widget embed point, not rebuilt</span></li>
+
+      <div class="content-panel">
+        <h3>Data model coverage</h3>
+        <ul class="compact-list">
+          <li><span>Unit</span><strong>1</strong></li>
+          <li><span>Lessons</span><strong>${lessons().length}</strong></li>
+          <li><span>Exercises</span><strong>${allExercises().length}</strong></li>
+          <li><span>Media specs</span><strong>${media.length}</strong></li>
+          <li><span>Analytics tags</span><strong>${new Set(allExercises().flatMap((exercise) => exercise.analytics_tags)).size}</strong></li>
         </ul>
-      </article>
+      </div>
+
+      <div class="content-panel structure-panel">
+        <h3>Unit tree</h3>
+        <div class="unit-tree">
+          ${lessons().map((lesson) => `<div class="tree-unit"><strong>${html(lesson.title)}</strong>${getLessonExercises(lesson.lesson_id).map((exercise) => `<span>${html(exercise.exercise_id)} - ${html(exercise.exercise_type)} - ${html(exercise.mode)}</span>`).join("")}</div>`).join("")}
+        </div>
+      </div>
     </section>
   `;
+}
+
+function getExercisePayload(exercise) {
+  const exerciseState = getExerciseState(progress, exercise.exercise_id);
+  const value = exerciseState.latestAnswer;
+  if (exercise.exercise_type === "multiple_choice" || exercise.exercise_type === "listen_choose") {
+    return value || "";
+  }
+  if (exercise.exercise_type === "matching") {
+    return value && typeof value === "object" ? value : {};
+  }
+  if (exercise.exercise_type === "word_order" || exercise.exercise_type === "drag_drop") {
+    return Array.isArray(value) ? value : [];
+  }
+  return value || "";
 }
 
 function handleClick(event) {
-  const viewButton = event.target.closest("[data-view]");
-  if (viewButton) {
-    state.view = viewButton.dataset.view;
-    if (state.view === "homework") trackEvent("homework_started", { homeworkId: homeworkAssignment.id });
-    if (state.view === "live") trackEvent("live_session_started", { lessonId: COURSE.currentLessonId });
-    render();
+  const route = event.target.closest("[data-route]");
+  if (route) {
+    navigate(route.dataset.route);
     return;
   }
 
-  const lessonButton = event.target.closest("[data-lesson]");
+  const lessonButton = event.target.closest("[data-open-lesson]");
   if (lessonButton) {
-    state.selectedLessonId = lessonButton.dataset.lesson;
-    state.exerciseIndex = 0;
-    if (lessonButton.dataset.openLesson) state.view = "lesson";
-    trackEvent("lesson_opened", { lessonId: state.selectedLessonId });
-    render();
+    const lessonId = lessonButton.dataset.openLesson;
+    state.selectedLessonId = lessonId;
+    progress = setCurrentLesson(progress, lessonId);
+    logEvent("lesson_opened", { lesson_id: lessonId, mode: "classwork" });
+    navigate("lesson", { lessonId });
     return;
   }
 
-  const tabButton = event.target.closest("[data-ex-tab]");
-  if (tabButton) {
-    state.exerciseIndex = Number(tabButton.dataset.exTab);
-    trackEvent("exercise_started", { exerciseId: getCurrentExercise().id });
-    render();
+  const homeworkButton = event.target.closest("[data-open-homework]");
+  if (homeworkButton) {
+    const lessonId = homeworkButton.dataset.openHomework;
+    state.selectedLessonId = lessonId;
+    state.selectedMode = "homework";
+    state.selectedExerciseId = getHomeworkExercises(lessonId)[0]?.exercise_id || null;
+    logEvent("homework_started", { lesson_id: lessonId, exercise_id: state.selectedExerciseId, mode: "homework" });
+    navigate("homework", { lessonId });
     return;
   }
 
-  const homeworkExercise = event.target.closest("[data-homework-ex]");
+  const homeworkExercise = event.target.closest("[data-open-homework-exercise]");
   if (homeworkExercise) {
-    state.exerciseIndex = Number(homeworkExercise.dataset.homeworkEx);
-    state.selectedLessonId = homeworkAssignment.lessonId;
-    trackEvent("exercise_started", { exerciseId: getCurrentExercise().id, homeworkId: homeworkAssignment.id });
+    const lessonId = homeworkExercise.dataset.openHomeworkExercise;
+    state.selectedLessonId = lessonId;
+    state.selectedMode = "homework";
+    state.selectedExerciseId = getHomeworkExercises(lessonId)[0]?.exercise_id || null;
+    logEvent("exercise_started", { lesson_id: lessonId, exercise_id: state.selectedExerciseId, mode: "homework" });
     render();
     return;
   }
 
-  const continueHomework = event.target.closest("[data-continue-homework]");
-  if (continueHomework) {
-    state.view = "lesson";
-    state.selectedLessonId = homeworkAssignment.lessonId;
-    state.exerciseIndex = Math.max(0, exercises.findIndex((exercise) => exerciseStatus(exercise) !== "done"));
-    if (state.exerciseIndex >= exercises.length) state.exerciseIndex = 0;
-    trackEvent("homework_started", { homeworkId: homeworkAssignment.id, action: "continue" });
-    render();
+  const exerciseButton = event.target.closest("[data-open-exercise]");
+  if (exerciseButton) {
+    const exercise = getExercise(exerciseButton.dataset.openExercise);
+    state.selectedLessonId = exercise.lesson_id;
+    state.selectedExerciseId = exercise.exercise_id;
+    state.selectedMode = exerciseButton.dataset.mode || exercise.mode;
+    logEvent("exercise_started", { lesson_id: exercise.lesson_id, exercise_id: exercise.exercise_id, mode: state.selectedMode });
+    navigate("exercise", { lessonId: exercise.lesson_id, exerciseId: exercise.exercise_id, mode: state.selectedMode });
     return;
   }
 
   const choice = event.target.closest("[data-choice]");
   if (choice) {
-    const exerciseId = choice.dataset.choice;
-    progress.answers[exerciseId] = choice.dataset.value;
-    trackEvent("exercise_answered", { exerciseId, answerType: "choice" });
-    saveProgress();
+    const exercise = getExercise(choice.dataset.choice);
+    progress = saveDraftAnswer(progress, exercise, choice.value);
+    logEvent("exercise_answered", { lesson_id: exercise.lesson_id, exercise_id: exercise.exercise_id, mode: exercise.mode, metadata: { answer_type: "choice" } });
     render();
     return;
   }
 
-  const word = event.target.closest("[data-word]");
-  if (word) {
-    const exerciseId = word.dataset.word;
-    const placed = Array.isArray(progress.answers[exerciseId]) ? progress.answers[exerciseId] : [];
-    progress.answers[exerciseId] = [...placed, word.dataset.value];
-    trackEvent("exercise_answered", { exerciseId, answerType: "word-order" });
-    saveProgress();
+  const addWord = event.target.closest("[data-add-word]");
+  if (addWord) {
+    const exercise = getExercise(addWord.dataset.addWord);
+    const current = getExerciseState(progress, exercise.exercise_id).latestAnswer;
+    progress = saveDraftAnswer(progress, exercise, [...(Array.isArray(current) ? current : []), addWord.dataset.word]);
+    logEvent("exercise_answered", { lesson_id: exercise.lesson_id, exercise_id: exercise.exercise_id, mode: exercise.mode, metadata: { answer_type: "word_order" } });
     render();
     return;
   }
 
   const removeWord = event.target.closest("[data-remove-word]");
   if (removeWord) {
-    const exerciseId = removeWord.dataset.removeWord;
-    const placed = Array.isArray(progress.answers[exerciseId]) ? progress.answers[exerciseId] : [];
-    progress.answers[exerciseId] = placed.filter((_, index) => index !== Number(removeWord.dataset.index));
-    saveProgress();
+    const exercise = getExercise(removeWord.dataset.removeWord);
+    const current = getExerciseState(progress, exercise.exercise_id).latestAnswer;
+    const next = Array.isArray(current) ? current.filter((_, index) => index !== Number(removeWord.dataset.index)) : [];
+    progress = saveDraftAnswer(progress, exercise, next);
     render();
     return;
   }
 
-  const checkButton = event.target.closest("[data-check]");
-  if (checkButton) {
-    const exercise = exercises.find((item) => item.id === checkButton.dataset.check);
-    progress.results[exercise.id] = {
-      correct: isCorrect(exercise),
-      checkedAt: new Date().toISOString(),
-    };
-    trackEvent("exercise_checked", { exerciseId: exercise.id, correct: progress.results[exercise.id].correct });
-    if (!progress.results[exercise.id].correct) {
-      trackEvent("student_risk_signal_created", { exerciseId: exercise.id, signal: "needs_retry" });
+  const check = event.target.closest("[data-check-exercise]");
+  if (check) {
+    const exercise = getExercise(check.dataset.checkExercise);
+    const result = checkExercise(exercise, getExercisePayload(exercise));
+    progress = recordExerciseCheck(progress, exercise, result);
+    logEvent("exercise_checked", { lesson_id: exercise.lesson_id, exercise_id: exercise.exercise_id, mode: exercise.mode, metadata: { correct: result.correct, partial: result.partial } });
+    if (exercise.mode === "homework" && result.completed) {
+      logEvent("homework_completed", { lesson_id: exercise.lesson_id, exercise_id: exercise.exercise_id, mode: "homework" });
     }
-    checkHomeworkCompletion();
-    saveProgress();
     render();
     return;
   }
 
-  const showAnswer = event.target.closest("[data-show-answer]");
-  if (showAnswer) {
-    progress.correctShown[showAnswer.dataset.showAnswer] = true;
-    trackEvent("correct_answer_shown", { exerciseId: showAnswer.dataset.showAnswer });
-    saveProgress();
+  const answer = event.target.closest("[data-show-answer]");
+  if (answer) {
+    const exercise = getExercise(answer.dataset.showAnswer);
+    progress = markCorrectAnswerShown(progress, exercise.exercise_id);
+    logEvent("correct_answer_shown", { lesson_id: exercise.lesson_id, exercise_id: exercise.exercise_id, mode: exercise.mode });
     render();
     return;
   }
 
-  const aiButton = event.target.closest("[data-ai]");
-  if (aiButton) {
-    progress.aiRequested[aiButton.dataset.ai] = true;
-    trackEvent("ai_explanation_requested", { exerciseId: aiButton.dataset.ai });
-    saveProgress();
+  const ai = event.target.closest("[data-open-ai]");
+  if (ai) {
+    const exercise = getExercise(ai.dataset.openAi);
+    progress = markAiExplanationOpened(progress, exercise.exercise_id);
+    logEvent("ai_explanation_requested", { lesson_id: exercise.lesson_id, exercise_id: exercise.exercise_id, mode: exercise.mode });
     render();
     return;
   }
 
-  const statusFilter = event.target.closest("[data-status-filter]");
-  if (statusFilter) {
-    state.statusFilter = statusFilter.dataset.statusFilter;
+  const reset = event.target.closest("[data-reset-progress]");
+  if (reset && window.confirm("Reset v0.2 demo progress? v0.1.1 data is not deleted.")) {
+    progress = resetDemoProgress();
     render();
     return;
   }
 
-  const studentButton = event.target.closest("[data-student]");
-  if (studentButton) {
-    state.selectedStudentId = studentButton.dataset.student;
+  const student = event.target.closest("[data-student]");
+  if (student) {
+    state.selectedStudentId = student.dataset.student;
     render();
     return;
   }
 
-  const metaSave = event.target.closest("[data-meta-save]");
-  if (metaSave) {
-    progress.metadataDraft = {
-      type: document.querySelector('[data-meta-field="type"]').value,
-      skill: document.querySelector('[data-meta-field="skill"]').value,
-      status: document.querySelector('[data-meta-field="status"]').value,
-      savedAt: new Date().toISOString(),
-    };
-    saveProgress();
+  const liveOpen = event.target.closest("[data-open-live]");
+  if (liveOpen) {
+    state.liveLessonId = liveOpen.dataset.openLive;
+    state.liveExerciseId = getClassworkExercises(state.liveLessonId)[0]?.exercise_id || null;
+    logEvent("live_session_started", { lesson_id: state.liveLessonId, exercise_id: state.liveExerciseId, mode: "live" });
+    navigate("live", { lessonId: state.liveLessonId });
+    return;
+  }
+
+  const liveLesson = event.target.closest("[data-live-lesson]");
+  if (liveLesson) {
+    state.liveLessonId = liveLesson.dataset.liveLesson;
+    state.liveExerciseId = getClassworkExercises(state.liveLessonId)[0]?.exercise_id || null;
     render();
     return;
   }
 
-  const resetProgress = event.target.closest("[data-reset-progress]");
-  if (resetProgress) {
-    progress = { ...defaultProgress };
-    saveProgress();
+  const liveExercise = event.target.closest("[data-live-exercise]");
+  if (liveExercise) {
+    state.liveExerciseId = liveExercise.dataset.liveExercise;
+    logEvent("live_answer_updated", { lesson_id: state.liveLessonId, exercise_id: state.liveExerciseId, mode: "live" });
     render();
     return;
   }
 
-  const sendHint = event.target.closest("[data-send-hint]");
-  if (sendHint) {
-    trackEvent("teacher_hint_sent", { lessonId: COURSE.currentLessonId, hint: "Use I'm from + city." });
+  const liveMode = event.target.closest("[data-live-mode]");
+  if (liveMode) {
+    state.liveMode = liveMode.dataset.liveMode;
+    render();
+    return;
+  }
+
+  const liveToggle = event.target.closest("[data-live-toggle]");
+  if (liveToggle) {
+    if (liveToggle.dataset.liveToggle === "answers") state.liveShowAnswers = !state.liveShowAnswers;
+    if (liveToggle.dataset.liveToggle === "lock") state.liveLocked = !state.liveLocked;
+    if (liveToggle.dataset.liveToggle === "hint") logEvent("teacher_hint_sent", { lesson_id: state.liveLessonId, exercise_id: state.liveExerciseId, mode: "live" });
+    render();
+    return;
+  }
+
+  const methodStatus = event.target.closest("[data-method-status]");
+  if (methodStatus) {
+    state.methodStatusFilter = methodStatus.dataset.methodStatus;
+    render();
+    return;
+  }
+
+  const methodExercise = event.target.closest("[data-method-exercise]");
+  if (methodExercise) {
+    state.selectedMethodExerciseId = methodExercise.dataset.methodExercise;
     render();
   }
 }
 
 function handleInput(event) {
-  const answerInput = event.target.closest("[data-answer]");
-  if (answerInput) {
-    progress.answers[answerInput.dataset.answer] = answerInput.value;
-    trackEvent("exercise_answered", { exerciseId: answerInput.dataset.answer, answerType: "text" });
-    saveProgress();
-    return;
-  }
-
-  const matchSelect = event.target.closest("[data-match-key]");
-  if (matchSelect) {
-    const exerciseId = matchSelect.dataset.exercise;
-    progress.answers[exerciseId] = {
-      ...(progress.answers[exerciseId] || {}),
-      [matchSelect.dataset.matchKey]: matchSelect.value,
-    };
-    trackEvent("exercise_answered", { exerciseId, answerType: "matching" });
-    saveProgress();
-  }
+  const input = event.target.closest("[data-answer]");
+  if (!input) return;
+  const exercise = getExercise(input.dataset.answer);
+  progress = saveDraftAnswer(progress, exercise, input.value);
+  logEvent("exercise_answered", { lesson_id: exercise.lesson_id, exercise_id: exercise.exercise_id, mode: exercise.mode, metadata: { answer_type: "text" } });
 }
+
+function handleChange(event) {
+  const match = event.target.closest("[data-match]");
+  if (!match) return;
+  const exercise = getExercise(match.dataset.match);
+  const current = getExerciseState(progress, exercise.exercise_id).latestAnswer || {};
+  progress = saveDraftAnswer(progress, exercise, { ...current, [match.dataset.item]: match.value });
+  logEvent("exercise_answered", { lesson_id: exercise.lesson_id, exercise_id: exercise.exercise_id, mode: exercise.mode, metadata: { answer_type: "matching" } });
+}
+
+window.addEventListener("hashchange", () => {
+  parseHash();
+  render();
+});
 
 root.addEventListener("click", handleClick);
 root.addEventListener("input", handleInput);
-root.addEventListener("change", handleInput);
+root.addEventListener("change", handleChange);
 
+parseHash();
+if (!state.selectedExerciseId) {
+  state.selectedExerciseId = getClassworkExercises(state.selectedLessonId)[0]?.exercise_id || null;
+}
 render();

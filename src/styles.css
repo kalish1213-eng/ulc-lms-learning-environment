@@ -777,6 +777,43 @@ button:disabled {
   color: var(--muted);
 }
 
+.language-focus > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-width: 0;
+}
+
+.language-focus > div > strong {
+  flex-basis: 100%;
+}
+
+.language-focus span {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+
+.data-table {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+}
+
+.data-table th,
+.data-table td {
+  min-width: 0;
+  padding: 10px 8px;
+  overflow-wrap: anywhere;
+  text-align: left;
+  vertical-align: top;
+}
+
+.data-table small {
+  display: block;
+  color: var(--muted);
+}
+
 .lesson-sections {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1438,6 +1475,327 @@ button:disabled {
   font-size: 13px;
 }
 
+.dashboard-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(220px, 0.5fr);
+  align-items: end;
+  gap: 24px;
+}
+
+.hero-progress {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+  padding: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: var(--ulc-radius);
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.hero-progress strong {
+  font-size: clamp(36px, 5vw, 58px);
+  line-height: 1;
+}
+
+.two-column,
+.lesson-mini-grid,
+.media-spec-grid,
+.exercise-card-grid {
+  display: grid;
+  gap: 16px;
+}
+
+.two-column {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-top: 20px;
+}
+
+.exercise-card-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-top: 18px;
+}
+
+.exercise-card,
+.material-list button,
+.lesson-list button {
+  display: grid;
+  gap: 8px;
+  width: 100%;
+  min-width: 0;
+  padding: 14px;
+  text-align: left;
+  color: var(--ink);
+  border: 1px solid var(--line);
+  border-radius: var(--ulc-radius);
+  background: #ffffff;
+  cursor: pointer;
+}
+
+.exercise-card:hover,
+.exercise-card.selected,
+.material-list button:hover,
+.material-list button.selected,
+.lesson-list button:hover,
+.lesson-list button.active {
+  border-color: var(--accent);
+  background: var(--soft-blue);
+}
+
+.exercise-card span,
+.exercise-card small,
+.lesson-list span,
+.material-list small {
+  color: var(--muted);
+}
+
+.lesson-overview,
+.exercise-panel,
+.structure-panel {
+  min-width: 0;
+}
+
+.instruction-ru {
+  margin: 18px 0 8px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.english-line {
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--ulc-radius);
+  background: #fbfcff;
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.exercise-meta,
+.teacher-actions,
+.status-filter-list,
+.word-bank,
+.word-answer,
+.exercise-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.exercise-meta span,
+.hint-list span,
+.homework-proof span {
+  padding: 8px 10px;
+  border-radius: var(--ulc-radius);
+  background: #f1f4fb;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.choice-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.choice-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--ulc-radius);
+  background: #ffffff;
+}
+
+.matching-list {
+  display: grid;
+  gap: 10px;
+}
+
+.matching-list label {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(180px, 0.6fr);
+  gap: 10px;
+  align-items: center;
+}
+
+.matching-list select,
+.answer-field textarea {
+  width: 100%;
+  min-width: 0;
+  border: 1px solid var(--line);
+  border-radius: var(--ulc-radius);
+  color: var(--ink);
+  background: #ffffff;
+}
+
+.matching-list select {
+  padding: 10px;
+}
+
+.answer-field {
+  display: grid;
+  gap: 8px;
+}
+
+.answer-field textarea {
+  resize: vertical;
+  padding: 12px;
+  font: inherit;
+}
+
+.word-order {
+  display: grid;
+  gap: 12px;
+}
+
+.word-bank,
+.word-answer {
+  min-height: 54px;
+  padding: 10px;
+  border: 1px dashed var(--line);
+  border-radius: var(--ulc-radius);
+  background: #fbfcff;
+}
+
+.word-chip {
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--ulc-radius);
+  color: var(--ink);
+  background: #ffffff;
+  cursor: pointer;
+}
+
+.word-chip.placed {
+  border-color: var(--accent);
+  background: var(--soft-blue);
+}
+
+.feedback-card,
+.answer-card,
+.ai-card,
+.mock-audio-controls,
+.media-mini,
+.mini-card {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+  margin-top: 12px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--ulc-radius);
+  background: #ffffff;
+}
+
+.feedback-card.correct {
+  border-color: rgba(17, 132, 91, 0.45);
+  background: var(--green-soft);
+}
+
+.feedback-card.partial {
+  border-color: rgba(181, 122, 0, 0.45);
+  background: var(--amber-soft);
+}
+
+.feedback-card.incorrect {
+  border-color: rgba(198, 49, 49, 0.35);
+  background: #fff5f5;
+}
+
+.ai-card {
+  border-color: rgba(60, 74, 245, 0.25);
+  background: var(--soft-blue);
+}
+
+.mock-audio-controls {
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  background: #fbfcff;
+}
+
+.media-spec-grid,
+.lesson-mini-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-top: 18px;
+}
+
+.media-mini p,
+.mini-card p {
+  margin: 0;
+}
+
+.homework-grid {
+  align-items: start;
+}
+
+.homework-list {
+  display: grid;
+  gap: 10px;
+}
+
+.homework-proof {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.link-button {
+  padding: 0;
+  border: 0;
+  color: var(--accent);
+  background: transparent;
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.selected-row {
+  background: var(--soft-blue);
+}
+
+.lesson-list,
+.material-list,
+.status-filter-list,
+.unit-tree {
+  display: grid;
+  gap: 10px;
+}
+
+.status-filter-list {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.status-filter-list button {
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--ulc-radius);
+  color: var(--ink);
+  background: #ffffff;
+  cursor: pointer;
+}
+
+.status-filter-list button.active {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--soft-blue);
+}
+
+.tree-unit {
+  display: grid;
+  gap: 6px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--ulc-radius);
+  background: #ffffff;
+}
+
+.tree-unit span {
+  color: var(--muted);
+  font-size: 13px;
+}
+
 @media (max-width: 1120px) {
   .app-shell {
     grid-template-columns: 1fr;
@@ -1471,10 +1829,16 @@ button:disabled {
   .lesson-sections,
   .language-focus,
   .unit-overview,
+  .two-column,
+  .dashboard-hero,
+  .exercise-card-grid,
+  .lesson-mini-grid,
+  .media-spec-grid,
   .homework-grid,
   .integration-grid,
   .analytics-grid-wide,
   .workflow-grid,
+  .status-filter-list,
   .homework-proof {
     grid-template-columns: 1fr;
   }
@@ -1499,6 +1863,7 @@ button:disabled {
   .nav-list,
   .metric-strip,
   .choice-grid,
+  .matching-list label,
   .word-grid,
   .analytics-grid,
   .detail-grid,
