@@ -37,7 +37,7 @@ import {
   STORAGE_KEY,
 } from "./services/progress-store.js?v=0.2-state-p0b";
 import { getAnalyticsEvents, logEvent } from "./services/analytics-service.js?v=0.2-state-p0b";
-import editorialReferenceLesson from "./data/editorial-reference-lesson.js?v=student-book-editorial-v1";
+import editorialReferenceLesson from "./data/editorial-reference-lesson.js?v=student-book-editorial-final";
 
 const VERSION = "v0.2 RC";
 const UNIT_ID = "beginner_u1";
@@ -98,11 +98,19 @@ const state = {
   selectedStudentId: DEMO_USER_ID,
   methodStatusFilter: "all",
   selectedMethodExerciseId: null,
+  editorialTeacherMode: false,
   editorialTeacherToolbar: false,
-  editorialTranscriptOpen: false,
+  editorialTranscriptOpen: {},
+  editorialAudioActive: {},
   editorialRole: "A",
   editorialReviewTab: "Grammar",
+  editorialSelections: {},
+  editorialResults: {},
+  editorialPhotoOrder: ["listening-2", "listening-1", "listening-4", "listening-3", "listening-5"],
+  editorialDraggingPhotoId: null,
   editorialSavedPhrases: [],
+  editorialLearnedPhrases: [],
+  editorialSpeakingNotice: false,
   editorialProfile: loadEditorialProfile(),
 };
 
@@ -432,25 +440,164 @@ function editorialPhoto(photoId, className = "", caption = "") {
   `;
 }
 
+function isEditorialTeacherMode() {
+  return state.editorialTeacherMode || new URLSearchParams(window.location.search).get("teacherMode") === "1";
+}
+
+function editorialSelection(id, fallback = null) {
+  return state.editorialSelections[id] ?? fallback;
+}
+
+function editorialResult(id) {
+  return state.editorialResults[id] || null;
+}
+
+function normalizeEditorialAnswer(value) {
+  return String(value || "")
+    .trim()
+    .replace(/\s+/g, " ")
+    .replace(/[.!?]+$/g, "")
+    .toLowerCase();
+}
+
+function setEditorialResult(id, correct, correctText = "", retryText = "") {
+  state.editorialResults = {
+    ...state.editorialResults,
+    [id]: {
+      status: correct ? "correct" : "retry",
+      message: correct ? correctText : retryText,
+    },
+  };
+}
+
+function resetEditorialActivity(id) {
+  const nextSelections = { ...state.editorialSelections };
+  delete nextSelections[id];
+  Object.keys(nextSelections)
+    .filter((key) => key.startsWith(`${id}:`))
+    .forEach((key) => delete nextSelections[key]);
+  const nextResults = { ...state.editorialResults };
+  delete nextResults[id];
+  state.editorialSelections = nextSelections;
+  state.editorialResults = nextResults;
+}
+
+function EditorialFeedback(id) {
+  const result = editorialResult(id);
+  if (!result) return "";
+  return `
+    <div class="editorial-feedback ${result.status}">
+      ${icon(result.status === "correct" ? "check" : "hint")}
+      <span>${html(result.message)}</span>
+    </div>
+  `;
+}
+
+function editorialScore() {
+  const results = state.editorialResults;
+  const grammar = ["grammar-a", "grammar-b", "grammar-c"].filter((id) => results[id]?.status === "correct").length;
+  const vocabulary = ["vocab-a", "vocab-b", "listen-a", "listen-b"].filter((id) => results[id]?.status === "correct").length;
+  const phrases = state.editorialLearnedPhrases.length;
+  return { grammar, vocabulary, phrases };
+}
+
+function editorialActivities() {
+  return editorialReferenceLesson.sections.flatMap((section) => section.micro_activities || []);
+}
+
+function getEditorialActivity(id) {
+  return editorialActivities().find((activity) => activity.id === id);
+}
+
+function checkEditorialActivity(id) {
+  const activity = getEditorialActivity(id);
+  if (!activity && id !== "listen-a") return;
+
+  if (id === "vocab-a") {
+    const correct = editorialSelection(id, "") === activity.correct_en;
+    setEditorialResult(id, correct, activity.feedback_ru.correct, activity.feedback_ru.retry);
+    return;
+  }
+
+  if (id === "vocab-b") {
+    const correct = activity.pairs.every(([, answer], index) => editorialSelection(`${id}:${index}`, "") === answer);
+    setEditorialResult(id, correct, activity.feedback_ru.correct, activity.feedback_ru.retry);
+    return;
+  }
+
+  if (id === "pron-a") {
+    const correct = activity.phrases.every((phrase, index) => editorialSelection(`${id}:${index}`, "") === phrase.group);
+    setEditorialResult(id, correct, "Верно. Короткие и полные формы разделены правильно.", "Проверьте: I'm / you're / what's - короткие формы.");
+    return;
+  }
+
+  if (id === "grammar-a") {
+    const correct = activity.answers_en.every((answer, index) => editorialSelection(`${id}:${index}`, "") === answer);
+    setEditorialResult(id, correct, activity.feedback_ru.correct, activity.feedback_ru.retry);
+    return;
+  }
+
+  if (id === "grammar-b") {
+    const correct = activity.rows.every((row, index) => normalizeEditorialAnswer(editorialSelection(`${id}:${index}`, "")) === normalizeEditorialAnswer(row.answer));
+    setEditorialResult(id, correct, "Chart заполнен правильно.", "Проверьте короткие формы: I am -> I'm, you are -> you're.");
+    return;
+  }
+
+  if (id === "grammar-c") {
+    const correct = activity.items.every((item, index) => editorialSelection(`${id}:${index}`, "") === item.answer);
+    setEditorialResult(id, correct, "Верно. Формы verb be выбраны правильно.", activity.explanation_ru);
+    return;
+  }
+
+  if (id === "listen-a") {
+    const section = editorialReferenceLesson.sections.find((item) => item.id === "reading-listening");
+    const selectedNumbersCorrect = section.correct_order.every((photoId, index) => Number(editorialSelection(`${id}:${photoId}`, 0)) === index + 1);
+    const draggedOrderCorrect = state.editorialPhotoOrder.every((photoId, index) => photoId === section.correct_order[index]);
+    const correct = selectedNumbersCorrect || draggedOrderCorrect;
+    setEditorialResult(id, correct, "Верно. События идут в правильном порядке.", "Пока порядок не совпадает с историей. Начните с Anna arrives.");
+    return;
+  }
+
+  if (id === "listen-b") {
+    const correct = activity.questions.every((question, index) => {
+      const answer = normalizeEditorialAnswer(editorialSelection(`${id}:${index}`, ""));
+      return answer === normalizeEditorialAnswer(question.answer_en) || answer.includes(normalizeEditorialAnswer(question.answer_en));
+    });
+    setEditorialResult(id, correct, "Короткие ответы верные.", "Проверьте имена Anna/Maya, город Warsaw и contact details.");
+    return;
+  }
+
+  if (id === "listen-c") {
+    const correct = activity.gaps.every((gap, index) => normalizeEditorialAnswer(editorialSelection(`${id}:${index}`, "")) === normalizeEditorialAnswer(gap.answer_en));
+    setEditorialResult(id, correct, "Верно. Теперь можно открыть transcript.", "Проверьте ключевые слова: from, too, email.");
+  }
+}
+
 function LessonEditorialHeader(lesson) {
+  const teacherMode = isEditorialTeacherMode();
   return `
     <header class="editorial-header">
       <div class="editorial-brand-row">
         <button class="brand-button compact-brand" type="button" data-route="unit" aria-label="ULC">ULC</button>
+        <button class="editorial-back-link" type="button" data-route="unit">${icon("back")} Назад к курсу</button>
         <div class="editorial-progress-strip">
-          <span>Эталонный урок</span>
-          <strong>2 разворота · 7 секций · 16 действий</strong>
+          <span>${html(lesson.progress_label_ru)}</span>
+          <strong>${lesson.progress_percent}%</strong>
+          ${progressBar(lesson.progress_percent)}
         </div>
-        <button class="ghost-button compact" type="button" data-editorial-toolbar="toggle">${icon("users")} Панель преподавателя</button>
+        <button class="editorial-save-button" type="button" data-editorial-profile-save>${icon("check")} Сохранить</button>
+        <button class="editorial-exit-button" type="button" data-route="unit">Выйти</button>
+        ${teacherMode ? `<button class="ghost-button compact" type="button" data-editorial-toolbar="toggle">${icon("users")} Teacher Mode</button>` : ""}
+        <button class="editorial-teacher-switch" type="button" data-editorial-teacher-mode aria-label="Enable teacher mode"></button>
       </div>
       <div class="editorial-title-grid">
         <div>
-          <p class="book-kicker">${html(lesson.lesson_label)} · ${html(lesson.title_en)}</p>
-          <h1>${html(lesson.unit_label)} · ${html(lesson.title_en)}</h1>
-          <p>${html(lesson.outcome_ru)}</p>
+          <p class="book-kicker">${html(lesson.lesson_number_label)}</p>
+          <h1>${html(lesson.lesson_label)} · ${html(lesson.title_en)}</h1>
+          <p>${html(lesson.subtitle_ru)}</p>
         </div>
         <div class="skill-labels">
-          ${lesson.skill_labels.map((label) => `<span>${html(label)}</span>`).join("")}
+          ${lesson.skill_labels.map((label) => `<span class="${html(label.section)}"><strong>${html(label.type)}</strong> · ${html(label.text)}</span>`).join("")}
         </div>
       </div>
     </header>
@@ -459,7 +606,7 @@ function LessonEditorialHeader(lesson) {
 
 function SectionHeading(section) {
   return `
-    <div class="editorial-section-heading">
+    <div class="editorial-section-heading" style="--section-accent: var(--editorial-${html(section.id)});">
       <span>${html(section.number)}</span>
       <div>
         <p>${html(section.label)}</p>
@@ -470,44 +617,71 @@ function SectionHeading(section) {
   `;
 }
 
-function AudioControl(label = "Аудио", script = "Демо-аудио будет подключено после утверждения сценария.") {
+function AudioControl(id, label = "Аудио", script = "", options = {}) {
+  const active = Boolean(state.editorialAudioActive[id]);
+  const open = Boolean(state.editorialTranscriptOpen[id] || (options.requiresCompletion && options.completed));
+  const locked = Boolean(options.requiresCompletion && !options.completed);
   return `
-    <div class="book-audio-control" data-audio-state="${state.editorialTranscriptOpen ? "active" : "idle"}">
-      <button type="button" data-editorial-audio="play">${icon("play")}</button>
+    <div class="book-audio-control" data-audio-state="${active ? "active" : "idle"}">
+      <button type="button" data-editorial-audio="${html(id)}">${icon("play")}</button>
       <div>
         <strong>${html(label)}</strong>
-        <div class="audio-progress"><span style="width: ${state.editorialTranscriptOpen ? "72%" : "28%"}"></span></div>
+        <div class="audio-progress"><span style="width: ${active ? "72%" : "18%"}"></span></div>
       </div>
-      <button type="button" data-editorial-audio="speed">0.75 / 1.0</button>
-      <button type="button" data-editorial-transcript="toggle">Текст</button>
-      ${state.editorialTranscriptOpen ? `<p>${html(script)}</p>` : ""}
+      <button type="button" data-editorial-audio="${html(id)}:speed">0.75 / 1.0</button>
+      <button type="button" data-editorial-audio="${html(id)}:transcript" data-editorial-transcript="${html(id)}" ${locked ? "disabled" : ""}>${locked ? "Текст после заданий" : "Текст"}</button>
+      ${open && !locked ? `<p>${html(script)}</p>` : ""}
     </div>
   `;
 }
 
 function PhotoChoiceExercise(activity) {
+  const selected = editorialSelection(activity.id, "");
   return `
     <div class="micro-task photo-choice-task">
       <strong>${html(activity.letter)}. ${html(activity.instruction_ru)}</strong>
       <p class="english-line">${html(activity.prompt_en)}</p>
       <div class="choice-strip">
         ${activity.options_en.map((option, index) => `
-          <button class="${option === activity.correct_en ? "is-correct" : ""}" type="button" data-editorial-choice="${html(activity.id)}">
+          <button class="${selected === option ? "selected" : ""}" type="button" data-editorial-choice="${html(activity.id)}" data-value="${html(option)}">
             <span>${String.fromCharCode(65 + index)}</span>${html(option)}
           </button>
         `).join("")}
       </div>
+      <div class="editorial-action-row">
+        <button type="button" data-editorial-check="${html(activity.id)}">Проверить</button>
+        <button type="button" data-editorial-retry="${html(activity.id)}">Повторить</button>
+      </div>
+      ${EditorialFeedback(activity.id)}
     </div>
   `;
 }
 
 function MatchingExercise(activity) {
+  const options = activity.pairs.map(([, right]) => right);
   return `
     <div class="micro-task matching-book-task">
       <strong>${html(activity.letter)}. ${html(activity.instruction_ru)}</strong>
       <div class="book-match-grid">
-        ${activity.pairs.map(([left, right]) => `<button type="button">${html(left)}</button><span>${html(right)}</span>`).join("")}
+        ${activity.pairs.map(([left], index) => {
+          const key = `${activity.id}:${index}`;
+          const value = editorialSelection(key, "");
+          return `
+            <label>
+              <span>${html(left)}</span>
+              <select data-editorial-match="${html(activity.id)}" data-index="${index}">
+                <option value="">Выберите ответ</option>
+                ${options.map((option) => `<option value="${html(option)}" ${value === option ? "selected" : ""}>${html(option)}</option>`).join("")}
+              </select>
+            </label>
+          `;
+        }).join("")}
       </div>
+      <div class="editorial-action-row">
+        <button type="button" data-editorial-check="${html(activity.id)}">Проверить</button>
+        <button type="button" data-editorial-retry="${html(activity.id)}">Повторить</button>
+      </div>
+      ${EditorialFeedback(activity.id)}
     </div>
   `;
 }
@@ -516,26 +690,43 @@ function PronunciationSortExercise(activity) {
   return `
     <div class="micro-task pronunciation-sort">
       <strong>${html(activity.letter)}. ${html(activity.instruction_ru)}</strong>
-      <div class="pron-columns">
-        ${activity.columns.map((column) => `
-          <div>
-            <h4>${html(column.title)}</h4>
-            ${column.items.map((item) => `<button type="button">${html(item)}</button>`).join("")}
-          </div>
-        `).join("")}
+      <div class="pron-sort-list">
+        ${activity.phrases.map((phrase, index) => {
+          const key = `${activity.id}:${index}`;
+          const value = editorialSelection(key, "");
+          return `
+            <div class="pron-sort-row">
+              <span>${html(phrase.text)}</span>
+              <button class="${value === "Short" ? "selected" : ""}" type="button" data-editorial-sort="${html(activity.id)}" data-index="${index}" data-group="Short">Short</button>
+              <button class="${value === "Full" ? "selected" : ""}" type="button" data-editorial-sort="${html(activity.id)}" data-index="${index}" data-group="Full">Full</button>
+            </div>
+          `;
+        }).join("")}
       </div>
+      <p class="pronunciation-hint">${html(activity.hint_ru)}</p>
+      <div class="editorial-action-row">
+        <button type="button" data-editorial-check="${html(activity.id)}">Проверить</button>
+        <button type="button" data-editorial-retry="${html(activity.id)}">Повторить</button>
+      </div>
+      ${EditorialFeedback(activity.id)}
     </div>
   `;
 }
 
 function WordBankExercise(activity, section) {
+  const values = activity.answers_en.map((_, index) => editorialSelection(`${activity.id}:${index}`, ""));
   return `
     <div class="micro-task word-bank-book-task">
       <strong>${html(activity.letter)}. ${html(activity.instruction_ru)}</strong>
       <div class="word-bank-inline">
-        ${section.word_bank.map((word) => `<button type="button">${html(word)}</button>`).join("")}
+        ${section.word_bank.map((word) => `<button type="button" data-editorial-word="${html(activity.id)}" data-word="${html(word)}">${html(word)}</button>`).join("")}
       </div>
-      ${activity.gaps_en.map((gap) => `<p class="inline-gap-line">${html(gap).replace("___", "<span>___</span>")}</p>`).join("")}
+      ${activity.gaps_en.map((gap, index) => `<p class="inline-gap-line">${html(gap).replace("___", `<button type="button" data-editorial-gap="${html(activity.id)}" data-index="${index}">${html(values[index] || "___")}</button>`)}</p>`).join("")}
+      <div class="editorial-action-row">
+        <button type="button" data-editorial-check="${html(activity.id)}">Проверить</button>
+        <button type="button" data-editorial-retry="${html(activity.id)}">Повторить</button>
+      </div>
+      ${EditorialFeedback(activity.id)}
     </div>
   `;
 }
@@ -546,9 +737,19 @@ function GrammarChartExercise(activity) {
       <strong>${html(activity.letter)}. ${html(activity.instruction_ru)}</strong>
       <table>
         <tbody>
-          ${activity.rows.map(([left, right]) => `<tr><td>${html(left)}</td><td><input value="${html(right)}" /></td></tr>`).join("")}
+          ${activity.rows.map((row, index) => `
+            <tr>
+              <td>${html(row.left)}</td>
+              <td><input data-editorial-chart="${html(activity.id)}" data-index="${index}" value="${html(editorialSelection(`${activity.id}:${index}`, ""))}" placeholder="Ваш ответ" /></td>
+            </tr>
+          `).join("")}
         </tbody>
       </table>
+      <div class="editorial-action-row">
+        <button type="button" data-editorial-check="${html(activity.id)}">Проверить</button>
+        <button type="button" data-editorial-retry="${html(activity.id)}">Повторить</button>
+      </div>
+      ${EditorialFeedback(activity.id)}
     </div>
   `;
 }
@@ -557,28 +758,44 @@ function MultipleChoiceMiniExercise(activity) {
   return `
     <div class="micro-task mini-mc-task">
       <strong>${html(activity.letter)}. ${html(activity.instruction_ru)}</strong>
-      ${activity.items.map(([prompt, options, answer]) => `
+      ${activity.items.map((item, index) => `
         <div class="mini-mc-row">
-          <span>${html(prompt)}</span>
-          ${options.map((option) => `<button class="${option === answer ? "is-correct" : ""}" type="button">${html(option)}</button>`).join("")}
+          <span>${html(item.prompt)}</span>
+          ${item.options.map((option) => `<button class="${editorialSelection(`${activity.id}:${index}`, "") === option ? "selected" : ""}" type="button" data-editorial-mc="${html(activity.id)}" data-index="${index}" data-value="${html(option)}">${html(option)}</button>`).join("")}
         </div>
       `).join("")}
+      <p class="pronunciation-hint">${html(activity.explanation_ru)}</p>
+      <div class="editorial-action-row">
+        <button type="button" data-editorial-check="${html(activity.id)}">Проверить</button>
+        <button type="button" data-editorial-retry="${html(activity.id)}">Повторить</button>
+      </div>
+      ${EditorialFeedback(activity.id)}
     </div>
   `;
 }
 
 function PhotoOrderingExercise(section) {
+  const checked = editorialResult("listen-a");
   return `
     <div class="micro-task photo-order-task">
       <strong>a. Расставьте фото в правильном порядке.</strong>
       <div class="photo-sequence">
-        ${section.photos.map((photoId, index) => `
-          <div class="sequence-card">
-            <span>${index + 1}</span>
+        ${state.editorialPhotoOrder.map((photoId, index) => `
+          <div class="sequence-card" draggable="true" data-editorial-drag-photo="${html(photoId)}">
+            <span>${checked ? section.correct_order.indexOf(photoId) + 1 : String.fromCharCode(65 + index)}</span>
             ${editorialPhoto(photoId, "sequence-photo")}
+            <select data-editorial-photo-order="${html(photoId)}" aria-label="Order for photo ${index + 1}">
+              <option value="">№</option>
+              ${section.correct_order.map((_, numberIndex) => `<option value="${numberIndex + 1}" ${Number(editorialSelection(`listen-a:${photoId}`, "")) === numberIndex + 1 ? "selected" : ""}>${numberIndex + 1}</option>`).join("")}
+            </select>
           </div>
         `).join("")}
       </div>
+      <div class="editorial-action-row">
+        <button type="button" data-editorial-check="listen-a">Проверить</button>
+        <button type="button" data-editorial-retry="listen-a">Повторить</button>
+      </div>
+      ${EditorialFeedback("listen-a")}
     </div>
   `;
 }
@@ -587,9 +804,17 @@ function ShortAnswerExercise(activity) {
   return `
     <div class="micro-task short-answer-task">
       <strong>${html(activity.letter)}. ${html(activity.instruction_ru)}</strong>
-      ${activity.questions_en.map((question) => `
-        <label><span>${html(question)}</span><input placeholder="Короткий ответ" /></label>
+      ${activity.questions.map((question, index) => `
+        <label>
+          <span>${html(question.prompt_en)}</span>
+          <input data-editorial-short-answer="${html(activity.id)}" data-index="${index}" value="${html(editorialSelection(`${activity.id}:${index}`, ""))}" placeholder="Short answer" />
+        </label>
       `).join("")}
+      <div class="editorial-action-row">
+        <button type="button" data-editorial-check="${html(activity.id)}">Проверить</button>
+        <button type="button" data-editorial-retry="${html(activity.id)}">Повторить</button>
+      </div>
+      ${EditorialFeedback(activity.id)}
     </div>
   `;
 }
@@ -598,9 +823,29 @@ function InlineGapExercise(activity) {
   return `
     <div class="micro-task listening-gap-task">
       <strong>${html(activity.letter)}. ${html(activity.instruction_ru)}</strong>
-      ${activity.gaps_en.map((gap) => `<p>${html(gap).replace("___", "<input aria-label='gap' />")}</p>`).join("")}
+      ${activity.gaps.map((gap, index) => `<p>${html(gap.text_en).replace("___", `<input data-editorial-listening-gap="${html(activity.id)}" data-index="${index}" value="${html(editorialSelection(`${activity.id}:${index}`, ""))}" aria-label="listening gap ${index + 1}" />`)}</p>`).join("")}
+      <div class="editorial-action-row">
+        <button type="button" data-editorial-check="${html(activity.id)}">Проверить</button>
+        <button type="button" data-editorial-retry="${html(activity.id)}">Повторить</button>
+      </div>
+      ${EditorialFeedback(activity.id)}
     </div>
   `;
+}
+
+function editorialProfileValue(field, fallback = "") {
+  return state.editorialProfile[field] || fallback;
+}
+
+function profileSpeakingCard(baseCard) {
+  if (baseCard.role !== "A" || !state.editorialProfile.useInSpeaking) return baseCard;
+  return {
+    ...baseCard,
+    name: editorialProfileValue("First name", baseCard.name),
+    city: editorialProfileValue("City", baseCard.city),
+    country: editorialProfileValue("Country", baseCard.country),
+    job: editorialProfileValue("Job", baseCard.job),
+  };
 }
 
 function PairRoleExercise(section) {
@@ -611,19 +856,31 @@ function PairRoleExercise(section) {
         <button type="button" data-editorial-role="${state.editorialRole === "A" ? "B" : "A"}">Поменяться ролями</button>
       </div>
       <div class="role-card-grid">
-        ${section.role_cards.map((card) => `
+        ${section.role_cards.map((rawCard) => {
+          const card = profileSpeakingCard(rawCard);
+          return `
           <article class="pair-role-card ${state.editorialRole === card.role ? "active" : ""}">
             <span>Роль ${html(card.role)}</span>
             <h3>${html(card.name)}</h3>
-            <p>${html(card.city)} · ${html(card.job)}</p>
-            <small>Узнайте: ${html(card.missing)}</small>
+            <p>${html(card.city)}${card.country ? `, ${html(card.country)}` : ""} · ${html(card.job)}</p>
+            <small>Скрытая информация: ${html(card.missing)}</small>
           </article>
-        `).join("")}
+        `;
+        }).join("")}
       </div>
       <div class="speaking-widget-slot">
         ${icon("microphone")}
-        <strong>Speaking widget placeholder</strong>
-        <span>Запуск преподавателем · таймер пары · будущая запись</span>
+        <div>
+          <strong>${html(section.widget.title_ru)}</strong>
+          <span>${html(section.widget.description_ru)}</span>
+        </div>
+        <div class="speaking-actions">
+          <button type="button" data-editorial-speaking-start>Начать практику</button>
+          <button type="button" data-editorial-role="${state.editorialRole === "A" ? "B" : "A"}">Поменяться ролями</button>
+          <button type="button" data-editorial-scroll-profile>Мои фразы</button>
+        </div>
+        <div class="speaking-timer">02:00</div>
+        ${state.editorialSpeakingNotice ? `<p>${html(section.widget.launch_message_ru)}</p>` : ""}
       </div>
     </div>
   `;
@@ -632,10 +889,12 @@ function PairRoleExercise(section) {
 function ProfileCardExercise(section) {
   return `
     <div class="profile-book-card">
-      <div>
+      <div class="profile-preview-card">
+        ${editorialPhoto("anna-portrait", "profile-avatar")}
         <span>Ваш профиль</span>
-        <h3>${html(state.editorialProfile["First name"] || "Anna")} ${html(state.editorialProfile.Surname || "")}</h3>
-        <p>${html(state.editorialProfile.City || "Minsk")} · ${html(state.editorialProfile.Job || "designer")}</p>
+        <h3>${html(editorialProfileValue("First name", "Anna"))} ${html(editorialProfileValue("Surname", ""))}</h3>
+        <p>${html(editorialProfileValue("City", "Minsk"))}${editorialProfileValue("Country") ? `, ${html(editorialProfileValue("Country"))}` : ""} · ${html(editorialProfileValue("Job", "designer"))}</p>
+        <small>${html(editorialProfileValue("Email", "anna@example.com"))}</small>
       </div>
       <div class="profile-fields">
         ${section.fields.map((field) => `
@@ -644,6 +903,11 @@ function ProfileCardExercise(section) {
             <input data-editorial-profile="${html(field)}" value="${html(state.editorialProfile[field] || "")}" placeholder="${html(field)}" />
           </label>
         `).join("")}
+        <div class="profile-actions">
+          <button type="button" data-editorial-profile-save>Сохранить</button>
+          <button type="button" data-editorial-profile-use>Использовать в разговорной практике</button>
+        </div>
+        ${state.editorialProfile.saved ? `<p class="profile-saved-note">${icon("check")} Профиль сохранён и доступен в Role A.</p>` : ""}
       </div>
     </div>
   `;
@@ -654,12 +918,17 @@ function UsefulPhrasesPanel(section) {
     <div class="useful-phrases-panel">
       ${section.phrases_en.map((phrase) => {
         const saved = state.editorialSavedPhrases.includes(phrase);
+        const learned = state.editorialLearnedPhrases.includes(phrase);
         return `
-          <button class="${saved ? "saved" : ""}" type="button" data-editorial-phrase="${html(phrase)}">
-            ${icon(saved ? "check" : "play")}
+          <div class="phrase-card ${saved ? "saved" : ""} ${learned ? "learned" : ""}">
             <span>${html(phrase)}</span>
-            <small>${saved ? "Сохранено" : "послушать · повторить"}</small>
-          </button>
+            <div>
+              <button type="button" data-editorial-phrase-action="play" data-phrase="${html(phrase)}">${icon("play")} Play</button>
+              <button type="button" data-editorial-phrase-action="repeat" data-phrase="${html(phrase)}">${icon("microphone")} Repeat</button>
+              <button type="button" data-editorial-phrase-action="bookmark" data-phrase="${html(phrase)}">${icon(saved ? "check" : "cards")} ${saved ? "Saved" : "Save"}</button>
+              <button type="button" data-editorial-phrase-action="learned" data-phrase="${html(phrase)}">${icon(learned ? "check" : "progress")} ${learned ? "Learned" : "Learn"}</button>
+            </div>
+          </div>
         `;
       }).join("")}
     </div>
@@ -667,6 +936,7 @@ function UsefulPhrasesPanel(section) {
 }
 
 function ReviewAndCheckPanel(lesson) {
+  const scores = editorialScore();
   return `
     <section class="editorial-review-panel">
       <div class="editorial-section-heading compact">
@@ -678,19 +948,22 @@ function ReviewAndCheckPanel(lesson) {
       </div>
       ${lesson.review.tabs.filter((tab) => tab.label === state.editorialReviewTab).map((tab) => `
         <div class="review-score-card">
-          <strong>${html(tab.score)}</strong>
+          <strong>${tab.label === "Grammar" ? `${scores.grammar} / ${tab.target}` : tab.label === "Vocabulary" ? `${scores.vocabulary} / ${tab.target}` : `${scores.phrases} / ${tab.target}`}</strong>
           ${tab.items.map((item) => `<span>${html(item)}</span>`).join("")}
         </div>
       `).join("")}
+      <div class="review-recommendations">
+        ${lesson.review.recommendations_ru.map((item) => `<p>${html(item)}</p>`).join("")}
+      </div>
     </section>
   `;
 }
 
 function TeacherToolbar() {
-  if (!state.editorialTeacherToolbar) return "";
+  if (!isEditorialTeacherMode() || !state.editorialTeacherToolbar) return "";
   return `
     <aside class="editorial-teacher-toolbar">
-      <strong>Панель преподавателя</strong>
+      <strong>Teacher Mode</strong>
       <button type="button">Открыть секцию группе</button>
       <button type="button">Запустить аудио</button>
       <button type="button">Показать ответы</button>
@@ -713,7 +986,7 @@ function renderEditorialSection(section) {
         </div>
         ${PhotoChoiceExercise(choice)}
         ${MatchingExercise(match)}
-        ${AudioControl("1.3 Послушайте и проверьте", audio.script_en)}
+        ${AudioControl("vocab-audio", "1.3 Послушайте и проверьте", audio.script_en)}
       </section>
     `;
   }
@@ -726,7 +999,7 @@ function renderEditorialSection(section) {
         <div class="repeat-strip">
           ${section.micro_activities[1].phrases_en.map((phrase) => `<button type="button">${icon("microphone")} ${html(phrase)}</button>`).join("")}
         </div>
-        ${AudioControl("1.4 Послушайте и повторите", "I'm Anna. What's your name? Nice to meet you.")}
+        ${AudioControl("pron-audio", "1.4 Послушайте и повторите", "I'm Anna. What's your name? Nice to meet you.")}
       </section>
     `;
   }
@@ -749,10 +1022,11 @@ function renderEditorialSection(section) {
 
   if (section.id === "reading-listening") {
     const [, shortAnswers, gaps] = section.micro_activities;
+    const completed = ["listen-a", "listen-b", "listen-c"].every((id) => editorialResult(id)?.status === "correct");
     return `
       <section class="editorial-section reading-listening-section">
         ${SectionHeading(section)}
-        ${AudioControl("1.5 Reading & listening", section.transcript_en)}
+        ${AudioControl("reading-audio", "1.5 Reading & listening", section.transcript_en, { requiresCompletion: true, completed })}
         ${PhotoOrderingExercise(section)}
         <div class="reading-listening-grid">
           ${ShortAnswerExercise(shortAnswers)}
@@ -1305,15 +1579,15 @@ function renderMediaSpecs(lessonId) {
     <div class="media-spec-grid">
       ${media.map((item) => `
         <div class="media-mini">
-          <p class="eyebrow">listening media specification</p>
+          <p class="eyebrow">Аудио к уроку</p>
           <strong>${html(item.media_type)} - ${html(item.duration)}</strong>
           <p>${html(item.script)}</p>
-          <small>${html(item.accent)} - ${html(item.speed)} - no audio file in v0.2</small>
+          <small>${html(item.accent)} - ${html(item.speed)} - аудио будет доступно на занятии</small>
         </div>
       `).join("")}
       ${speaking.map((activity) => `
         <div class="media-mini">
-          <p class="eyebrow">speaking widget placeholder</p>
+          <p class="eyebrow">Разговорная практика</p>
           <strong>${html(activity.activity_id)}</strong>
           <p>${html(activity.instruction_ru)}</p>
           <small>${activity.target_phrases_en.map(html).join(" - ")}</small>
@@ -1353,6 +1627,7 @@ function renderExercisePlayer(lessonId = state.selectedLessonId, mode = state.se
 
   return `
     <div class="exercise-player visual-exercise">
+      ${!options.compactHeader && lessonId === "beg_u1_l1" ? `<p class="legacy-route-label">Legacy technical exercise player</p>` : ""}
       ${options.compactHeader ? "" : `<div class="panel-heading">
         <div>
           <p class="eyebrow">${mode === "homework" ? "Домашняя практика" : "Задание с преподавателем"}</p>
@@ -1903,16 +2178,96 @@ function handleClick(event) {
     return;
   }
 
+  const editorialTeacherMode = event.target.closest("[data-editorial-teacher-mode]");
+  if (editorialTeacherMode) {
+    state.editorialTeacherMode = true;
+    state.editorialTeacherToolbar = true;
+    render();
+    return;
+  }
+
   const editorialAudio = event.target.closest("[data-editorial-audio]");
   if (editorialAudio) {
-    state.editorialTranscriptOpen = true;
+    const [id, action] = editorialAudio.dataset.editorialAudio.split(":");
+    state.editorialAudioActive = { ...state.editorialAudioActive, [id]: true };
+    if (action === "transcript") {
+      state.editorialTranscriptOpen = { ...state.editorialTranscriptOpen, [id]: true };
+    }
     render();
     return;
   }
 
   const editorialTranscript = event.target.closest("[data-editorial-transcript]");
   if (editorialTranscript) {
-    state.editorialTranscriptOpen = !state.editorialTranscriptOpen;
+    const id = editorialTranscript.dataset.editorialTranscript;
+    state.editorialTranscriptOpen = {
+      ...state.editorialTranscriptOpen,
+      [id]: !state.editorialTranscriptOpen[id],
+    };
+    render();
+    return;
+  }
+
+  const editorialChoice = event.target.closest("[data-editorial-choice]");
+  if (editorialChoice) {
+    state.editorialSelections = {
+      ...state.editorialSelections,
+      [editorialChoice.dataset.editorialChoice]: editorialChoice.dataset.value,
+    };
+    render();
+    return;
+  }
+
+  const editorialSort = event.target.closest("[data-editorial-sort]");
+  if (editorialSort) {
+    const key = `${editorialSort.dataset.editorialSort}:${editorialSort.dataset.index}`;
+    state.editorialSelections = { ...state.editorialSelections, [key]: editorialSort.dataset.group };
+    render();
+    return;
+  }
+
+  const editorialWord = event.target.closest("[data-editorial-word]");
+  if (editorialWord) {
+    const id = editorialWord.dataset.editorialWord;
+    const activity = getEditorialActivity(id);
+    const emptyIndex = activity.answers_en.findIndex((_, index) => !state.editorialSelections[`${id}:${index}`]);
+    const targetIndex = emptyIndex >= 0 ? emptyIndex : 0;
+    state.editorialSelections = { ...state.editorialSelections, [`${id}:${targetIndex}`]: editorialWord.dataset.word };
+    render();
+    return;
+  }
+
+  const editorialGap = event.target.closest("[data-editorial-gap]");
+  if (editorialGap) {
+    const key = `${editorialGap.dataset.editorialGap}:${editorialGap.dataset.index}`;
+    const next = { ...state.editorialSelections };
+    delete next[key];
+    state.editorialSelections = next;
+    render();
+    return;
+  }
+
+  const editorialMc = event.target.closest("[data-editorial-mc]");
+  if (editorialMc) {
+    const key = `${editorialMc.dataset.editorialMc}:${editorialMc.dataset.index}`;
+    state.editorialSelections = { ...state.editorialSelections, [key]: editorialMc.dataset.value };
+    render();
+    return;
+  }
+
+  const editorialCheck = event.target.closest("[data-editorial-check]");
+  if (editorialCheck) {
+    checkEditorialActivity(editorialCheck.dataset.editorialCheck);
+    render();
+    return;
+  }
+
+  const editorialRetry = event.target.closest("[data-editorial-retry]");
+  if (editorialRetry) {
+    resetEditorialActivity(editorialRetry.dataset.editorialRetry);
+    if (editorialRetry.dataset.editorialRetry === "listen-a") {
+      state.editorialPhotoOrder = ["listening-2", "listening-1", "listening-4", "listening-3", "listening-5"];
+    }
     render();
     return;
   }
@@ -1924,12 +2279,53 @@ function handleClick(event) {
     return;
   }
 
-  const editorialPhrase = event.target.closest("[data-editorial-phrase]");
-  if (editorialPhrase) {
-    const phrase = editorialPhrase.dataset.editorialPhrase;
-    state.editorialSavedPhrases = state.editorialSavedPhrases.includes(phrase)
-      ? state.editorialSavedPhrases.filter((item) => item !== phrase)
-      : [...state.editorialSavedPhrases, phrase];
+  const editorialSpeakingStart = event.target.closest("[data-editorial-speaking-start]");
+  if (editorialSpeakingStart) {
+    state.editorialSpeakingNotice = true;
+    render();
+    return;
+  }
+
+  const editorialScrollProfile = event.target.closest("[data-editorial-scroll-profile]");
+  if (editorialScrollProfile) {
+    document.querySelector(".phrases-section")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    return;
+  }
+
+  const editorialPhraseAction = event.target.closest("[data-editorial-phrase-action]");
+  if (editorialPhraseAction) {
+    const phrase = editorialPhraseAction.dataset.phrase;
+    const action = editorialPhraseAction.dataset.editorialPhraseAction;
+    if (action === "bookmark") {
+      state.editorialSavedPhrases = state.editorialSavedPhrases.includes(phrase)
+        ? state.editorialSavedPhrases.filter((item) => item !== phrase)
+        : [...state.editorialSavedPhrases, phrase];
+    }
+    if (action === "learned") {
+      state.editorialLearnedPhrases = state.editorialLearnedPhrases.includes(phrase)
+        ? state.editorialLearnedPhrases.filter((item) => item !== phrase)
+        : [...state.editorialLearnedPhrases, phrase];
+    }
+    if (action === "play" || action === "repeat") {
+      state.editorialAudioActive = { ...state.editorialAudioActive, phrases: true };
+    }
+    render();
+    return;
+  }
+
+  const editorialProfileSave = event.target.closest("[data-editorial-profile-save]");
+  if (editorialProfileSave) {
+    state.editorialProfile = { ...state.editorialProfile, saved: true, useInSpeaking: true };
+    saveEditorialProfile(state.editorialProfile);
+    render();
+    return;
+  }
+
+  const editorialProfileUse = event.target.closest("[data-editorial-profile-use]");
+  if (editorialProfileUse) {
+    state.editorialProfile = { ...state.editorialProfile, saved: true, useInSpeaking: true };
+    saveEditorialProfile(state.editorialProfile);
+    state.editorialRole = "A";
     render();
     return;
   }
@@ -1983,6 +2379,13 @@ function handleClick(event) {
   const lessonButton = event.target.closest("[data-open-lesson]");
   if (lessonButton) {
     const lessonId = lessonButton.dataset.openLesson;
+    if (lessonId === "beg_u1_l1") {
+      state.selectedLessonId = lessonId;
+      progress = setCurrentLesson(progress, lessonId);
+      logEvent("lesson_opened", { lesson_id: lessonId, mode: "editorial_reference" });
+      navigate("student-book-reference");
+      return;
+    }
     state.selectedLessonId = lessonId;
     state.lessonStepIndex = 0;
     state.selectedExerciseId = null;
@@ -2220,6 +2623,27 @@ function handleInput(event) {
     return;
   }
 
+  const editorialChart = event.target.closest("[data-editorial-chart]");
+  if (editorialChart) {
+    const key = `${editorialChart.dataset.editorialChart}:${editorialChart.dataset.index}`;
+    state.editorialSelections = { ...state.editorialSelections, [key]: editorialChart.value };
+    return;
+  }
+
+  const editorialShortAnswer = event.target.closest("[data-editorial-short-answer]");
+  if (editorialShortAnswer) {
+    const key = `${editorialShortAnswer.dataset.editorialShortAnswer}:${editorialShortAnswer.dataset.index}`;
+    state.editorialSelections = { ...state.editorialSelections, [key]: editorialShortAnswer.value };
+    return;
+  }
+
+  const editorialListeningGap = event.target.closest("[data-editorial-listening-gap]");
+  if (editorialListeningGap) {
+    const key = `${editorialListeningGap.dataset.editorialListeningGap}:${editorialListeningGap.dataset.index}`;
+    state.editorialSelections = { ...state.editorialSelections, [key]: editorialListeningGap.value };
+    return;
+  }
+
   const input = event.target.closest("[data-answer]");
   if (!input) return;
   const exercise = getExercise(input.dataset.answer);
@@ -2228,12 +2652,58 @@ function handleInput(event) {
 }
 
 function handleChange(event) {
+  const editorialMatch = event.target.closest("[data-editorial-match]");
+  if (editorialMatch) {
+    const key = `${editorialMatch.dataset.editorialMatch}:${editorialMatch.dataset.index}`;
+    state.editorialSelections = { ...state.editorialSelections, [key]: editorialMatch.value };
+    render();
+    return;
+  }
+
+  const editorialPhotoOrder = event.target.closest("[data-editorial-photo-order]");
+  if (editorialPhotoOrder) {
+    const key = `listen-a:${editorialPhotoOrder.dataset.editorialPhotoOrder}`;
+    state.editorialSelections = { ...state.editorialSelections, [key]: editorialPhotoOrder.value };
+    render();
+    return;
+  }
+
   const match = event.target.closest("[data-match]");
   if (!match) return;
   const exercise = getExercise(match.dataset.match);
   const current = getExerciseState(progress, exercise.exercise_id).latestAnswer || {};
   progress = saveDraftAnswer(progress, exercise, { ...current, [match.dataset.item]: match.value });
   logEvent("exercise_answered", { lesson_id: exercise.lesson_id, exercise_id: exercise.exercise_id, mode: exercise.mode, metadata: { answer_type: "matching" } });
+}
+
+function handleDragStart(event) {
+  const card = event.target.closest("[data-editorial-drag-photo]");
+  if (!card) return;
+  state.editorialDraggingPhotoId = card.dataset.editorialDragPhoto;
+  event.dataTransfer?.setData("text/plain", state.editorialDraggingPhotoId);
+}
+
+function handleDragOver(event) {
+  if (!event.target.closest("[data-editorial-drag-photo]")) return;
+  event.preventDefault();
+}
+
+function handleDrop(event) {
+  const target = event.target.closest("[data-editorial-drag-photo]");
+  if (!target || !state.editorialDraggingPhotoId) return;
+  event.preventDefault();
+  const sourceId = state.editorialDraggingPhotoId;
+  const targetId = target.dataset.editorialDragPhoto;
+  const next = [...state.editorialPhotoOrder];
+  const sourceIndex = next.indexOf(sourceId);
+  const targetIndex = next.indexOf(targetId);
+  if (sourceIndex >= 0 && targetIndex >= 0) {
+    next.splice(sourceIndex, 1);
+    next.splice(targetIndex, 0, sourceId);
+    state.editorialPhotoOrder = next;
+    render();
+  }
+  state.editorialDraggingPhotoId = null;
 }
 
 window.addEventListener("hashchange", () => {
@@ -2244,6 +2714,9 @@ window.addEventListener("hashchange", () => {
 root.addEventListener("click", handleClick);
 root.addEventListener("input", handleInput);
 root.addEventListener("change", handleChange);
+root.addEventListener("dragstart", handleDragStart);
+root.addEventListener("dragover", handleDragOver);
+root.addEventListener("drop", handleDrop);
 
 parseHash();
 render();

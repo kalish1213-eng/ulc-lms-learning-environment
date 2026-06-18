@@ -9,21 +9,20 @@ const editorialReferenceLesson = {
   route: "student-book-reference",
   unit_label: "Unit 1",
   lesson_label: "1A",
+  lesson_number_label: "Unit 1 · Lesson 1",
   title_en: "Nice to meet you",
-  context_ru: "Взрослые впервые встречаются на мероприятии языкового клуба ULC.",
-  outcome_ru:
-    "После урока вы сможете поздороваться, представиться, спросить имя, город и профессию и закончить короткий разговор.",
+  subtitle_ru: "После урока вы сможете представиться, задать первые вопросы и завершить короткий разговор.",
+  progress_label_ru: "Прогресс урока",
+  progress_percent: 18,
   skill_labels: [
-    "G: verb be - I / you",
-    "V: greetings and personal information",
-    "P: contractions and sentence stress",
+    { type: "G", text: "verb be: I / you", section: "grammar" },
+    { type: "V", text: "greetings and personal information", section: "vocabulary" },
+    { type: "P", text: "contractions and sentence stress", section: "pronunciation" },
   ],
-  source_note:
-    "Original ULC reference lesson. English File is used only as a structural benchmark for density and variety.",
   characters: [
-    { id: "anna", name: "Anna", age: 29, city: "Minsk", job: "designer", photo_id: "anna-portrait" },
-    { id: "leo", name: "Leo", age: 32, city: "Warsaw", job: "product manager", photo_id: "leo-portrait" },
-    { id: "maya", name: "Maya", age: 27, city: "Vilnius", job: "teacher", photo_id: "maya-portrait" },
+    { id: "anna", name: "Anna", age: 29, city: "Minsk", country: "Belarus", job: "designer", photo_id: "anna-portrait" },
+    { id: "leo", name: "Leo", age: 32, city: "Warsaw", country: "Poland", job: "product manager", photo_id: "leo-portrait" },
+    { id: "maya", name: "Maya", age: 27, city: "Vilnius", country: "Lithuania", job: "teacher", photo_id: "maya-portrait" },
   ],
   assets: {
     meeting_wide: {
@@ -65,6 +64,10 @@ const editorialReferenceLesson = {
           prompt_en: "You meet a new person at a language club.",
           options_en: ["Hi, I'm Anna.", "Good night.", "I'm a coffee."],
           correct_en: "Hi, I'm Anna.",
+          feedback_ru: {
+            correct: "Верно. Так можно начать короткое знакомство.",
+            retry: "Попробуйте ещё раз. Нужна фраза приветствия и представления.",
+          },
         },
         {
           id: "vocab-b",
@@ -76,11 +79,15 @@ const editorialReferenceLesson = {
             ["What's your name?", "I'm Leo."],
             ["Where are you from?", "I'm from Minsk."],
           ],
+          feedback_ru: {
+            correct: "Отлично. Вопросы и ответы подходят друг другу.",
+            retry: "Проверьте смысл: name отвечает на имя, from отвечает на город или страну.",
+          },
         },
         {
           id: "vocab-c",
           letter: "c",
-          type: "audio_placeholder",
+          type: "audio_task",
           instruction_ru: "Прослушайте и проверьте ответы.",
           script_en: "Hi, I'm Anna. Nice to meet you.",
         },
@@ -97,11 +104,18 @@ const editorialReferenceLesson = {
           id: "pron-a",
           letter: "a",
           type: "pronunciation_sort",
-          instruction_ru: "Разложите фразы в две колонки.",
+          instruction_ru: "Разложите фразы в две группы.",
           columns: [
             { title: "Short", items: ["I'm Anna.", "What's your name?", "You're Leo."] },
             { title: "Full", items: ["I am Anna.", "What is your name?", "You are Leo."] },
           ],
+          phrases: [
+            { text: "I'm Anna.", group: "Short" },
+            { text: "What is your name?", group: "Full" },
+            { text: "You're Leo.", group: "Short" },
+            { text: "You are Leo.", group: "Full" },
+          ],
+          hint_ru: "Короткие формы звучат естественнее в разговоре: I am -> I'm.",
         },
         {
           id: "pron-b",
@@ -109,6 +123,7 @@ const editorialReferenceLesson = {
           type: "listen_repeat",
           instruction_ru: "Прослушайте, повторите и отметьте ударное слово.",
           phrases_en: ["I'm Anna.", "Nice to meet you.", "Where are you from?"],
+          hint_ru: "В коротком знакомстве обычно сильнее звучат имя, meet и from.",
         },
       ],
     },
@@ -135,6 +150,11 @@ const editorialReferenceLesson = {
           type: "word_bank",
           instruction_ru: "Вставьте слова из word bank в пропуски диалога.",
           gaps_en: ["Hi, ___ Anna.", "___ you new here?", "Yes, I ___.", "I'm ___ Warsaw."],
+          answers_en: ["I'm", "Are", "am", "from"],
+          feedback_ru: {
+            correct: "Верно. Диалог звучит естественно.",
+            retry: "Проверьте порядок: I'm для I am, Are для вопроса, from для города.",
+          },
         },
         {
           id: "grammar-b",
@@ -142,9 +162,9 @@ const editorialReferenceLesson = {
           type: "grammar_chart",
           instruction_ru: "Заполните chart короткими формами.",
           rows: [
-            ["I am", "I'm"],
-            ["you are", "you're"],
-            ["Are you from Minsk?", "Yes, I am. / No, I'm not."],
+            { left: "I am", answer: "I'm" },
+            { left: "you are", answer: "you're" },
+            { left: "Are you from Minsk?", answer: "Yes, I am. / No, I'm not." },
           ],
         },
         {
@@ -153,10 +173,11 @@ const editorialReferenceLesson = {
           type: "multiple_choice",
           instruction_ru: "Выберите правильную форму.",
           items: [
-            ["___ Leo.", ["I'm", "Are", "You"], "I'm"],
-            ["___ you from Warsaw?", ["Am", "Are", "Is"], "Are"],
-            ["No, I'm ___.", ["not", "no", "am"], "not"],
+            { prompt: "___ Leo.", options: ["I'm", "Are", "You"], answer: "I'm" },
+            { prompt: "___ you from Warsaw?", options: ["Am", "Are", "Is"], answer: "Are" },
+            { prompt: "No, I'm ___.", options: ["not", "no", "am"], answer: "not" },
           ],
+          explanation_ru: "В вопросе с you используем Are you...? В отрицании: I'm not.",
         },
       ],
     },
@@ -166,7 +187,8 @@ const editorialReferenceLesson = {
       label: "READING & LISTENING",
       title_ru: "A language club conversation",
       aim_ru: "Прочитайте, прослушайте и восстановите порядок событий.",
-      photos: ["listening-1", "listening-2", "listening-3", "listening-4", "listening-5"],
+      photos: ["listening-2", "listening-1", "listening-4", "listening-3", "listening-5"],
+      correct_order: ["listening-1", "listening-2", "listening-3", "listening-4", "listening-5"],
       transcript_en:
         "Anna arrives at the ULC language club. She meets Leo. Maya joins them. They talk about their cities and jobs. At the end, Anna and Leo exchange contact details.",
       micro_activities: [
@@ -181,14 +203,23 @@ const editorialReferenceLesson = {
           letter: "b",
           type: "short_answer",
           instruction_ru: "Ответьте коротко.",
-          questions_en: ["Who meets Leo?", "Where is Leo from?", "Who joins the conversation?", "What do they exchange?"],
+          questions: [
+            { prompt_en: "Who meets Leo?", answer_en: "Anna" },
+            { prompt_en: "Where is Leo from?", answer_en: "Warsaw" },
+            { prompt_en: "Who joins the conversation?", answer_en: "Maya" },
+            { prompt_en: "What do they exchange?", answer_en: "contact details" },
+          ],
         },
         {
           id: "listen-c",
           letter: "c",
           type: "inline_gap",
           instruction_ru: "Прослушайте ещё раз и заполните пропуски.",
-          gaps_en: ["I'm ___ Warsaw.", "Nice to meet you, ___.", "What's your ___?"],
+          gaps: [
+            { text_en: "I'm ___ Warsaw.", answer_en: "from" },
+            { text_en: "Nice to meet you, ___.", answer_en: "too" },
+            { text_en: "What's your ___?", answer_en: "email" },
+          ],
         },
       ],
     },
@@ -201,9 +232,14 @@ const editorialReferenceLesson = {
       photos: ["speaking-1", "speaking-2", "speaking-3", "club-wide"],
       questions_en: ["What's your name?", "Where are you from?", "What do you do?", "Are you new here?"],
       role_cards: [
-        { role: "A", name: "Anna", city: "Minsk", job: "designer", missing: "Leo's city and job" },
-        { role: "B", name: "Leo", city: "Warsaw", job: "product manager", missing: "Anna's city and job" },
+        { role: "A", name: "Anna", city: "Minsk", country: "Belarus", job: "designer", missing: "Leo's city and job" },
+        { role: "B", name: "Leo", city: "Warsaw", country: "Poland", job: "product manager", missing: "Anna's city and job" },
       ],
+      widget: {
+        title_ru: "Разговорная практика",
+        description_ru: "Поговорите с партнёром и узнайте, из какого он города и кем работает.",
+        launch_message_ru: "Разговорная практика будет запущена преподавателем на занятии.",
+      },
     },
     {
       id: "profile",
@@ -235,11 +271,15 @@ const editorialReferenceLesson = {
   review: {
     title: "REVISE & CHECK",
     tabs: [
-      { label: "Grammar", score: "3 / 4", items: ["I am -> I'm", "you are -> you're", "Are you...?"] },
-      { label: "Vocabulary", score: "4 / 4", items: ["Hello", "city", "job", "email"] },
-      { label: "Useful phrases", score: "Ready", items: ["Nice to meet you.", "See you."] },
+      { label: "Grammar", target: 4, items: ["I am -> I'm", "you are -> you're", "Are you...?"] },
+      { label: "Vocabulary", target: 4, items: ["Hello", "city", "job", "email"] },
+      { label: "Useful phrases", target: 3, items: ["Nice to meet you.", "See you."] },
     ],
-    personal_questions: ["What's your name?", "Where are you from?"],
+    recommendations_ru: [
+      "Повторите фразы приветствия перед следующей парной практикой.",
+      "Если путаете Are you...? и I am..., вернитесь к Grammar section.",
+      "Добавьте 3 полезные фразы в «Мои фразы».",
+    ],
   },
 };
 

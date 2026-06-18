@@ -19,8 +19,8 @@ Goal: create one high-density digital Student Book reference lesson for ULC Begi
 | Two connected editorial spreads | Pass |
 | Photo-led layout | Pass: 14 rendered photo elements |
 | Generated ULC photo assets stored in project | Pass |
-| Audio placeholders | Pass: 3 controls with play/progress/speed/transcript states |
-| Speaking outcome visible | Pass: role cards, pair mode, speaking widget placeholder |
+| Audio controls | Pass: 3 controls with play/progress/speed/transcript states |
+| Speaking outcome visible | Pass: role cards, pair mode, user-facing speaking practice block |
 | Teacher toolbar | Pass: hidden/visible toolbar with teacher actions |
 | Review block | Pass: Grammar / Vocabulary / Useful phrases tabs |
 | Desktop first viewport density | Pass: 5 photos and 3 learning actions visible at 1440px |
@@ -44,6 +44,20 @@ Stored in `docs/screenshots/student-book-editorial-v2/`:
 - `lesson-mobile-middle.png`
 - `lesson-mobile-speaking.png`
 - `teacher-toolbar.png`
+- `full-lesson-desktop-long.png`
+- `full-lesson-mobile-long.png`
+- `section-1-interaction.png`
+- `section-2-pronunciation.png`
+- `section-3-grammar.png`
+- `section-4-photo-order-before.png`
+- `section-4-photo-order-after.png`
+- `section-5-role-a.png`
+- `section-5-role-b.png`
+- `section-6-profile-saved.png`
+- `section-7-useful-phrases.png`
+- `review-results.png`
+- `student-mode-mobile-top.png`
+- `teacher-mode-toolbar.png`
 
 ## Visual Direction
 
@@ -65,6 +79,6 @@ The lesson uses:
 
 - Photo assets are generated draft assets, not final commissioned photography.
 - The current photo sprite should be replaced by separate optimized WebP files before production.
-- Audio is still a visual placeholder; no real audio files are loaded.
+- Audio controls are visual only; no real audio files are loaded.
 - This reference lesson is not yet mapped onto all six Unit 1 lessons by design.
 - The current branch is for visual approval before applying the pattern to the full Unit.
