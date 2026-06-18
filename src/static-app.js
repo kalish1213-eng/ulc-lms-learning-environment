@@ -75,6 +75,8 @@ const state = {
   selectedLessonId: progress.currentLessonId || lessons()[0].lesson_id,
   selectedExerciseId: null,
   selectedMode: "classwork",
+  lessonStepIndex: 0,
+  homeworkStarted: false,
   liveLessonId: progress.currentLessonId || lessons()[0].lesson_id,
   liveExerciseId: null,
   liveMode: "group",
@@ -121,6 +123,45 @@ methodMaterials.push({
   updated: "2026-06-01",
 });
 
+const icons = {
+  home: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10.8 12 4l9 6.8v8.1a1.6 1.6 0 0 1-1.6 1.6h-4.8v-5.7H9.4v5.7H4.6A1.6 1.6 0 0 1 3 18.9z"/></svg>`,
+  book: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4.8A2.8 2.8 0 0 1 7.8 2H20v17H7.8A2.8 2.8 0 0 0 5 21.8z"/><path d="M5 4.8v17A2.8 2.8 0 0 1 7.8 19H20"/></svg>`,
+  checklist: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m4 6 1.6 1.6L9 4.2"/><path d="M11 6h9"/><path d="m4 12 1.6 1.6L9 10.2"/><path d="M11 12h9"/><path d="m4 18 1.6 1.6L9 16.2"/><path d="M11 18h9"/></svg>`,
+  cards: `<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="5" width="12" height="14" rx="2"/><path d="M9 5.5 17.8 3a2 2 0 0 1 2.5 1.4l3 10.7a2 2 0 0 1-1.4 2.5L17 19"/></svg>`,
+  calendar: `<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4M16 3v4M4 10h16"/></svg>`,
+  headphones: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 14a8 8 0 0 1 16 0"/><rect x="3" y="13" width="4" height="7" rx="2"/><rect x="17" y="13" width="4" height="7" rx="2"/></svg>`,
+  microphone: `<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3M8 21h8"/></svg>`,
+  message: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5h14a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H9l-5 4v-4H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z"/></svg>`,
+  progress: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19V5"/><path d="M4 19h16"/><path d="M8 16v-4M12 16V8M16 16v-6"/></svg>`,
+  profile: `<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4.5 21a7.5 7.5 0 0 1 15 0"/></svg>`,
+  arrow: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>`,
+  back: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5"/><path d="m11 6-6 6 6 6"/></svg>`,
+  check: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m4 12.5 5 5L20 6"/></svg>`,
+  hint: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M8 14a6 6 0 1 1 8 0c-.8.7-1 1.4-1 2H9c0-.6-.2-1.3-1-2z"/></svg>`,
+  play: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>`,
+  bell: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/></svg>`,
+  users: `<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="10" r="2.5"/><path d="M3 20a6 6 0 0 1 12 0"/><path d="M14 19a5 5 0 0 1 7 0"/></svg>`,
+  settings: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8z"/><path d="m4 12-2-1 2-4 2 1a8 8 0 0 1 2-1V5h8v2a8 8 0 0 1 2 1l2-1 2 4-2 1a8 8 0 0 1 0 2l2 1-2 4-2-1a8 8 0 0 1-2 1v2H8v-2a8 8 0 0 1-2-1l-2 1-2-4 2-1a8 8 0 0 1 0-2z"/></svg>`,
+};
+
+const lessonIllustrations = {
+  beg_u1_l1: "./src/assets/illustrations/lesson-1-meeting.svg",
+  beg_u1_l2: "./src/assets/illustrations/lesson-2-countries.svg",
+  beg_u1_l3: "./src/assets/illustrations/lesson-3-jobs.svg",
+  beg_u1_l4: "./src/assets/illustrations/lesson-4-contacts.svg",
+  beg_u1_l5: "./src/assets/illustrations/lesson-5-profile.svg",
+  beg_u1_l6: "./src/assets/illustrations/lesson-6-practical.svg",
+};
+
+const lessonScenes = {
+  beg_u1_l1: "Встреча",
+  beg_u1_l2: "Города",
+  beg_u1_l3: "Работа",
+  beg_u1_l4: "Контакты",
+  beg_u1_l5: "Профиль",
+  beg_u1_l6: "Практика",
+};
+
 function html(value) {
   return String(value ?? "")
     .replaceAll("&", "&amp;")
@@ -130,8 +171,8 @@ function html(value) {
     .replaceAll("'", "&#039;");
 }
 
-function icon(label) {
-  return `<span class="icon-circle" aria-hidden="true">${html(label)}</span>`;
+function icon(name) {
+  return `<span class="ui-icon" aria-hidden="true">${icons[name] || icons.arrow}</span>`;
 }
 
 function pill(text, tone = "blue") {
@@ -158,6 +199,7 @@ function routeFor(view, extra = {}) {
   if (view === "teacher") return "#teacher";
   if (view === "methodologist") return "#methodologist";
   if (view === "unit") return "#unit";
+  if (view === "review") return "#review";
   return "#student";
 }
 
@@ -172,26 +214,34 @@ function parseHash() {
   const [view, lessonId, exerciseId, mode] = parts;
   if (!view) return;
 
-  if (["student", "unit", "teacher", "methodologist"].includes(view)) {
+  if (["student", "unit", "review", "teacher", "methodologist"].includes(view)) {
     state.view = view;
   }
 
   if (view === "lesson" && getLesson(lessonId)) {
     state.view = "lesson";
     state.selectedLessonId = lessonId;
+    state.selectedExerciseId = null;
+    state.lessonStepIndex = 0;
+    state.homeworkStarted = false;
   }
 
   if (view === "homework" && getLesson(lessonId)) {
     state.view = "homework";
     state.selectedLessonId = lessonId;
     state.selectedMode = "homework";
+    state.homeworkStarted = false;
   }
 
   if (view === "exercise" && getLesson(lessonId) && getExercise(exerciseId)) {
-    state.view = "lesson";
+    const exercise = getExercise(exerciseId);
+    const exerciseMode = mode || exercise.mode || "classwork";
+    state.view = exerciseMode === "homework" ? "homework" : "lesson";
     state.selectedLessonId = lessonId;
     state.selectedExerciseId = exerciseId;
-    state.selectedMode = mode || getExercise(exerciseId).mode || "classwork";
+    state.selectedMode = exerciseMode;
+    state.homeworkStarted = exerciseMode === "homework";
+    state.lessonStepIndex = exerciseMode === "homework" ? 0 : lessonStepIndexForExercise(lessonId, exerciseId);
   }
 
   if (view === "live" && getLesson(lessonId)) {
@@ -205,47 +255,92 @@ function render() {
 }
 
 function renderShell(content) {
-  const navItems = [
-    ["student", ui.student, "Dashboard"],
-    ["unit", ui.unitMap, "6 lessons"],
-    ["lesson", ui.lesson, "Lesson page"],
-    ["homework", ui.homework, "Homework"],
-    ["teacher", ui.teacher, "Teacher"],
-    ["live", "Live", "Session"],
-    ["methodologist", ui.methodologist, "Data layer"],
+  if (["teacher", "live", "methodologist"].includes(state.view)) {
+    return renderStaffShell(content);
+  }
+
+  const stats = calculateUnitProgress(progress, allExercises());
+  const studentNav = [
+    ["student", "Сегодня", "home"],
+    ["unit", "Курс", "book"],
+    ["homework", "Домашка", "checklist"],
+    ["review", "Повторение", "cards"],
   ];
 
+  return `
+    <div class="student-shell">
+      <header class="student-topbar">
+        <button class="brand-button" type="button" data-route="student" aria-label="ULC">
+          <span class="brand-mark">ULC</span>
+          <span>Learning</span>
+        </button>
+        <nav class="student-nav" aria-label="Student navigation">
+          ${studentNav.map(([view, label, iconName]) => {
+            const active = state.view === view || (view === "student" && state.view === "lesson");
+            return `<button class="${active ? "active" : ""}" type="button" data-route="${view}">${icon(iconName)}<span>${html(label)}</span></button>`;
+          }).join("")}
+        </nav>
+        <div class="student-actions">
+          <span class="streak-pill">${icon("progress")} 3 дня</span>
+          <button class="icon-button" type="button" aria-label="Уведомления">${icon("bell")}</button>
+          <details class="profile-menu">
+            <summary><span class="avatar">A</span></summary>
+            <div class="profile-popover">
+              <strong>Анна</strong>
+              <span>${stats.percent}% Unit 1</span>
+              <button type="button" data-route="teacher">${icon("users")} Teacher demo</button>
+              <button type="button" data-open-live="${html(state.selectedLessonId)}">${icon("microphone")} Live demo</button>
+              <button type="button" data-route="methodologist">${icon("settings")} Methodologist</button>
+              <button type="button" data-reset-progress="true">${icon("progress")} ${html(ui.reset)}</button>
+            </div>
+          </details>
+        </div>
+      </header>
+      <main class="student-workspace">
+        ${content}
+      </main>
+      <nav class="mobile-bottom-nav" aria-label="Student mobile navigation">
+        ${studentNav.map(([view, label, iconName]) => `<button class="${state.view === view ? "active" : ""}" type="button" data-route="${view}">${icon(iconName)}<span>${html(label)}</span></button>`).join("")}
+      </nav>
+    </div>
+  `;
+}
+
+function renderStaffShell(content) {
+  const navItems = [
+    ["student", "Student", "home"],
+    ["teacher", "Teacher", "users"],
+    ["live", "Live", "microphone"],
+    ["methodologist", "Methodologist", "settings"],
+  ];
   const stats = calculateUnitProgress(progress, allExercises());
 
   return `
-    <div class="app-shell">
-      <aside class="sidebar">
-        <div class="brand">
+    <div class="app-shell staff-shell">
+      <aside class="sidebar staff-sidebar">
+        <div class="brand-block">
           <div class="brand-mark">ULC</div>
           <div>
-            <strong>ULC LMS</strong>
-            <span>${html(VERSION)}</span>
+            <h1>ULC LMS</h1>
+            <p>${html(VERSION)}</p>
           </div>
         </div>
-        <nav class="nav-list" aria-label="Main navigation">
-          ${navItems
-            .map(([view, label, meta]) => {
-              const active = state.view === view || (view === "lesson" && state.view === "exercise");
-              return `<button class="${active ? "active" : ""}" type="button" data-route="${view}">${icon(label.slice(0, 1))}<span>${html(label)}<small>${html(meta)}</small></span></button>`;
-            })
-            .join("")}
+        <nav class="nav-list" aria-label="Staff navigation">
+          ${navItems.map(([view, label, iconName]) => {
+            const active = state.view === view;
+            return `<button class="nav-item ${active ? "active" : ""}" type="button" data-route="${view}">${icon(iconName)}<span>${html(label)}</span></button>`;
+          }).join("")}
         </nav>
-        <div class="sidebar-card">
-          <small>${html(ui.progress)} Unit 1</small>
-          <strong>${stats.percent}%</strong>
+        <div class="sidebar-status">
+          <strong>${stats.percent}% Unit 1</strong>
           ${progressBar(stats.percent)}
           <span>${stats.completed}/${stats.total} exercises - ${html(STORAGE_KEY)}</span>
         </div>
       </aside>
-      <main class="workspace">
+      <main class="workspace staff-workspace">
         <div class="topbar">
           <div>
-            <p class="eyebrow">ULC v0.2 release candidate - data layer connected</p>
+            <p class="eyebrow">Internal demo workspace</p>
             <h2>${html(unit.title)}</h2>
           </div>
           <div class="topbar-actions">
@@ -255,9 +350,6 @@ function renderShell(content) {
           </div>
         </div>
         ${content}
-        <div class="footer-note">
-          ${icon("i")} Static prototype: mock backend, localStorage progress, prepared AI explanations, and speaking-widget placeholder. No external requests.
-        </div>
       </main>
     </div>
   `;
@@ -267,6 +359,7 @@ function renderCurrentView() {
   if (state.view === "unit") return renderUnitMap();
   if (state.view === "lesson") return renderLessonPage();
   if (state.view === "homework") return renderHomeworkMode();
+  if (state.view === "review") return renderReviewPractice();
   if (state.view === "teacher") return renderTeacherDashboard();
   if (state.view === "live") return renderLiveLessonMode();
   if (state.view === "methodologist") return renderMethodologistDashboard();
@@ -296,6 +389,62 @@ function deadlineForLesson(lesson) {
   return `2026-06-${String(day).padStart(2, "0")} 22:00`;
 }
 
+function lessonIllustration(lesson) {
+  return lessonIllustrations[lesson.lesson_id] || "./src/assets/illustrations/unit-1-cover.svg";
+}
+
+function lessonOutcome(lesson) {
+  return lesson.speaking_outcome?.can_do_statement_ru || lesson.lesson_goal || "";
+}
+
+function humanStatus(status) {
+  const labels = {
+    "not started": "Не начато",
+    "in progress": "В процессе",
+    done: "Готово",
+    "needs retry": "Повторить",
+    risk: "Риск",
+    active: "Активен",
+    watch: "Наблюдать",
+  };
+  return labels[status] || status;
+}
+
+function humanExerciseType(type) {
+  const labels = {
+    fill_gap: "Заполнить пропуск",
+    multiple_choice: "Выбор ответа",
+    matching: "Сопоставить",
+    word_order: "Собрать фразу",
+    listen_type: "Аудирование",
+    listen_choose: "Аудирование",
+    short_writing: "Мини-письмо",
+    drag_drop: "Собрать диалог",
+  };
+  return labels[type] || type;
+}
+
+function attemptsText(exercise, exerciseState) {
+  const attemptsLeft = Math.max(0, exercise.attempts_allowed - (exerciseState.attempts || 0));
+  if (attemptsLeft === 1) return "Осталась 1 попытка";
+  if (attemptsLeft > 1 && attemptsLeft < 5) return `Осталось ${attemptsLeft} попытки`;
+  return `Осталось ${attemptsLeft} попыток`;
+}
+
+function renderProgressRing(percent, label = "") {
+  const value = Math.max(0, Math.min(100, Number(percent) || 0));
+  return `
+    <div class="progress-ring" style="--progress: ${value}%">
+      <strong>${value}%</strong>
+      ${label ? `<span>${html(label)}</span>` : ""}
+    </div>
+  `;
+}
+
+function getCurrentExerciseIndex(pool) {
+  return Math.max(0, pool.findIndex((exercise) => exercise.exercise_id === state.selectedExerciseId));
+}
+
 function getDemoStudentMetrics() {
   const localStats = calculateUnitProgress(progress, allExercises());
   return demoStudents.map((student) => {
@@ -318,69 +467,53 @@ function renderStudentDashboard() {
   const next = nextLessonAfter(lesson);
   const unitStats = calculateUnitProgress(progress, allExercises());
   const homework = getLessonHomework(lesson.lesson_id) || getHomeworkTasks()[0];
-  const homeworkStats = calculateHomeworkProgress(progress, getHomeworkTasks(), getHomeworkExercises);
-  const classworkStats = calculateExerciseProgress(progress, allExercises().filter((exercise) => exercise.mode === "classwork"));
+  const homeworkStats = calculateExerciseProgress(progress, getHomeworkExercises(homework.lesson_id));
+  const reviewWords = lesson.target_vocabulary.slice(0, 3);
 
   return `
-    <section class="hero-panel dashboard-hero">
-      <div>
-        <p class="eyebrow">${html(ui.student)} - ${html(course.group)}</p>
-        <h1>${html(course.title)}</h1>
-        <p>${html(unit.unit_goal_ru)}</p>
-        <div class="hero-actions">
-          <button class="primary-button" type="button" data-open-lesson="${html(lesson.lesson_id)}">${icon(">")} ${html(ui.continueLesson)}</button>
-          <button class="ghost-button hero-ghost" type="button" data-open-homework="${html(homework.lesson_id)}">${icon("HW")} ${html(ui.continueHomework)}</button>
+    <section class="student-dashboard">
+      <div class="learning-hero">
+        <div class="hero-copy-block">
+          <span class="soft-label">Lesson ${lesson.lesson_number} · ${html(lesson.estimated_time || "18 min")}</span>
+          <h1>Привет, Анна!</h1>
+          <p>${html(lessonOutcome(lesson))}</p>
+          <button class="primary-button large-cta" type="button" data-open-lesson="${html(lesson.lesson_id)}">
+            ${icon("arrow")} ${html(ui.continueLesson)}
+          </button>
         </div>
+        <img src="./src/assets/illustrations/unit-1-cover.svg" alt="" class="hero-illustration" />
       </div>
-      <div class="hero-progress">
-        <strong>${unitStats.percent}%</strong>
-        <span>Unit 1 progress</span>
-        ${progressBar(unitStats.percent)}
-      </div>
-    </section>
 
-    <section class="metrics-grid">
-      ${renderMetric(ui.currentLesson, lesson.title, lesson.speaking_outcome?.can_do_statement_ru || "")}
-      ${renderMetric(ui.nextLesson, next.title, next.lesson_goal)}
-      ${renderMetric("Classwork", `${classworkStats.completed}/${classworkStats.total}`, "interactive lesson exercises")}
-      ${renderMetric("Homework", `${homeworkStats.percent}%`, "visible Homework Mode with auto-check")}
-    </section>
-
-    <section class="content-panel">
-      <div class="panel-heading">
-        <div><p class="eyebrow">Beginner Unit 1</p><h3>${html(ui.unitMap)}</h3></div>
-        <button class="ghost-button" type="button" data-route="unit">${icon("U")} Open map</button>
+      <div class="quick-card-row">
+        <button class="quick-card" type="button" data-open-lesson="${html(next.lesson_id)}">
+          ${icon("calendar")}
+          <span>Следующий урок</span>
+          <strong>${html(next.title)}</strong>
+        </button>
+        <button class="quick-card" type="button" data-open-homework="${html(homework.lesson_id)}">
+          ${icon("checklist")}
+          <span>Домашка</span>
+          <strong>${homeworkStats.percent}% · ${html(deadlineForLesson(lesson).slice(0, 10))}</strong>
+        </button>
+        <button class="quick-card" type="button" data-route="review">
+          ${icon("cards")}
+          <span>Повторить слова</span>
+          <strong>${reviewWords.map(html).join(", ")}</strong>
+        </button>
       </div>
-      <div class="lesson-rail six-lessons">
-        ${lessons().map(renderLessonTile).join("")}
-      </div>
-    </section>
 
-    <section class="two-column">
-      <div class="content-panel homework-panel">
-        <div class="panel-heading">
-          <div><p class="eyebrow">${html(ui.homework)}</p><h3>${html(homework.title_ru)}</h3></div>
-          ${pill(`${homeworkStats.percent}%`, homeworkStats.percent > 60 ? "green" : "amber")}
+      <section class="course-path-panel" aria-label="Course progress">
+        <div class="path-heading">
+          <div>
+            <span class="soft-label">Unit 1 · Nice to meet you</span>
+            <h2>Путь к первому разговору</h2>
+          </div>
+          ${renderProgressRing(unitStats.percent, "готово")}
         </div>
-        <p>${html(homework.purpose_ru)}</p>
-        <ul class="compact-list">
-          ${homework.exercise_ids.map((id) => {
-            const exercise = getExercise(id);
-            return `<li><span>${html(exercise.exercise_type)} - ${html(exercise.estimated_time)}</span>${pill(getExerciseStatus(progress, id), statusTone(getExerciseStatus(progress, id)))}</li>`;
-          }).join("")}
-        </ul>
-        <button class="primary-button" type="button" data-open-homework="${html(homework.lesson_id)}">${icon(">")} ${html(ui.continueHomework)}</button>
-      </div>
-
-      <div class="content-panel">
-        <div class="panel-heading">
-          <div><p class="eyebrow">localStorage</p><h3>Demo progress</h3></div>
-          ${pill(progress.legacy.detected ? "v0.1.1 detected" : "v0.2 store", progress.legacy.detected ? "amber" : "green")}
+        <div class="visual-path compact-path">
+          ${lessons().map(renderPathNode).join("")}
         </div>
-        <p>Progress is stored locally and is not synced to a backend in this static prototype.</p>
-        <p><strong>Last activity:</strong> ${html(getLastActivity(progress))}</p>
-        <button class="ghost-button" type="button" data-reset-progress="true">${icon("R")} ${html(ui.reset)}</button>
-      </div>
+      </section>
     </section>
   `;
 }
@@ -388,104 +521,208 @@ function renderStudentDashboard() {
 function renderLessonTile(lesson) {
   const stats = calculateLessonProgress(progress, lesson.lesson_id, getLessonExercises);
   const active = lesson.lesson_id === state.selectedLessonId;
-  const counts = getExerciseModeCounts(lesson.lesson_id);
 
   return `
-    <button class="lesson-card ${active ? "active" : ""}" type="button" data-open-lesson="${html(lesson.lesson_id)}">
-      <span>Lesson ${lesson.lesson_number}</span>
+    <button class="lesson-route-card ${active ? "active" : ""}" type="button" data-open-lesson="${html(lesson.lesson_id)}">
+      <img src="${html(lessonIllustration(lesson))}" alt="" />
+      <span>Lesson ${lesson.lesson_number} · ${html(lessonScenes[lesson.lesson_id] || "Speaking")}</span>
       <strong>${html(lesson.title)}</strong>
-      <small>${html(lesson.lesson_goal)}</small>
+      <small>${html(lessonOutcome(lesson))}</small>
       ${progressBar(stats.percent)}
-      <em>${stats.percent}% - ${counts.classwork} classwork / ${counts.homework} homework</em>
+      <em>${stats.percent}%</em>
+    </button>
+  `;
+}
+
+function renderPathNode(lesson) {
+  const stats = calculateLessonProgress(progress, lesson.lesson_id, getLessonExercises);
+  const status = stats.percent >= 100 ? "done" : stats.percent > 0 ? "in progress" : "not started";
+  return `
+    <button class="path-node ${status.replaceAll(" ", "-")}" type="button" data-open-lesson="${html(lesson.lesson_id)}">
+      <span>${lesson.lesson_number}</span>
+      <strong>${html(lesson.title.replace(/^Lesson \d+:\s*/i, ""))}</strong>
+      <small>${html(humanStatus(status))}</small>
     </button>
   `;
 }
 
 function renderUnitMap() {
-  const stats = getUnitStats(UNIT_ID);
-  const lesson4 = getLesson("beg_u1_l4");
-
   return `
-    <section class="content-panel">
-      <div class="panel-heading">
-        <div><p class="eyebrow">${html(unit.unit_id)} - data model</p><h3>${html(unit.title)}</h3></div>
-        ${pill(`${stats.lessons} lessons / ${stats.exercises} exercises`, "green")}
+    <section class="unit-map-screen">
+      <div class="screen-intro">
+        <span class="soft-label">Beginner English for Adults</span>
+        <h1>${html(unit.title)}</h1>
+        <p>${html(unit.unit_goal_ru)}</p>
       </div>
-      <p>${html(unit.unit_goal_ru)}</p>
-      <div class="lesson-rail six-lessons">
+      <div class="visual-unit-route">
         ${lessons().map(renderLessonTile).join("")}
-      </div>
-    </section>
-
-    <section class="content-panel">
-      <div class="panel-heading">
-        <div><p class="eyebrow">Lesson 4 guardrail</p><h3>${html(lesson4.title)}</h3></div>
-        ${pill("scope limited", "green")}
-      </div>
-      <div class="language-focus">
-        <div><strong>Included</strong>${lesson4.production_scope.included.map((item) => `<span>${html(item)}</span>`).join("")}</div>
-        <div><strong>Excluded</strong>${lesson4.production_scope.excluded.map((item) => `<span>${html(item)}</span>`).join("")}</div>
       </div>
     </section>
   `;
 }
 
+function buildLessonSteps(lesson) {
+  const classwork = getClassworkExercises(lesson.lesson_id);
+  return [
+    { type: "context", title: "Контекст", icon: "message" },
+    { type: "phrases", title: "Новые фразы", icon: "cards" },
+    { type: "exercise", title: "Мини-практика", icon: "checklist", exercise: classwork[0] },
+    { type: "grammar", title: "Грамматика", icon: "book" },
+    { type: "exercise", title: "Аудирование", icon: "headphones", exercise: classwork[1] || classwork[0] },
+    { type: "speaking", title: "Практика речи", icon: "microphone" },
+    { type: "summary", title: "Итог", icon: "check" },
+  ];
+}
+
+function lessonStepIndexForExercise(lessonId, exerciseId) {
+  const lesson = getLesson(lessonId);
+  const steps = buildLessonSteps(lesson);
+  const index = steps.findIndex((step) => step.exercise?.exercise_id === exerciseId);
+  return index >= 0 ? index : 0;
+}
+
+function syncLessonStepToExercise(lesson, steps) {
+  if (!Number.isInteger(state.lessonStepIndex) || state.lessonStepIndex < 0 || state.lessonStepIndex >= steps.length) {
+    state.lessonStepIndex = 0;
+  }
+  const step = steps[state.lessonStepIndex];
+  if (step.exercise) {
+    state.selectedExerciseId = step.exercise.exercise_id;
+    state.selectedMode = step.exercise.mode;
+  }
+}
+
 function renderLessonPage() {
   const lesson = currentLesson();
-  const classwork = getClassworkExercises(lesson.lesson_id);
-  const homework = getHomeworkExercises(lesson.lesson_id);
+  const steps = buildLessonSteps(lesson);
+  syncLessonStepToExercise(lesson, steps);
+  const step = steps[state.lessonStepIndex] || steps[0];
   const stats = calculateLessonProgress(progress, lesson.lesson_id, getLessonExercises);
-
-  if (!state.selectedExerciseId || !getExercise(state.selectedExerciseId) || getExercise(state.selectedExerciseId).lesson_id !== lesson.lesson_id) {
-    state.selectedExerciseId = classwork[0]?.exercise_id || homework[0]?.exercise_id || null;
-    state.selectedMode = getExercise(state.selectedExerciseId)?.mode || "classwork";
-  }
+  const exercise = step.exercise ? getExercise(step.exercise.exercise_id) : getExercise(state.selectedExerciseId);
 
   return `
-    <section class="content-panel lesson-overview">
-      <div class="panel-heading">
-        <div><p class="eyebrow">Lesson Page - Lesson ${lesson.lesson_number}</p><h2>${html(lesson.title)}</h2></div>
-        ${pill(`${stats.percent}% complete`, stats.percent > 60 ? "green" : "amber")}
+    <section class="lesson-player-screen">
+      <div class="lesson-player-top">
+        <button class="ghost-button compact" type="button" data-route="student">${icon("back")} Назад</button>
+        <div>
+          <span>Unit 1 · Lesson ${lesson.lesson_number}</span>
+          <strong>${html(lesson.title)}</strong>
+        </div>
+        <div class="lesson-step-meter">
+          <span>Шаг ${state.lessonStepIndex + 1} из ${steps.length}</span>
+          ${progressBar(((state.lessonStepIndex + 1) / steps.length) * 100)}
+        </div>
+        <button class="ghost-button compact" type="button" data-route="unit">Выйти</button>
       </div>
-      <p>${html(lesson.lesson_goal)}</p>
-      <p><strong>Speaking outcome:</strong> ${html(lesson.speaking_outcome?.can_do_statement_ru || lesson.speaking_outcome)}</p>
-      <div class="language-focus">
-        <div><strong>Vocabulary</strong>${lesson.target_vocabulary.map((item) => `<span>${html(item)}</span>`).join("")}</div>
-        <div><strong>Grammar</strong>${lesson.target_grammar.map((item) => `<span>${html(item)}</span>`).join("")}</div>
-        <div><strong>Pronunciation</strong>${lesson.pronunciation_focus.map((item) => `<span>${html(item)}</span>`).join("")}</div>
+
+      <div class="lesson-player-layout">
+        <article class="lesson-stage">
+          <div class="stage-visual">
+            <img src="${html(lessonIllustration(lesson))}" alt="" />
+          </div>
+          <div class="stage-content">
+            <span class="soft-label">${html(step.title)}</span>
+            ${renderLessonStepContent(lesson, step)}
+          </div>
+        </article>
+
+        <details class="lesson-drawer">
+          <summary>${icon("book")} Структура урока</summary>
+          <div class="lesson-step-list">
+            ${steps.map((item, index) => `
+              <button class="${index === state.lessonStepIndex ? "active" : ""}" type="button" data-lesson-step="${index}">
+                ${icon(item.icon)}
+                <span>${html(item.title)}</span>
+              </button>
+            `).join("")}
+          </div>
+        </details>
       </div>
+
+      ${renderLessonActionBar(exercise, step, steps.length)}
     </section>
+  `;
+}
 
-    <section class="lesson-workspace">
-      <div class="content-panel structure-panel">
-        <div class="panel-heading">
-          <div><p class="eyebrow">Native lesson sections</p><h3>Class flow</h3></div>
-          <button class="ghost-button" type="button" data-open-live="${html(lesson.lesson_id)}">${icon("L")} Live mode</button>
-        </div>
-        <div class="lesson-sections">
-          ${(lesson.sections || []).map((section) => `
-            <div>
-              <span>${html(section.section_type)}</span>
-              <strong>${html(section.title_ru)}</strong>
-              <p>${html(section.student_instruction_ru)}</p>
-              <small>${html(section.estimated_time)} - ${html(section.mode)}</small>
-            </div>
-          `).join("")}
-        </div>
-
-        <div class="exercise-card-grid">
-          ${classwork.map((exercise) => renderExerciseCard(exercise, "classwork")).join("")}
-          ${homework.map((exercise) => renderExerciseCard(exercise, "homework")).join("")}
-        </div>
-
-        ${renderMediaSpecs(lesson.lesson_id)}
-        ${renderTeacherNotes(lesson.lesson_id)}
+function renderLessonStepContent(lesson, step) {
+  if (step.type === "context") {
+    return `
+      <h1>${html(lesson.title)}</h1>
+      <p>${html(lessonOutcome(lesson))}</p>
+      <div class="phrase-bubbles">
+        ${lesson.target_vocabulary.slice(0, 4).map((item) => `<span>${html(item)}</span>`).join("")}
       </div>
+    `;
+  }
 
-      <div class="content-panel exercise-panel">
-        ${renderExercisePlayer(lesson.lesson_id, state.selectedMode)}
+  if (step.type === "phrases") {
+    return `
+      <h2>Фразы для старта</h2>
+      <div class="phrase-list">
+        ${lesson.target_vocabulary.slice(0, 5).map((item) => `<span>${html(item)}</span>`).join("")}
       </div>
-    </section>
+      <p>Прочитайте вслух и выберите две фразы, которые пригодятся в разговоре.</p>
+    `;
+  }
+
+  if (step.type === "grammar") {
+    return `
+      <h2>Маленькое правило</h2>
+      <div class="rule-card">
+        ${lesson.target_grammar.slice(0, 2).map((item) => `<strong>${html(item)}</strong>`).join("")}
+      </div>
+      <p>${html(lesson.pronunciation_focus?.[0] || "Скажите фразу медленно, затем естественно.")}</p>
+    `;
+  }
+
+  if (step.type === "speaking") {
+    const activity = getSpeakingActivities(lesson.lesson_id)[0];
+    return `
+      <h2>Скажите вслух</h2>
+      <p>${html(activity?.instruction_ru || lessonOutcome(lesson))}</p>
+      <div class="speaking-card">
+        ${icon("microphone")}
+        <strong>${html(activity?.target_phrases_en?.slice(0, 3).join(" · ") || lesson.learning_content_en || lesson.title)}</strong>
+      </div>
+    `;
+  }
+
+  if (step.type === "summary") {
+    return `
+      <h2>Готово на сегодня</h2>
+      <p>${html(lessonOutcome(lesson))}</p>
+      <div class="summary-actions">
+        <button class="primary-button" type="button" data-open-homework="${html(lesson.lesson_id)}">${icon("checklist")} Перейти к домашке</button>
+      </div>
+    `;
+  }
+
+  if (step.exercise) {
+    state.selectedExerciseId = step.exercise.exercise_id;
+    state.selectedMode = step.exercise.mode;
+    return renderExercisePlayer(lesson.lesson_id, step.exercise.mode, { includeActions: false, compactHeader: true });
+  }
+
+  return "";
+}
+
+function renderLessonActionBar(exercise, step, totalSteps) {
+  const isExercise = step.type === "exercise" && exercise;
+  const exerciseState = isExercise ? getExerciseState(progress, exercise.exercise_id) : null;
+  const attemptsLeft = isExercise ? Math.max(0, exercise.attempts_allowed - (exerciseState.attempts || 0)) : 1;
+  const mainLabel = isExercise ? ui.check : state.lessonStepIndex >= totalSteps - 1 ? "К курсу" : "Далее";
+  const mainAttrs = isExercise
+    ? `data-check-exercise="${html(exercise.exercise_id)}" ${attemptsLeft <= 0 ? "disabled" : ""}`
+    : state.lessonStepIndex >= totalSteps - 1
+      ? `data-route="unit"`
+      : `data-next-step="true"`;
+
+  return `
+    <div class="lesson-action-bar">
+      <button class="ghost-button" type="button" data-prev-step="true" ${state.lessonStepIndex <= 0 ? "disabled" : ""}>${icon("back")} Назад</button>
+      ${isExercise ? `<button class="ghost-button" type="button" data-show-answer="${html(exercise.exercise_id)}">${icon("check")} Показать ответ</button>` : `<button class="ghost-button" type="button">${icon("hint")} Подсказка</button>`}
+      <button class="primary-button" type="button" ${mainAttrs}>${icon(isExercise ? "check" : "arrow")} ${html(mainLabel)}</button>
+    </div>
   `;
 }
 
@@ -494,10 +731,10 @@ function renderExerciseCard(exercise, mode) {
   const selected = exercise.exercise_id === state.selectedExerciseId;
   return `
     <button class="exercise-card ${selected ? "selected" : ""}" type="button" data-open-exercise="${html(exercise.exercise_id)}" data-mode="${html(mode)}">
-      <span>${html(mode)} - ${html(exercise.exercise_type)}</span>
+      <span>${html(humanExerciseType(exercise.exercise_type))}</span>
       <strong>${html(exercise.instruction_ru)}</strong>
-      <small>${html(exercise.estimated_time)} - attempts ${exercise.attempts_allowed}</small>
-      ${pill(status, statusTone(status))}
+      <small>${html(exercise.estimated_time)}</small>
+      ${pill(humanStatus(status), statusTone(status))}
     </button>
   `;
 }
@@ -546,7 +783,7 @@ function renderTeacherNotes(lessonId) {
   `;
 }
 
-function renderExercisePlayer(lessonId = state.selectedLessonId, mode = state.selectedMode) {
+function renderExercisePlayer(lessonId = state.selectedLessonId, mode = state.selectedMode, options = {}) {
   const pool = mode === "homework" ? getHomeworkExercises(lessonId) : getClassworkExercises(lessonId);
   const fallback = pool[0] || getLessonExercises(lessonId)[0];
   const exercise = getExercise(state.selectedExerciseId) || fallback;
@@ -556,36 +793,26 @@ function renderExercisePlayer(lessonId = state.selectedLessonId, mode = state.se
   state.selectedMode = mode || exercise.mode;
 
   const exerciseState = getExerciseState(progress, exercise.exercise_id);
-  const attemptsLeft = Math.max(0, exercise.attempts_allowed - (exerciseState.attempts || 0));
 
   return `
-    <div class="exercise-player">
-      <div class="panel-heading">
+    <div class="exercise-player visual-exercise">
+      ${options.compactHeader ? "" : `<div class="panel-heading">
         <div>
-          <p class="eyebrow">Exercise Player - ${html(mode)}</p>
-          <h3>${html(exercise.exercise_type)}</h3>
+          <p class="eyebrow">${mode === "homework" ? "Домашняя практика" : "Задание с преподавателем"}</p>
+          <h3>${html(humanExerciseType(exercise.exercise_type))}</h3>
         </div>
-        ${pill(getExerciseStatus(progress, exercise.exercise_id), statusTone(getExerciseStatus(progress, exercise.exercise_id)))}
-      </div>
-      <div class="exercise-meta">
-        <span>${html(exercise.estimated_time)}</span>
-        <span>attempts left ${attemptsLeft}</span>
-        <span>autocheck ${exercise.autocheck ? "on" : "off"}</span>
-        <span>show correct answer ${exercise.show_correct_answer ? "on" : "off"}</span>
+        ${pill(humanStatus(getExerciseStatus(progress, exercise.exercise_id)), statusTone(getExerciseStatus(progress, exercise.exercise_id)))}
+      </div>`}
+      <div class="friendly-meta">
+        <span>${icon(mode === "homework" ? "checklist" : "book")} ${mode === "homework" ? "Домашняя практика" : "Задание с преподавателем"}</span>
+        <span>${icon("calendar")} ${html(exercise.estimated_time)}</span>
+        <span>${icon("progress")} ${html(attemptsText(exercise, exerciseState))}</span>
       </div>
       ${renderExerciseMediaNotice(exercise)}
-      <p class="instruction-ru">${html(exercise.instruction_ru)}</p>
-      <p class="english-line">${html(exercise.learning_content_en)}</p>
+      <p class="exercise-instruction">${html(exercise.instruction_ru)}</p>
       ${renderExerciseInput(exercise, exerciseState)}
-      <div class="exercise-actions">
-        <button class="primary-button" type="button" data-check-exercise="${html(exercise.exercise_id)}" ${attemptsLeft <= 0 ? "disabled" : ""}>${icon("?")} ${html(ui.check)}</button>
-        <button class="ghost-button" type="button" data-show-answer="${html(exercise.exercise_id)}">${icon("A")} ${html(ui.showAnswer)}</button>
-        <button class="ghost-button" type="button" data-open-ai="${html(exercise.exercise_id)}">${icon("AI")} AI explanation</button>
-      </div>
       ${renderFeedback(exercise, exerciseState)}
-      <div class="hint-list">
-        ${exercise.hints_ru.map((hint) => `<span>${html(hint.text_ru || hint)}</span>`).join("")}
-      </div>
+      ${options.includeActions === false ? "" : renderExerciseActions(exercise, exerciseState)}
     </div>
   `;
 }
@@ -596,9 +823,10 @@ function renderExerciseMediaNotice(exercise) {
   const media = getAllMediaSpecifications().find((item) => item.media_id === refs[0]);
   if (!media) return "";
   return `
-    <div class="mock-audio-controls">
-      ${icon("AU")}
-      <span>Audio spec only: ${html(media.duration)} - ${html(media.speed)} - ${html(media.accent)}</span>
+    <div class="audio-player-card">
+      <button class="play-button" type="button" aria-label="Play">${icon("play")}</button>
+      <div class="waveform" aria-hidden="true">${Array.from({ length: 28 }, (_, index) => `<span style="--h: ${18 + ((index * 7) % 30)}px"></span>`).join("")}</div>
+      <span class="speed-pill">1x</span>
     </div>
   `;
 }
@@ -609,30 +837,30 @@ function renderExerciseInput(exercise, exerciseState) {
 
   if (exercise.exercise_type === "multiple_choice" || exercise.exercise_type === "listen_choose") {
     return `
+      <div class="exercise-prompt">${html(item.prompt_en || exercise.learning_content_en)}</div>
       <div class="choice-grid">
         ${(item.options || []).map((option) => `
-          <label class="choice-card">
-            <input type="radio" name="${html(exercise.exercise_id)}" value="${html(option)}" data-choice="${html(exercise.exercise_id)}" ${draft === option ? "checked" : ""} />
+          <button class="choice-tile ${draft === option ? "selected" : ""}" type="button" value="${html(option)}" data-choice="${html(exercise.exercise_id)}">
+            ${draft === option ? icon("check") : ""}
             <span>${html(option)}</span>
-          </label>
+          </button>
         `).join("")}
       </div>
     `;
   }
 
   if (exercise.exercise_type === "matching") {
-    const options = exercise.correct_answers.map((answer) => answer.value);
+    const options = [...new Set(exercise.correct_answers.map((answer) => answer.value))];
     const current = typeof draft === "object" && !Array.isArray(draft) ? draft : {};
     return `
-      <div class="matching-list">
+      <div class="matching-board">
         ${exercise.items.map((matchItem) => `
-          <label>
-            <span>${html(matchItem.prompt_en)}</span>
-            <select data-match="${html(exercise.exercise_id)}" data-item="${html(matchItem.item_id)}">
-              <option value="">${html(ui.choose)}</option>
-              ${options.map((option) => `<option value="${html(option)}" ${current[matchItem.item_id] === option ? "selected" : ""}>${html(option)}</option>`).join("")}
-            </select>
-          </label>
+          <div class="match-row">
+            <div class="match-prompt">${html(matchItem.prompt_en)}</div>
+            <div class="match-options">
+              ${options.map((option) => `<button class="${current[matchItem.item_id] === option ? "selected" : ""}" type="button" data-match-choice="${html(exercise.exercise_id)}" data-item="${html(matchItem.item_id)}" data-value="${html(option)}">${html(option)}</button>`).join("")}
+            </div>
+          </div>
         `).join("")}
       </div>
     `;
@@ -644,20 +872,46 @@ function renderExerciseInput(exercise, exerciseState) {
     const available = bank.filter((word) => !placed.includes(word));
     return `
       <div class="word-order">
+        <div class="drop-zone word-answer">
+          ${placed.length ? placed.map((word, index) => `<button class="word-chip placed" type="button" data-remove-word="${html(exercise.exercise_id)}" data-index="${index}">${html(word)}</button>`).join("") : `<span>Соберите ответ здесь</span>`}
+        </div>
         <div class="word-bank">
           ${available.map((word) => `<button class="word-chip" type="button" data-add-word="${html(exercise.exercise_id)}" data-word="${html(word)}">${html(word)}</button>`).join("")}
-        </div>
-        <div class="word-answer">
-          ${placed.length ? placed.map((word, index) => `<button class="word-chip placed" type="button" data-remove-word="${html(exercise.exercise_id)}" data-index="${index}">${html(word)}</button>`).join("") : `<span>${html(ui.answer)}</span>`}
         </div>
       </div>
     `;
   }
 
+  if (exercise.exercise_type === "fill_gap") {
+    const prompt = item.prompt_en || exercise.learning_content_en;
+    const pieces = prompt.split("___");
+    if (pieces.length > 1) {
+      return `
+        <label class="inline-gap">
+          <span>${html(pieces[0])}</span>
+          <input data-answer="${html(exercise.exercise_id)}" value="${html(typeof draft === "string" ? draft : "")}" placeholder="answer" />
+          <span>${html(pieces.slice(1).join("___"))}</span>
+        </label>
+      `;
+    }
+  }
+
+  if (exercise.exercise_type === "short_writing") {
+    return `
+      <div class="chat-writing">
+        <div class="chat-bubble task">${html(exercise.learning_content_en)}</div>
+        <label class="chat-response">
+          <span>${html(item.prompt_en || "Write your answer.")}</span>
+          <textarea data-answer="${html(exercise.exercise_id)}" rows="3" placeholder="Hello. I'm ...">${html(typeof draft === "string" ? draft : "")}</textarea>
+        </label>
+      </div>
+    `;
+  }
+
   return `
-    <label class="answer-field">
-      <span>${html(ui.answer)}</span>
-      <textarea data-answer="${html(exercise.exercise_id)}" rows="4" placeholder="${html(exercise.items[0]?.prompt_en || "")}">${html(typeof draft === "string" ? draft : "")}</textarea>
+    <label class="single-answer">
+      <span class="exercise-prompt">${html(item.prompt_en || exercise.learning_content_en)}</span>
+      <input data-answer="${html(exercise.exercise_id)}" value="${html(typeof draft === "string" ? draft : "")}" placeholder="Type here" />
     </label>
   `;
 }
@@ -669,30 +923,42 @@ function renderFeedback(exercise, exerciseState) {
   if (result) {
     blocks.push(`
       <div class="feedback-card ${result.correct ? "correct" : result.partial ? "partial" : "incorrect"}">
-        <strong>${html(result.correct ? "Correct" : result.status === "submitted" ? "Submitted" : result.partial ? "Partly correct" : "Needs retry")}</strong>
-        <p>${html(result.preliminary_feedback_ru || result.item_results?.[0]?.explanation_ru || "Review the model answer and try again.")}</p>
-        ${result.score !== null && result.score !== undefined ? `<small>score ${Math.round(result.score * 100)}%</small>` : ""}
+        <strong>${icon(result.correct ? "check" : "hint")} ${html(result.correct ? "Отлично, идём дальше" : result.partial ? "Почти получилось" : "Нужно чуть поправить")}</strong>
+        <p>${html(result.preliminary_feedback_ru || result.item_results?.[0]?.explanation_ru || "Посмотрите на подсказку и попробуйте ещё раз.")}</p>
+        ${result.correct ? `<button class="ghost-button" type="button" data-next-step="true">${icon("arrow")} Далее</button>` : `<div class="feedback-actions"><button class="ghost-button" type="button" data-open-ai="${html(exercise.exercise_id)}">${icon("hint")} Разобрать ошибку</button><button class="ghost-button" type="button" data-clear-answer="${html(exercise.exercise_id)}">${icon("back")} Попробовать ещё раз</button></div>`}
       </div>
     `);
   } else if (exerciseState.latestAnswer) {
-    blocks.push(`<p class="mode-note">${html(ui.saved)}. Click Auto-check when ready.</p>`);
+    blocks.push(`<p class="mode-note">${html(ui.saved)}.</p>`);
   }
 
   if (exerciseState.correctAnswerShown) {
-    blocks.push(`<div class="answer-card"><strong>Correct answer</strong><p>${html(formatCorrectAnswer(exercise))}</p></div>`);
+    blocks.push(`<div class="answer-card"><strong>Правильный вариант</strong><p>${html(formatCorrectAnswer(exercise))}</p></div>`);
   }
 
-  if (exerciseState.aiExplanationOpened || (result && !result.correct)) {
+  if (exerciseState.aiExplanationOpened) {
     blocks.push(`
       <div class="ai-card">
-        <strong>AI explanation mock</strong>
-        <p>${html(exercise.ai_explanation.text_ru)}</p>
-        <small>Prepared methodology response. No real AI call in v0.2.</small>
+        <strong>${icon("hint")} Разбор ошибки</strong>
+        <div><span>Что не так</span><p>${html(exercise.ai_explanation.text_ru)}</p></div>
+        <div><span>Как правильно</span><p>${html(formatCorrectAnswer(exercise))}</p></div>
+        <div><span>Пример</span><p>${html(exercise.ai_explanation.example_en || formatCorrectAnswer(exercise))}</p></div>
       </div>
     `);
   }
 
   return blocks.join("");
+}
+
+function renderExerciseActions(exercise, exerciseState) {
+  const attemptsLeft = Math.max(0, exercise.attempts_allowed - (exerciseState.attempts || 0));
+  return `
+    <div class="exercise-actions">
+      <button class="primary-button" type="button" data-check-exercise="${html(exercise.exercise_id)}" ${attemptsLeft <= 0 ? "disabled" : ""}>${icon("check")} ${html(ui.check)}</button>
+      <button class="ghost-button" type="button" data-show-answer="${html(exercise.exercise_id)}">${icon("check")} ${html(ui.showAnswer)}</button>
+      <button class="ghost-button" type="button" data-open-ai="${html(exercise.exercise_id)}">${icon("hint")} Разобрать ошибку</button>
+    </div>
+  `;
 }
 
 function renderHomeworkMode() {
@@ -701,56 +967,114 @@ function renderHomeworkMode() {
   const selectedTask = getLessonHomework(selectedLesson.lesson_id) || homeworkTasks[0];
   const selectedExercises = getHomeworkExercises(selectedTask.lesson_id);
   const selectedStats = calculateExerciseProgress(progress, selectedExercises);
+  const currentIndex = getCurrentExerciseIndex(selectedExercises);
+  const currentExercise = selectedExercises[currentIndex] || selectedExercises[0];
+
+  if (!state.homeworkStarted) {
+    return `
+      <section class="homework-start-screen">
+        <div class="homework-hero-card">
+          <div>
+            <span class="soft-label">Unit 1 · Lesson ${selectedLesson.lesson_number}</span>
+            <h1>${html(selectedTask.title_ru)}</h1>
+            <p>${html(selectedTask.purpose_ru)}</p>
+            <div class="homework-facts">
+              <span>${icon("calendar")} ${html(deadlineForLesson(selectedLesson))}</span>
+              <span>${icon("checklist")} ${selectedExercises.length} задания</span>
+              <span>${icon("progress")} 12 минут</span>
+            </div>
+            <button class="primary-button large-cta" type="button" data-start-homework="${html(selectedLesson.lesson_id)}">${icon("arrow")} Начать</button>
+          </div>
+          ${renderProgressRing(selectedStats.percent, "домашка")}
+        </div>
+
+        <div class="homework-route">
+          ${selectedExercises.map((exercise, index) => `
+            <button class="homework-step-card" type="button" data-open-homework-exercise="${html(selectedLesson.lesson_id)}" data-exercise-id="${html(exercise.exercise_id)}">
+              <span>${index + 1}</span>
+              ${icon(index === 0 ? "cards" : index === 1 ? "book" : index === 2 ? "headphones" : "message")}
+              <strong>${html(humanExerciseType(exercise.exercise_type))}</strong>
+              ${pill(humanStatus(getExerciseStatus(progress, exercise.exercise_id)), statusTone(getExerciseStatus(progress, exercise.exercise_id)))}
+            </button>
+          `).join("")}
+        </div>
+
+        <details class="homework-history">
+          <summary>Другие домашки Unit 1</summary>
+          <div class="homework-list compact">
+            ${homeworkTasks.map((task) => {
+              const lesson = getLesson(task.lesson_id);
+              const stats = calculateExerciseProgress(progress, getHomeworkExercises(task.lesson_id));
+              return `<button type="button" data-open-homework="${html(task.lesson_id)}"><strong>${html(task.title_ru)}</strong><span>${stats.percent}% · Lesson ${lesson.lesson_number}</span></button>`;
+            }).join("")}
+          </div>
+        </details>
+      </section>
+    `;
+  }
+
+  state.selectedExerciseId = currentExercise.exercise_id;
+  state.selectedMode = "homework";
 
   return `
-    <section class="homework-grid">
-      <div class="content-panel">
-        <div class="panel-heading">
-          <div><p class="eyebrow">Homework Mode - Unit 1</p><h2>${html(ui.homework)}</h2></div>
-          ${pill(`${selectedStats.percent}%`, selectedStats.percent > 60 ? "green" : "amber")}
+    <section class="homework-player-screen">
+      <div class="lesson-player-top">
+        <button class="ghost-button compact" type="button" data-open-homework="${html(selectedLesson.lesson_id)}">${icon("back")} Домашка</button>
+        <div>
+          <span>Lesson ${selectedLesson.lesson_number}</span>
+          <strong>${html(selectedTask.title_ru)}</strong>
         </div>
-        <div class="homework-list">
-          ${homeworkTasks.map((task) => {
-            const lesson = getLesson(task.lesson_id);
-            const stats = calculateExerciseProgress(progress, getHomeworkExercises(task.lesson_id));
-            const active = task.lesson_id === selectedTask.lesson_id;
-            return `
-              <button class="${active ? "selected" : ""}" type="button" data-open-homework="${html(task.lesson_id)}">
-                <strong>${html(task.title_ru)}</strong>
-                <span>Unit 1 / Lesson ${lesson.lesson_number} - deadline ${html(deadlineForLesson(lesson))}</span>
-                ${progressBar(stats.percent)}
-                ${pill(`${stats.percent}%`, stats.percent > 60 ? "green" : "amber")}
-              </button>
-            `;
-          }).join("")}
+        <div class="lesson-step-meter">
+          <span>Задание ${currentIndex + 1} из ${selectedExercises.length}</span>
+          ${progressBar(((currentIndex + 1) / selectedExercises.length) * 100)}
         </div>
       </div>
-
-      <div class="content-panel">
-        <div class="panel-heading">
-          <div><p class="eyebrow">Current homework</p><h3>${html(selectedTask.title_ru)}</h3></div>
-          ${pill(`deadline ${deadlineForLesson(selectedLesson)}`, "amber")}
-        </div>
-        <p>${html(selectedTask.purpose_ru)}</p>
-        <ul class="compact-list">
-          ${selectedExercises.map((exercise) => `<li><span>${html(exercise.exercise_type)} - ${html(exercise.estimated_time)}</span>${pill(getExerciseStatus(progress, exercise.exercise_id), statusTone(getExerciseStatus(progress, exercise.exercise_id)))}</li>`).join("")}
-        </ul>
-        <button class="primary-button" type="button" data-open-homework-exercise="${html(selectedLesson.lesson_id)}">${icon(">")} ${html(ui.continueHomework)}</button>
-        <button class="ghost-button" type="button" data-route="teacher">${icon("T")} Teacher Dashboard link</button>
+      <article class="homework-stage">
+        ${renderExercisePlayer(selectedLesson.lesson_id, "homework", { includeActions: false })}
+      </article>
+      <div class="lesson-action-bar">
+        <button class="ghost-button" type="button" data-homework-prev="true" ${currentIndex <= 0 ? "disabled" : ""}>${icon("back")} Назад</button>
+        <button class="ghost-button" type="button" data-show-answer="${html(currentExercise.exercise_id)}">${icon("check")} Показать ответ</button>
+        <button class="primary-button" type="button" data-check-exercise="${html(currentExercise.exercise_id)}">${icon("check")} Проверить</button>
+        <button class="ghost-button" type="button" data-homework-next="true" ${currentIndex >= selectedExercises.length - 1 ? "disabled" : ""}>Далее ${icon("arrow")}</button>
       </div>
     </section>
+  `;
+}
 
-    <section class="lesson-workspace">
-      <div class="content-panel structure-panel">
-        <h3>Homework proof points</h3>
-        <div class="homework-proof">
-          <span>auto-check: ${selectedExercises.every((exercise) => exercise.autocheck) ? "on" : "mixed"}</span>
-          <span>show correct answer: ${selectedExercises.every((exercise) => exercise.show_correct_answer) ? "on" : "mixed"}</span>
-          <span>AI explanation after mistake: prepared per exercise</span>
-        </div>
+function renderReviewPractice() {
+  const lesson = currentLesson();
+  const exercises = getLessonExercises(lesson.lesson_id).filter((exercise) =>
+    ["matching", "fill_gap", "word_order"].includes(exercise.exercise_type),
+  );
+
+  return `
+    <section class="review-screen">
+      <div class="screen-intro">
+        <span class="soft-label">Повторение</span>
+        <h1>Короткая практика перед следующим уроком</h1>
+        <p>Повторите слова и фразы из ${html(lesson.title)}. Откройте любое задание, когда будет 5 минут.</p>
       </div>
-      <div class="content-panel exercise-panel">
-        ${renderExercisePlayer(selectedLesson.lesson_id, "homework")}
+      <div class="review-card-grid">
+        <div class="review-words-card">
+          ${icon("cards")}
+          <h2>Слова</h2>
+          <div class="phrase-bubbles">
+            ${lesson.target_vocabulary.slice(0, 6).map((item) => `<span>${html(item)}</span>`).join("")}
+          </div>
+        </div>
+        <div class="review-words-card mint">
+          ${icon("microphone")}
+          <h2>Сказать вслух</h2>
+          <p>${html(lessonOutcome(lesson))}</p>
+        </div>
+        ${exercises.slice(0, 2).map((exercise) => `
+          <button class="review-task-card" type="button" data-open-exercise="${html(exercise.exercise_id)}" data-mode="${html(exercise.mode)}">
+            ${icon("checklist")}
+            <span>${html(humanExerciseType(exercise.exercise_type))}</span>
+            <strong>${html(exercise.instruction_ru)}</strong>
+          </button>
+        `).join("")}
       </div>
     </section>
   `;
@@ -769,7 +1093,7 @@ function renderTeacherDashboard() {
     <section class="content-panel">
       <div class="panel-heading">
         <div><p class="eyebrow">Teacher Dashboard - desktop-first</p><h2>${html(course.group)}</h2></div>
-        <button class="primary-button" type="button" data-open-live="${html(progress.currentLessonId)}">${icon("L")} Start live lesson</button>
+        <button class="primary-button" type="button" data-open-live="${html(progress.currentLessonId)}">${icon("microphone")} Start live lesson</button>
       </div>
       <p>Local demo student reads progress from localStorage; other students are mock cohort data.</p>
     </section>
@@ -844,51 +1168,44 @@ function renderLiveLessonMode() {
   return `
     <section class="content-panel live-hero">
       <div class="panel-heading">
-        <div><p class="eyebrow">Live Lesson Mode mockup</p><h2>${html(lesson.title)}</h2></div>
+        <div><p class="eyebrow">Live Lesson Mode</p><h2>${html(lesson.title)}</h2></div>
         ${pill(state.liveLocked ? "locked" : "teacher controlled", state.liveLocked ? "danger" : "green")}
       </div>
       <p>${html(lesson.speaking_outcome?.can_do_statement_ru || lesson.lesson_goal)}</p>
-      <div class="teacher-actions">
-        <button class="ghost-button ${state.liveMode === "group" ? "active" : ""}" type="button" data-live-mode="group">${icon("G")} Group</button>
-        <button class="ghost-button ${state.liveMode === "pair" ? "active" : ""}" type="button" data-live-mode="pair">${icon("P")} Pairs</button>
-        <button class="ghost-button ${state.liveMode === "individual" ? "active" : ""}" type="button" data-live-mode="individual">${icon("I")} Individual</button>
-        <button class="ghost-button" type="button" data-live-toggle="hint">${icon("H")} Send hint</button>
-        <button class="ghost-button" type="button" data-live-toggle="answers">${icon("A")} Toggle answers</button>
-        <button class="ghost-button" type="button" data-live-toggle="lock">${icon("L")} Lock inputs</button>
-      </div>
     </section>
 
-    <section class="live-grid">
-      <div class="content-panel">
-        <h3>Lesson queue</h3>
-        <div class="lesson-list">
-          ${lessons().map((item) => `<button class="${item.lesson_id === lesson.lesson_id ? "active" : ""}" type="button" data-live-lesson="${html(item.lesson_id)}"><strong>${html(item.title)}</strong><span>Lesson ${item.lesson_number}</span></button>`).join("")}
-        </div>
-      </div>
-
-      <div class="content-panel">
-        <h3>Exercise stage</h3>
-        <div class="lesson-list">
-          ${classwork.map((exercise) => `<button class="${exercise.exercise_id === selectedExercise.exercise_id ? "active" : ""}" type="button" data-live-exercise="${html(exercise.exercise_id)}"><strong>${html(exercise.exercise_type)}</strong><span>${html(exercise.instruction_ru)}</span></button>`).join("")}
-        </div>
-      </div>
-
-      <div class="content-panel shared-space">
-        <div class="shared-board">
-          <p class="eyebrow">Shared learning space</p>
-          <h3>${html(selectedExercise.learning_content_en)}</h3>
-          <p>${html(selectedExercise.instruction_ru)}</p>
-          ${state.liveShowAnswers ? `<div class="answer-card"><strong>Model</strong><p>${html(formatCorrectAnswer(selectedExercise))}</p></div>` : ""}
-          <div class="live-answer-demo"><span>Simulated live answer - no real WebSocket</span><strong>${html(selectedExercise.items[0]?.prompt_en || selectedExercise.learning_content_en)}</strong><small>${html(state.liveMode)} mode</small></div>
-        </div>
-      </div>
-
-      <div class="content-panel">
+    <section class="live-classroom">
+      <aside class="live-participants content-panel">
         <h3>Participants</h3>
         <ul class="live-student-list">
-          ${getDemoStudentMetrics().map((student) => `<li><span>${html(student.name)}</span>${pill(student.id === DEMO_USER_ID ? "online local" : student.retention, statusTone(student.retention))}</li>`).join("")}
+          ${getDemoStudentMetrics().map((student) => `<li><span>${html(student.name)}</span>${pill(student.id === DEMO_USER_ID ? "online" : student.retention, statusTone(student.retention))}</li>`).join("")}
         </ul>
-      </div>
+      </aside>
+
+      <main class="live-stage content-panel">
+        <div class="shared-board">
+          <span class="soft-label">${html(humanExerciseType(selectedExercise.exercise_type))}</span>
+          <h3>${html(selectedExercise.learning_content_en)}</h3>
+          <p>${html(selectedExercise.instruction_ru)}</p>
+          ${renderExerciseInput(selectedExercise, getExerciseState(progress, selectedExercise.exercise_id))}
+          ${state.liveShowAnswers ? `<div class="answer-card"><strong>Model</strong><p>${html(formatCorrectAnswer(selectedExercise))}</p></div>` : ""}
+        </div>
+      </main>
+
+      <aside class="live-controls content-panel">
+        <h3>Teacher controls</h3>
+        <div class="teacher-actions vertical">
+          <button class="ghost-button ${state.liveMode === "group" ? "active" : ""}" type="button" data-live-mode="group">${icon("users")} Group</button>
+          <button class="ghost-button ${state.liveMode === "pair" ? "active" : ""}" type="button" data-live-mode="pair">${icon("message")} Pairs</button>
+          <button class="ghost-button ${state.liveMode === "individual" ? "active" : ""}" type="button" data-live-mode="individual">${icon("profile")} Individual</button>
+          <button class="ghost-button" type="button" data-live-toggle="hint">${icon("hint")} Send hint</button>
+          <button class="ghost-button" type="button" data-live-toggle="answers">${icon("check")} Toggle answers</button>
+          <button class="ghost-button" type="button" data-live-toggle="lock">${icon("settings")} Lock inputs</button>
+        </div>
+        <div class="lesson-list compact">
+          ${classwork.map((exercise) => `<button class="${exercise.exercise_id === selectedExercise.exercise_id ? "active" : ""}" type="button" data-live-exercise="${html(exercise.exercise_id)}"><strong>${html(humanExerciseType(exercise.exercise_type))}</strong></button>`).join("")}
+        </div>
+      </aside>
     </section>
   `;
 }
@@ -981,10 +1298,52 @@ function handleClick(event) {
     return;
   }
 
+  const lessonStep = event.target.closest("[data-lesson-step]");
+  if (lessonStep) {
+    state.lessonStepIndex = Number(lessonStep.dataset.lessonStep);
+    const step = buildLessonSteps(currentLesson())[state.lessonStepIndex];
+    if (step?.exercise) {
+      state.selectedExerciseId = step.exercise.exercise_id;
+      state.selectedMode = step.exercise.mode;
+      logEvent("exercise_started", { lesson_id: step.exercise.lesson_id, exercise_id: step.exercise.exercise_id, mode: step.exercise.mode });
+    }
+    render();
+    return;
+  }
+
+  const nextStep = event.target.closest("[data-next-step]");
+  if (nextStep) {
+    const steps = buildLessonSteps(currentLesson());
+    state.lessonStepIndex = Math.min(steps.length - 1, state.lessonStepIndex + 1);
+    const step = steps[state.lessonStepIndex];
+    if (step?.exercise) {
+      state.selectedExerciseId = step.exercise.exercise_id;
+      state.selectedMode = step.exercise.mode;
+    }
+    render();
+    return;
+  }
+
+  const prevStep = event.target.closest("[data-prev-step]");
+  if (prevStep) {
+    const steps = buildLessonSteps(currentLesson());
+    state.lessonStepIndex = Math.max(0, state.lessonStepIndex - 1);
+    const step = steps[state.lessonStepIndex];
+    if (step?.exercise) {
+      state.selectedExerciseId = step.exercise.exercise_id;
+      state.selectedMode = step.exercise.mode;
+    }
+    render();
+    return;
+  }
+
   const lessonButton = event.target.closest("[data-open-lesson]");
   if (lessonButton) {
     const lessonId = lessonButton.dataset.openLesson;
     state.selectedLessonId = lessonId;
+    state.lessonStepIndex = 0;
+    state.selectedExerciseId = null;
+    state.homeworkStarted = false;
     progress = setCurrentLesson(progress, lessonId);
     logEvent("lesson_opened", { lesson_id: lessonId, mode: "classwork" });
     navigate("lesson", { lessonId });
@@ -996,9 +1355,20 @@ function handleClick(event) {
     const lessonId = homeworkButton.dataset.openHomework;
     state.selectedLessonId = lessonId;
     state.selectedMode = "homework";
+    state.homeworkStarted = false;
+    navigate("homework", { lessonId });
+    return;
+  }
+
+  const startHomework = event.target.closest("[data-start-homework]");
+  if (startHomework) {
+    const lessonId = startHomework.dataset.startHomework;
+    state.selectedLessonId = lessonId;
+    state.selectedMode = "homework";
+    state.homeworkStarted = true;
     state.selectedExerciseId = getHomeworkExercises(lessonId)[0]?.exercise_id || null;
     logEvent("homework_started", { lesson_id: lessonId, exercise_id: state.selectedExerciseId, mode: "homework" });
-    navigate("homework", { lessonId });
+    render();
     return;
   }
 
@@ -1007,8 +1377,27 @@ function handleClick(event) {
     const lessonId = homeworkExercise.dataset.openHomeworkExercise;
     state.selectedLessonId = lessonId;
     state.selectedMode = "homework";
-    state.selectedExerciseId = getHomeworkExercises(lessonId)[0]?.exercise_id || null;
+    state.homeworkStarted = true;
+    state.selectedExerciseId = homeworkExercise.dataset.exerciseId || getHomeworkExercises(lessonId)[0]?.exercise_id || null;
     logEvent("exercise_started", { lesson_id: lessonId, exercise_id: state.selectedExerciseId, mode: "homework" });
+    render();
+    return;
+  }
+
+  const homeworkNext = event.target.closest("[data-homework-next]");
+  if (homeworkNext) {
+    const homeworkExercises = getHomeworkExercises(state.selectedLessonId);
+    const index = getCurrentExerciseIndex(homeworkExercises);
+    state.selectedExerciseId = homeworkExercises[Math.min(homeworkExercises.length - 1, index + 1)]?.exercise_id || state.selectedExerciseId;
+    render();
+    return;
+  }
+
+  const homeworkPrev = event.target.closest("[data-homework-prev]");
+  if (homeworkPrev) {
+    const homeworkExercises = getHomeworkExercises(state.selectedLessonId);
+    const index = getCurrentExerciseIndex(homeworkExercises);
+    state.selectedExerciseId = homeworkExercises[Math.max(0, index - 1)]?.exercise_id || state.selectedExerciseId;
     render();
     return;
   }
@@ -1019,8 +1408,20 @@ function handleClick(event) {
     state.selectedLessonId = exercise.lesson_id;
     state.selectedExerciseId = exercise.exercise_id;
     state.selectedMode = exerciseButton.dataset.mode || exercise.mode;
+    state.homeworkStarted = state.selectedMode === "homework";
+    state.lessonStepIndex = lessonStepIndexForExercise(exercise.lesson_id, exercise.exercise_id);
     logEvent("exercise_started", { lesson_id: exercise.lesson_id, exercise_id: exercise.exercise_id, mode: state.selectedMode });
     navigate("exercise", { lessonId: exercise.lesson_id, exerciseId: exercise.exercise_id, mode: state.selectedMode });
+    return;
+  }
+
+  const matchChoice = event.target.closest("[data-match-choice]");
+  if (matchChoice) {
+    const exercise = getExercise(matchChoice.dataset.matchChoice);
+    const current = getExerciseState(progress, exercise.exercise_id).latestAnswer || {};
+    progress = saveDraftAnswer(progress, exercise, { ...current, [matchChoice.dataset.item]: matchChoice.dataset.value });
+    logEvent("exercise_answered", { lesson_id: exercise.lesson_id, exercise_id: exercise.exercise_id, mode: exercise.mode, metadata: { answer_type: "matching" } });
+    render();
     return;
   }
 
@@ -1080,6 +1481,14 @@ function handleClick(event) {
     const exercise = getExercise(ai.dataset.openAi);
     progress = markAiExplanationOpened(progress, exercise.exercise_id);
     logEvent("ai_explanation_requested", { lesson_id: exercise.lesson_id, exercise_id: exercise.exercise_id, mode: exercise.mode });
+    render();
+    return;
+  }
+
+  const clearAnswer = event.target.closest("[data-clear-answer]");
+  if (clearAnswer) {
+    const exercise = getExercise(clearAnswer.dataset.clearAnswer);
+    progress = saveDraftAnswer(progress, exercise, exercise.exercise_type === "matching" ? {} : exercise.exercise_type === "word_order" || exercise.exercise_type === "drag_drop" ? [] : "");
     render();
     return;
   }
@@ -1180,7 +1589,4 @@ root.addEventListener("input", handleInput);
 root.addEventListener("change", handleChange);
 
 parseHash();
-if (!state.selectedExerciseId) {
-  state.selectedExerciseId = getClassworkExercises(state.selectedLessonId)[0]?.exercise_id || null;
-}
 render();

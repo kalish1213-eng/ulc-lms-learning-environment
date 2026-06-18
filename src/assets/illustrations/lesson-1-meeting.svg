@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 360" role="img" aria-label="Two adults saying hello">
+  <rect width="520" height="360" rx="34" fill="#EEF0FF"/>
+  <circle cx="428" cy="74" r="42" fill="#FFF0E8"/>
+  <rect x="58" y="78" width="170" height="212" rx="28" fill="#fff"/>
+  <rect x="292" y="86" width="170" height="204" rx="28" fill="#fff"/>
+  <g fill="none" stroke="#17182B" stroke-linecap="round" stroke-linejoin="round" stroke-width="10">
+    <circle cx="143" cy="152" r="40"/>
+    <path d="M84 282c15-54 35-82 59-82s44 28 59 82"/>
+    <circle cx="377" cy="156" r="38"/>
+    <path d="M320 282c15-50 34-76 57-76s42 26 57 76"/>
+  </g>
+  <path d="M214 128h92c18 0 32 14 32 32v20c0 18-14 32-32 32h-45l-38 28 8-28h-17c-18 0-32-14-32-32v-20c0-18 14-32 32-32z" fill="#3C4AF5"/>
+  <path d="M232 164h88M232 188h54" stroke="#fff" stroke-width="9" stroke-linecap="round"/>
+</svg>

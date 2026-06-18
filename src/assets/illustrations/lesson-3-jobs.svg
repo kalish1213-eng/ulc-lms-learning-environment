@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 360" role="img" aria-label="Adults in a modern work setting">
+  <rect width="520" height="360" rx="34" fill="#FFF0E8"/>
+  <rect x="70" y="88" width="380" height="202" rx="28" fill="#fff"/>
+  <path d="M108 256h304" stroke="#3C4AF5" stroke-width="12" stroke-linecap="round" opacity=".18"/>
+  <g fill="none" stroke="#17182B" stroke-linecap="round" stroke-linejoin="round" stroke-width="9">
+    <circle cx="168" cy="154" r="34"/>
+    <path d="M118 252c13-42 30-62 50-62s37 20 50 62"/>
+    <circle cx="342" cy="152" r="34"/>
+    <path d="M292 252c13-42 30-62 50-62s37 20 50 62"/>
+  </g>
+  <rect x="220" y="124" width="82" height="58" rx="14" fill="#EEF0FF" stroke="#3C4AF5" stroke-width="8"/>
+  <path d="M238 151h46M238 169h28M102 108h72M358 108h52" stroke="#3C4AF5" stroke-width="8" stroke-linecap="round"/>
+</svg>
