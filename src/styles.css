@@ -3194,12 +3194,34 @@ summary:focus-visible {
 }
 
 @media (max-width: 640px) {
+  html {
+    scroll-padding-bottom: calc(126px + env(safe-area-inset-bottom));
+  }
+
   body {
     font-size: 16px;
   }
 
   .student-shell {
-    padding: 12px 12px 96px;
+    height: 100svh;
+    min-height: 100svh;
+    overflow: hidden;
+    padding: 12px 12px calc(138px + env(safe-area-inset-bottom));
+  }
+
+  .student-workspace {
+    height: calc(100svh - 176px - env(safe-area-inset-bottom));
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding-bottom: calc(126px + env(safe-area-inset-bottom));
+    scroll-padding-bottom: calc(126px + env(safe-area-inset-bottom));
+  }
+
+  .student-dashboard,
+  .unit-map-screen,
+  .homework-start-screen,
+  .review-screen {
+    padding-bottom: calc(96px + env(safe-area-inset-bottom));
   }
 
   .student-topbar {
@@ -3319,7 +3341,7 @@ summary:focus-visible {
     z-index: 30;
     left: 10px;
     right: 10px;
-    bottom: 10px;
+    bottom: calc(10px + env(safe-area-inset-bottom));
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 4px;
@@ -3815,15 +3837,31 @@ summary:focus-visible {
 
   .unit-route-hero h1 {
     font-size: clamp(34px, 10vw, 40px);
+    margin: 10px 0 8px;
+  }
+
+  .unit-route-hero {
+    gap: 10px;
+    padding: 18px;
+  }
+
+  .unit-route-hero p {
+    font-size: 16px;
+    line-height: 1.38;
+  }
+
+  .unit-compact-progress {
+    margin-top: 12px;
   }
 
   .unit-route-hero img {
-    max-height: 190px;
+    justify-self: end;
+    max-height: 96px;
   }
 
   .learning-path {
     gap: 14px;
-    padding-left: 46px;
+    padding: 12px 0 calc(112px + env(safe-area-inset-bottom)) 46px;
   }
 
   .learning-path::before {
@@ -3832,13 +3870,27 @@ summary:focus-visible {
 
   .learning-path-card {
     grid-template-columns: 76px minmax(0, 1fr);
-    min-height: 130px;
-    padding: 14px;
+    min-height: 116px;
+    gap: 10px;
+    padding: 12px;
   }
 
   .learning-path-card img {
-    width: 76px;
-    height: 76px;
+    width: 64px;
+    height: 64px;
+  }
+
+  .learning-path-card strong {
+    font-size: 20px;
+  }
+
+  .learning-path-card small {
+    font-size: 14px;
+    line-height: 1.35;
+  }
+
+  .path-card-main {
+    gap: 5px;
   }
 
   .path-marker {
@@ -3847,10 +3899,13 @@ summary:focus-visible {
 
   .path-card-progress {
     grid-column: 2;
+    gap: 6px;
     justify-items: stretch;
   }
 
   .learning-path-card em {
+    min-height: 34px;
+    padding: 7px 12px;
     width: fit-content;
     text-align: center;
   }

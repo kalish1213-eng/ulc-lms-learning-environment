@@ -1010,6 +1010,15 @@ function successExplanation(exercise, result) {
   return result?.item_results?.[0]?.explanation_ru || exercise.ai_explanation?.example_en || "Хорошо. Можно идти дальше.";
 }
 
+function incorrectExplanation(exercise, result) {
+  if (exercise.exercise_type === "short_writing" && result?.preliminary_feedback_ru) return result.preliminary_feedback_ru;
+  const itemId = result?.item_results?.[0]?.item_id;
+  const currentExplanation =
+    exercise.correct_answers?.find((answer) => answer.item_id === itemId)?.explanation_ru ||
+    exercise.correct_answers?.[0]?.explanation_ru;
+  return currentExplanation || result?.preliminary_feedback_ru || result?.item_results?.[0]?.explanation_ru || "Посмотрите на подсказку и попробуйте снова.";
+}
+
 function gapPlaceholder(exercise, prompt) {
   if (exercise.exercise_id === "beg_u1_l1_ex1" || /^Hello,\s*___/.test(prompt)) return "I'm";
   return "...";
@@ -1023,7 +1032,7 @@ function renderFeedback(exercise, exerciseState) {
     blocks.push(`
       <div class="feedback-card ${result.correct ? "correct" : result.partial ? "partial" : "incorrect"}">
         <strong>${icon(result.correct ? "check" : "hint")} ${html(result.correct ? "Правильно!" : result.partial ? "Почти получилось" : "Нужно чуть поправить")}</strong>
-        <p>${html(result.correct ? successExplanation(exercise, result) : result.preliminary_feedback_ru || result.item_results?.[0]?.explanation_ru || "Посмотрите на подсказку и попробуйте снова.")}</p>
+        <p>${html(result.correct ? successExplanation(exercise, result) : incorrectExplanation(exercise, result))}</p>
         ${result.correct ? "" : `<div class="feedback-actions"><button class="ghost-button" type="button">${icon("hint")} Подсказка</button><button class="ghost-button" type="button" data-clear-answer="${html(exercise.exercise_id)}">${icon("back")} Попробовать снова</button><button class="ghost-button" type="button" data-open-ai="${html(exercise.exercise_id)}">${icon("hint")} Разобрать ошибку</button></div>`}
       </div>
     `);

@@ -487,7 +487,7 @@ const beginnerUnit1 = {
     exercise("beg_u1_l5_ex4", "beg_u1_l5", "beg_u1_l5_sec_speaking", "short_writing", "Напишите 4 строки о себе.", "Name. From. Job. Contact.", [item("i1", "Write four short lines about yourself.")], [answer("a1", "i1", "I'm Anna. I'm from Minsk. I'm a manager. My email is anna@example.com.", "I'm Anna. I'm from Minsk. I'm a manager. My email is anna@example.com.", "Short chunks are enough.")], [accepted("a1", ["I am Anna. I am from Minsk. I am a manager. My email is anna@example.com.", "I'm Anna I'm from Minsk I'm a manager My email is anna@example.com"], "I am/I'm and punctuation variants accepted.")], "6 min", 2, true, true, "homework", ["Accept mock contact details."], ["short_writing", "personal_profile"]),
 
     exercise("beg_u1_l6_ex1", "beg_u1_l6", "beg_u1_l6_sec_practice", "multiple_choice", "Выберите лучшую реплику в диалоге.", "A: Nice to meet you. B: ...", [item("i1", "A: Nice to meet you. B: ...", "", ["Nice to meet you, too.", "I am job.", "Phone at dot."])], [answer("a1", "i1", "Nice to meet you, too.", "Nice to meet you, too.", "This is the polite reply.")], [accepted("a1", ["Nice to meet you too", "Nice to meet you, too."], "Comma optional.")], "3 min", 2, true, true, "classwork", ["Checkpoint of Lesson 1 chunk."], ["unit_review", "greeting_reply"]),
-    exercise("beg_u1_l6_ex2", "beg_u1_l6", "beg_u1_l6_sec_practice", "fill_gap", "Вставьте слово.", "Where are you ___?", [item("i1", "Where are you ___?")], [answer("a1", "i1", "from", "from", "The question is Where are you from?")], [accepted("a1", ["from"], "Case-insensitive.")], "3 min", 2, true, true, "classwork", ["Checkpoint of Lesson 2 question."], ["unit_review", "question_order"]),
+    exercise("beg_u1_l6_ex2", "beg_u1_l6", "beg_u1_l6_sec_practice", "fill_gap", "Вставьте слово.", "Where are you ___?", [item("i1", "Where are you ___?")], [answer("a1", "i1", "from", "from", "Здесь нужен предлог from.")], [accepted("a1", ["from"], "Case-insensitive.")], "3 min", 2, true, true, "classwork", ["Checkpoint of Lesson 2 question."], ["unit_review", "question_order"]),
     exercise("beg_u1_l6_ex3", "beg_u1_l6", "beg_u1_l6_sec_practice", "drag_drop", "Соберите диалог по порядку.", "Greeting, name, from, job, close.", [item("i1", "Order the dialogue.", "", [], [], ["Hi. I'm Max.", "Nice to meet you.", "I'm from Gomel.", "I'm a designer.", "See you."])], [answer("a1", "i1", ["Hi. I'm Max.", "Nice to meet you.", "I'm from Gomel.", "I'm a designer.", "See you."], "Hi. I'm Max. Nice to meet you. I'm from Gomel. I'm a designer. See you.", "This is a logical first-meeting order.")], [accepted("a1", [["Hi. I'm Max.", "Nice to meet you.", "I'm from Gomel.", "I'm a designer.", "See you."]], "Exact order expected for drag-drop.")], "6 min", 2, true, true, "homework", ["Dialogue ordering prepares final role-play."], ["dialogue_order", "homework"]),
     exercise("beg_u1_l6_ex4", "beg_u1_l6", "beg_u1_l6_sec_speaking", "short_writing", "Напишите 6 строк диалога первой встречи.", "Include greeting, name, from, job, and one contact detail.", [item("i1", "Write a six-line first-meeting dialogue.")], [answer("a1", "i1", "A: Hi. I'm Max. B: Hello, Max. I'm Alina. A: Where are you from? B: I'm from Minsk. A: What's your job? B: I'm a designer.", "A short first-meeting dialogue with six turns.", "Use Unit 1 chunks.")], [accepted("a1", ["Hi I'm Max Hello Max I'm Alina Where are you from I'm from Minsk What's your job I'm a designer"], "Speaker labels and punctuation optional.")], "8 min", 2, true, true, "homework", ["Final homework can feed speaking widget later."], ["first_meeting_dialogue", "unit_checkpoint"]),
   ],
@@ -510,6 +510,25 @@ const beginnerUnit1 = {
     speakingActivity("beg_u1_l6_speak_1", "beg_u1_l6", "Сыграйте диалог первой встречи с новой ролью.", ["Hi. I'm ...", "Nice to meet you.", "See you."]),
   ],
 };
+
+const fromQuestionCheckpoint = beginnerUnit1.exercises.find((exerciseItem) => exerciseItem.exercise_id === "beg_u1_l6_ex2");
+if (fromQuestionCheckpoint) {
+  fromQuestionCheckpoint.hints_ru = [
+    {
+      hint_id: "beg_u1_l6_ex2_hint_1",
+      trigger: "after_wrong_attempt",
+      text_ru: "В вопросе о городе или стране используйте from: Where are you from?",
+      target: "fill_gap",
+    },
+  ];
+  fromQuestionCheckpoint.ai_explanation = {
+    ...fromQuestionCheckpoint.ai_explanation,
+    text_ru:
+      "Слово job означает «работа» или «профессия». В вопросе о городе или стране нужен предлог from. Как правильно: Where are you from?",
+    linked_target_language_en: "Where are you from?",
+    example_en: "I'm from Minsk.",
+  };
+}
 
 function section(section_id, lesson_id, section_type, title_ru, student_instruction_ru, teacher_purpose, target_language_en, estimated_time, mode) {
   return { section_id, lesson_id, section_type, title_ru, student_instruction_ru, teacher_purpose, target_language_en, estimated_time, mode };
