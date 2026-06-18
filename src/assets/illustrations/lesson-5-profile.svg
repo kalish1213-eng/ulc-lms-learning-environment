@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 380" role="img" aria-label="Adult completing a profile card with a partner">
+  <rect width="560" height="380" rx="34" fill="#FFF5CC"/>
+  <rect x="82" y="66" width="396" height="248" rx="34" fill="#fff"/>
+  <rect x="264" y="96" width="154" height="172" rx="24" fill="#EEF0FF"/>
+  <path d="M294 128h86M294 160h104M294 192h70M294 224h96" stroke="#3C4AF5" stroke-width="8" stroke-linecap="round"/>
+  <g fill="none" stroke="#17182B" stroke-linecap="round" stroke-linejoin="round" stroke-width="9">
+    <circle cx="170" cy="158" r="38"/>
+    <path d="M112 286c16-52 35-78 58-78s42 26 58 78"/>
+  </g>
+  <path d="M116 104h72M326 292h86" stroke="#20A873" stroke-width="9" stroke-linecap="round"/>
+</svg>

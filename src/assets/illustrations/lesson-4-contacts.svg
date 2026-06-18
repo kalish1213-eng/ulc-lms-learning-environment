@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 380" role="img" aria-label="Adults exchanging phone and email contacts">
+  <rect width="560" height="380" rx="34" fill="#EEF0FF"/>
+  <rect x="80" y="72" width="400" height="236" rx="34" fill="#fff"/>
+  <rect x="228" y="90" width="112" height="168" rx="26" fill="#fff" stroke="#17182B" stroke-width="9"/>
+  <circle cx="284" cy="236" r="7" fill="#3C4AF5"/>
+  <path d="M250 128h68M250 154h48M250 180h58" stroke="#3C4AF5" stroke-width="8" stroke-linecap="round"/>
+  <g fill="none" stroke="#17182B" stroke-linecap="round" stroke-linejoin="round" stroke-width="8">
+    <circle cx="150" cy="174" r="28"/>
+    <path d="M106 286c12-42 27-62 44-62s32 20 44 62"/>
+    <circle cx="414" cy="174" r="28"/>
+    <path d="M370 286c12-42 27-62 44-62s32 20 44 62"/>
+  </g>
+  <path d="M118 116h62M382 116h62" stroke="#20A873" stroke-width="8" stroke-linecap="round"/>
+  <circle cx="462" cy="72" r="30" fill="#FFF0E8"/>
+</svg>

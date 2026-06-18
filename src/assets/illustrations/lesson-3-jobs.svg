@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 380" role="img" aria-label="Adults discussing work in a studio">
+  <rect width="560" height="380" rx="34" fill="#FFF0E8"/>
+  <rect x="64" y="70" width="432" height="246" rx="34" fill="#fff"/>
+  <rect x="218" y="112" width="124" height="82" rx="20" fill="#EEF0FF" stroke="#3C4AF5" stroke-width="8"/>
+  <path d="M242 146h76M242 170h46" stroke="#3C4AF5" stroke-width="8" stroke-linecap="round"/>
+  <g fill="none" stroke="#17182B" stroke-linecap="round" stroke-linejoin="round" stroke-width="10">
+    <circle cx="150" cy="168" r="34"/>
+    <path d="M98 282c14-48 31-72 52-72s38 24 52 72"/>
+    <circle cx="408" cy="168" r="34"/>
+    <path d="M356 282c14-48 31-72 52-72s38 24 52 72"/>
+  </g>
+  <path d="M92 104h76M390 104h74M236 256h88" stroke="#F19B45" stroke-width="9" stroke-linecap="round"/>
+</svg>

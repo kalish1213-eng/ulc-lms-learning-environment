@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 380" role="img" aria-label="Two adults introducing themselves">
+  <rect width="560" height="380" rx="34" fill="#EEF0FF"/>
+  <rect x="58" y="72" width="444" height="244" rx="32" fill="#fff"/>
+  <path d="M96 292h366" stroke="#3C4AF5" stroke-width="13" stroke-linecap="round" opacity=".12"/>
+  <g fill="none" stroke="#17182B" stroke-linecap="round" stroke-linejoin="round" stroke-width="10">
+    <circle cx="164" cy="154" r="36"/>
+    <path d="M112 270c15-48 32-72 52-72s37 24 52 72"/>
+    <circle cx="394" cy="154" r="36"/>
+    <path d="M342 270c15-48 32-72 52-72s37 24 52 72"/>
+  </g>
+  <path d="M226 106h124c20 0 36 16 36 36v24c0 20-16 36-36 36h-54l-44 36 10-36h-36c-20 0-36-16-36-36v-24c0-20 16-36 36-36z" fill="#3C4AF5"/>
+  <path d="M246 148h104M246 174h70" stroke="#fff" stroke-width="9" stroke-linecap="round"/>
+  <circle cx="468" cy="84" r="28" fill="#FFF0E8"/>
+</svg>
