@@ -98,6 +98,7 @@ const state = {
   selectedStudentId: DEMO_USER_ID,
   methodStatusFilter: "all",
   selectedMethodExerciseId: null,
+  brandReferenceScreen: "dashboard",
   editorialTeacherMode: false,
   editorialTeacherToolbar: false,
   editorialTranscriptOpen: {},
@@ -240,6 +241,7 @@ function statusTone(status) {
 }
 
 function routeFor(view, extra = {}) {
+  if (view === "brand-reference") return `#brand-reference/${extra.screen || state.brandReferenceScreen || "dashboard"}`;
   if (view === "student-book-reference") return "#student-book-reference";
   if (view === "lesson") return `#lesson/${extra.lessonId || state.selectedLessonId}`;
   if (view === "exercise") return `#exercise/${extra.lessonId || state.selectedLessonId}/${extra.exerciseId || state.selectedExerciseId}/${extra.mode || state.selectedMode}`;
@@ -265,6 +267,11 @@ function parseHash() {
 
   if (["student", "unit", "review", "teacher", "methodologist", "student-book-reference"].includes(view)) {
     state.view = view;
+  }
+
+  if (view === "brand-reference") {
+    state.view = "brand-reference";
+    state.brandReferenceScreen = lessonId || "dashboard";
   }
 
   if (view === "lesson" && getLesson(lessonId)) {
@@ -304,6 +311,10 @@ function render() {
 }
 
 function renderShell(content) {
+  if (state.view === "brand-reference") {
+    return content;
+  }
+
   if (state.view === "student-book-reference") {
     return content;
   }
@@ -1163,7 +1174,266 @@ function renderStudentBookReferenceLesson() {
   `;
 }
 
+const brandReferenceNav = [
+  ["dashboard", "Dashboard"],
+  ["unit", "Unit"],
+  ["student-book", "Student Book"],
+  ["homework", "Homework"],
+  ["review-result", "Review"],
+  ["teacher-live", "Teacher Live"],
+  ["assets", "Assets"],
+  ["typography", "Typography"],
+  ["colors", "Colors"],
+];
+
+const brandLessons = [
+  ["01", "Hello! I'm...", "Vocabulary", "mint"],
+  ["02", "Where are you from?", "Grammar", "blue"],
+  ["03", "What's your job?", "Speaking", "coral"],
+  ["04", "Numbers and spelling", "Listening", "sky"],
+  ["05", "Personal information", "Useful phrases", "yellow"],
+  ["06", "Meeting a new person", "Review", "navy"],
+];
+
+function OfficialLogoSlot(label = "Official ULC logo asset") {
+  return `
+    <div class="official-logo-slot" aria-label="${html(label)}">
+      <span>${html(label)}</span>
+      <small>approved local file required</small>
+    </div>
+  `;
+}
+
+function BrandPhoto(className = "", label = "") {
+  return `<figure class="brand-ref-photo photo-crop ${html(className)}" aria-label="${html(label || "ULC lesson photo")}"></figure>`;
+}
+
+function BrandScreenFrame(screen, body) {
+  return `
+    <main class="brand-reference-shell" data-brand-screen="${html(screen)}">
+      <aside class="brand-reference-nav">
+        ${OfficialLogoSlot("ULC logo slot")}
+        <nav>
+          ${brandReferenceNav.map(([id, label]) => `
+            <button class="${state.brandReferenceScreen === id ? "active" : ""}" type="button" data-brand-screen="${html(id)}">
+              ${html(label)}
+            </button>
+          `).join("")}
+        </nav>
+        <p>Design-only reference. No production LMS behavior is connected here.</p>
+      </aside>
+      ${body}
+    </main>
+  `;
+}
+
+function BrandHeader(title, kicker, copy = "") {
+  return `
+    <header class="brand-ref-header">
+      <div>
+        <p>${html(kicker)}</p>
+        <h1>${html(title)}</h1>
+        ${copy ? `<span>${html(copy)}</span>` : ""}
+      </div>
+      ${OfficialLogoSlot()}
+    </header>
+  `;
+}
+
+function renderBrandDashboardReference() {
+  return BrandScreenFrame("dashboard", `
+    <section class="brand-ref-canvas dashboard-ref">
+      ${BrandHeader("Today starts with speaking", "Student Dashboard", "Current lesson, homework, review, progress, one clear CTA.")}
+      <div class="brand-dashboard-grid">
+        <article class="brand-hero-panel">
+          <div class="brand-letter-fragment">U</div>
+          <div>
+            <p class="brand-ref-pill">Unit 1 / Lesson 1</p>
+            <h2>Nice to meet you</h2>
+            <p>После урока вы сможете представиться и начать короткий разговор.</p>
+            <button type="button">Продолжить урок</button>
+          </div>
+          ${BrandPhoto("wide", "Adults speaking in a language club")}
+        </article>
+        <article class="brand-mini-card red"><span>Next group class</span><strong>Today / 19:00</strong></article>
+        <article class="brand-mini-card mint"><span>Homework</span><strong>3 tasks / 12 min</strong></article>
+        <article class="brand-mini-card sky"><span>Review</span><strong>hello, from, email</strong></article>
+        <article class="brand-progress-card"><span>Unit progress</span><strong>38%</strong>${progressBar(38)}</article>
+      </div>
+    </section>
+  `);
+}
+
+function renderBrandUnitReference() {
+  return BrandScreenFrame("unit", `
+    <section class="brand-ref-canvas unit-ref">
+      ${BrandHeader("Unit 1", "Course / Unit page", "A bold unit identity with photographic lesson covers, not icons.")}
+      <div class="brand-unit-cover">
+        <div>
+          <p class="brand-ref-pill">Beginner English for Adults</p>
+          <h2>Nice to meet you</h2>
+          <p>Introduce yourself, ask simple questions, spell contact details, and hold a first meeting dialogue.</p>
+          ${progressBar(38)}
+        </div>
+        ${BrandPhoto("wide", "Urban language club event")}
+      </div>
+      <div class="brand-lesson-thumb-grid">
+        ${brandLessons.map(([number, title, section, tone], index) => `
+          <article class="brand-lesson-thumb ${html(tone)}">
+            ${BrandPhoto(`contact crop-${(index % 5) + 1}`, title)}
+            <span>${html(number)}</span>
+            <strong>${html(title)}</strong>
+            <small>${html(section)}</small>
+          </article>
+        `).join("")}
+      </div>
+    </section>
+  `);
+}
+
+function renderBrandStudentBookReference() {
+  return BrandScreenFrame("student-book", `
+    <section class="brand-ref-canvas student-book-ref">
+      ${BrandHeader("1A / Nice to meet you", "Student Book", "Editorial density with ULC color, photos, section numbers, and native tasks.")}
+      <div class="brand-book-spread">
+        <section class="brand-book-section vocab">
+          <span class="brand-section-number">1</span>
+          <h2>Vocabulary</h2>
+          <p>Познакомьтесь с персонажами и выберите фразы для первой встречи.</p>
+          <div class="brand-photo-mosaic">
+            ${BrandPhoto("wide", "Language club meeting")}
+            ${BrandPhoto("contact crop-1", "Anna")}
+            ${BrandPhoto("contact crop-2", "Leo")}
+          </div>
+          <div class="brand-ref-task"><strong>Match the phrases.</strong><span>Nice to meet you. / Nice to meet you, too.</span></div>
+        </section>
+        <section class="brand-book-section grammar">
+          <span class="brand-section-number">2</span>
+          <h2>Grammar</h2>
+          <p>Verb be / short forms.</p>
+          <div class="brand-dialogue-lines"><span>I'm Anna.</span><span>Are you from Minsk?</span><span>No, I'm from Warsaw.</span></div>
+          <div class="brand-ref-task blue"><strong>Complete the gaps.</strong><span>Hi, ___ Anna. / ___ you new here?</span></div>
+        </section>
+        <section class="brand-book-section listening">
+          <span class="brand-section-number">3</span>
+          <h2>Reading & Listening</h2>
+          <div class="brand-audio-bar"><span></span><strong>1.5 Audio</strong><button type="button">Play</button></div>
+          <div class="brand-sequence-row">${[1, 2, 3, 4].map((item) => BrandPhoto(`contact crop-${item}`, `Sequence ${item}`)).join("")}</div>
+        </section>
+        <section class="brand-book-section speaking">
+          <span class="brand-section-number">4</span>
+          <h2>Speaking</h2>
+          <p>Ask and answer. Then change roles.</p>
+          <div class="brand-question-chip">What's your name?</div>
+          <div class="brand-question-chip">Where are you from?</div>
+          <div class="brand-question-chip">Nice to meet you.</div>
+        </section>
+      </div>
+    </section>
+  `);
+}
+
+function renderBrandHomeworkReference() {
+  return BrandScreenFrame("homework", `
+    <section class="brand-ref-canvas homework-ref">
+      ${BrandHeader("Homework / Lesson 1", "Homework", "A continuation of the Student Book: same photo context, compact progress, calm checks.")}
+      <div class="brand-homework-layout">
+        <article class="brand-homework-hero">
+          ${BrandPhoto("wide", "Homework connected to lesson photo")}
+          <div>
+            <p class="brand-ref-pill">Deadline / tomorrow 22:00</p>
+            <h2>Nice to meet you</h2>
+            <p>Закрепите фразы знакомства и короткие формы.</p>
+          </div>
+        </article>
+        <div class="brand-homework-list">
+          ${["Match greetings", "Complete I'm / you're", "Listen and type", "Short profile"].map((item, index) => `
+            <article><span>${index + 1}</span><strong>${html(item)}</strong><small>${index === 0 ? "done" : index === 1 ? "in progress" : "not started"}</small></article>
+          `).join("")}
+        </div>
+      </div>
+    </section>
+  `);
+}
+
+function renderBrandReviewReference() {
+  return BrandScreenFrame("review-result", `
+    <section class="brand-ref-canvas review-ref">
+      ${BrandHeader("Review result", "Achievements", "Official illustration assets may be used here after approval.")}
+      <div class="brand-review-grid">
+        <article class="brand-score-card"><span class="brand-accent-word">82%</span><h2>Great start</h2><p>Вы уверенно используете greetings и verb be.</p></article>
+        <article class="brand-asset-slot-card"><span>Official brain / cat / gift asset slot</span><small>No unapproved character is rendered.</small></article>
+        <article class="brand-mistake-card"><h3>Review next</h3><p>Where are you from? / I'm from Minsk.</p></article>
+      </div>
+    </section>
+  `);
+}
+
+function renderBrandTeacherLiveReference() {
+  return BrandScreenFrame("teacher-live", `
+    <section class="brand-ref-canvas teacher-live-ref">
+      ${BrandHeader("Teacher Live", "Professional workspace", "Students left, Student Book center, controls right. Brand is controlled.")}
+      <div class="brand-live-shell">
+        <aside class="brand-live-students">${["Anna", "Maria", "Irina", "Kate"].map((name, index) => `<span><strong>${html(name)}</strong><em>${index === 0 ? "answering" : "ready"}</em></span>`).join("")}</aside>
+        <article class="brand-live-book">
+          <div class="brand-audio-bar"><span></span><strong>Exercise 1B</strong><button type="button">Show answers</button></div>
+          <h2>Match the questions and answers</h2>
+          <div class="brand-live-task-grid"><span>What's your name?</span><span>I'm Leo.</span><span>Where are you from?</span><span>I'm from Minsk.</span></div>
+        </article>
+        <aside class="brand-live-controls"><strong>Teacher controls</strong><button type="button">Lock exercise</button><button type="button">Send hint</button><button type="button">Open homework</button></aside>
+      </div>
+    </section>
+  `);
+}
+
+function renderBrandAssetsBoard() {
+  return BrandScreenFrame("assets", `
+    <section class="brand-ref-canvas asset-board-ref">
+      ${BrandHeader("Asset usage board", "Brand assets", "Local approved assets only. Missing assets stay as visible slots.")}
+      <div class="brand-board-grid">
+        <article>${OfficialLogoSlot("Round mark slot")}<p>Header / app icon / mobile nav.</p></article>
+        <article>${OfficialLogoSlot("Text mark slot")}<p>Wide dashboard / documents.</p></article>
+        <article class="brand-asset-slot-card"><span>Official illustration slot</span><small>Brain, cat, gift, hands, numbers.</small></article>
+        <article>${BrandPhoto("wide", "Approved lesson photography")}<p>Photos remain the primary Student Book visual.</p></article>
+      </div>
+    </section>
+  `);
+}
+
+function renderBrandTypographyBoard() {
+  return BrandScreenFrame("typography", `
+    <section class="brand-ref-canvas typography-board-ref">
+      ${BrandHeader("Typography board", "Wix Madefor Display + Dela Gothic One", "Accent font is short and expressive. Body remains readable.")}
+      <div class="brand-type-scale"><span class="brand-accent-word">SPEAK</span><h2>Page title / Wix Madefor Display / 44px</h2><h3>Section title / 28px / 700</h3><p>Exercise instruction uses 17-19px and never Dela Gothic One. Dialogues stay readable and compact.</p><small>Metadata / 14-15px / muted navy.</small></div>
+    </section>
+  `);
+}
+
+function renderBrandColorBoard() {
+  const colors = [["blue", "#3C4AF5"], ["navy", "#10265C"], ["red", "#F34040"], ["coral", "#F85F7D"], ["pink", "#F8BAD8"], ["mint", "#54C4A6"], ["light green", "#A4F99B"], ["yellow", "#F9DD06"], ["sky", "#B0EAFF"], ["lavender", "#8D96FF"]];
+  return BrandScreenFrame("colors", `
+    <section class="brand-ref-canvas color-board-ref">
+      ${BrandHeader("Color board", "Official palette", "Main interface: blue, navy, white. Use accents with hierarchy.")}
+      <div class="brand-color-grid">${colors.map(([name, value]) => `<article style="--swatch: ${value};"><span></span><strong>${html(name)}</strong><small>${html(value)}</small></article>`).join("")}</div>
+    </section>
+  `);
+}
+
+function renderBrandReference() {
+  const screen = state.brandReferenceScreen || "dashboard";
+  if (screen === "unit") return renderBrandUnitReference();
+  if (screen === "student-book") return renderBrandStudentBookReference();
+  if (screen === "homework") return renderBrandHomeworkReference();
+  if (screen === "review-result") return renderBrandReviewReference();
+  if (screen === "teacher-live") return renderBrandTeacherLiveReference();
+  if (screen === "assets") return renderBrandAssetsBoard();
+  if (screen === "typography") return renderBrandTypographyBoard();
+  if (screen === "colors") return renderBrandColorBoard();
+  return renderBrandDashboardReference();
+}
+
 function renderCurrentView() {
+  if (state.view === "brand-reference") return renderBrandReference();
   if (state.view === "student-book-reference") return renderStudentBookReferenceLesson();
   if (state.view === "unit") return renderUnitMap();
   if (state.view === "lesson") return renderLessonPage();
@@ -2228,6 +2498,13 @@ function handleClick(event) {
   const route = event.target.closest("[data-route]");
   if (route) {
     navigate(route.dataset.route);
+    return;
+  }
+
+  const brandScreen = event.target.closest("[data-brand-screen]");
+  if (brandScreen) {
+    state.brandReferenceScreen = brandScreen.dataset.brandScreen;
+    navigate("brand-reference", { screen: state.brandReferenceScreen });
     return;
   }
 
