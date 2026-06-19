@@ -107,6 +107,8 @@ const state = {
   editorialSelections: {},
   editorialResults: {},
   editorialPhotoOrder: ["listening-2", "listening-1", "listening-4", "listening-3", "listening-5"],
+  editorialSelectedMatchLeft: null,
+  editorialSelectedPhotoId: null,
   editorialDraggingPhotoId: null,
   editorialSavedPhrases: [],
   editorialLearnedPhrases: [],
@@ -480,6 +482,8 @@ function resetEditorialActivity(id) {
   delete nextResults[id];
   state.editorialSelections = nextSelections;
   state.editorialResults = nextResults;
+  if (id === "vocab-b") state.editorialSelectedMatchLeft = null;
+  if (id === "listen-a") state.editorialSelectedPhotoId = null;
 }
 
 function EditorialFeedback(id) {
@@ -621,15 +625,17 @@ function AudioControl(id, label = "Аудио", script = "", options = {}) {
   const active = Boolean(state.editorialAudioActive[id]);
   const open = Boolean(state.editorialTranscriptOpen[id] || (options.requiresCompletion && options.completed));
   const locked = Boolean(options.requiresCompletion && !options.completed);
+  const transcriptLabel = locked ? "Расшифровка после задания" : options.requiresCompletion ? "Открыть расшифровку" : "Показать текст";
   return `
     <div class="book-audio-control" data-audio-state="${active ? "active" : "idle"}">
-      <button type="button" data-editorial-audio="${html(id)}">${icon("play")}</button>
+      <button type="button" data-editorial-audio="${html(id)}" aria-label="${active ? "Pause" : "Play"}">${active ? "Пауза" : icon("play")}</button>
       <div>
         <strong>${html(label)}</strong>
         <div class="audio-progress"><span style="width: ${active ? "72%" : "18%"}"></span></div>
       </div>
       <button type="button" data-editorial-audio="${html(id)}:speed">0.75 / 1.0</button>
-      <button type="button" data-editorial-audio="${html(id)}:transcript" data-editorial-transcript="${html(id)}" ${locked ? "disabled" : ""}>${locked ? "Текст после заданий" : "Текст"}</button>
+      <button type="button" data-editorial-audio="${html(id)}:replay">Повторить</button>
+      <button type="button" data-editorial-audio="${html(id)}:transcript" data-editorial-transcript="${html(id)}" ${locked ? "disabled" : ""}>${transcriptLabel}</button>
       ${open && !locked ? `<p>${html(script)}</p>` : ""}
     </div>
   `;
@@ -659,10 +665,45 @@ function PhotoChoiceExercise(activity) {
 
 function MatchingExercise(activity) {
   const options = activity.pairs.map(([, right]) => right);
+  const selectedLeft = state.editorialSelectedMatchLeft;
+  const checked = Boolean(editorialResult(activity.id));
   return `
     <div class="micro-task matching-book-task">
       <strong>${html(activity.letter)}. ${html(activity.instruction_ru)}</strong>
-      <div class="book-match-grid">
+      <div class="click-pair-board" data-pair-activity="${html(activity.id)}">
+        <div class="pair-column">
+          <span>Фраза</span>
+          ${activity.pairs.map(([left], index) => {
+            const pairedAnswer = editorialSelection(`${activity.id}:${index}`, "");
+            const pairStatus = checked ? (pairedAnswer === activity.pairs[index][1] ? "correct" : "incorrect") : "";
+            return `
+              <button class="${selectedLeft === String(index) ? "selected" : ""} ${pairedAnswer ? "paired" : ""} ${pairStatus}" style="--pair-index: ${index};" type="button" data-editorial-match-left="${html(activity.id)}" data-index="${index}">
+                ${pairedAnswer ? `<em>${index + 1}</em>` : ""}
+                ${html(left)}
+              </button>
+            `;
+          }).join("")}
+        </div>
+        <div class="pair-column">
+          <span>Ответ</span>
+          ${options.map((right) => {
+            const pairedIndex = activity.pairs.findIndex((_, index) => editorialSelection(`${activity.id}:${index}`, "") === right);
+            const pairStatus = checked && pairedIndex >= 0 ? (activity.pairs[pairedIndex][1] === right ? "correct" : "incorrect") : "";
+            return `
+              <button class="${pairedIndex >= 0 ? "paired" : ""} ${pairStatus}" style="--pair-index: ${Math.max(0, pairedIndex)};" type="button" data-editorial-match-right="${html(activity.id)}" data-value="${html(right)}">
+                ${pairedIndex >= 0 ? `<em>${pairedIndex + 1}</em>` : ""}
+                ${html(right)}
+              </button>
+            `;
+          }).join("")}
+        </div>
+      </div>
+      <div class="pair-clear-row">
+        ${activity.pairs.map(([left], index) => editorialSelection(`${activity.id}:${index}`, "") ? `<button type="button" data-editorial-match-clear="${html(activity.id)}" data-index="${index}">Отменить ${index + 1}</button>` : "").join("")}
+      </div>
+      <details class="matching-fallback">
+        <summary>Клавиатурный вариант</summary>
+        <div class="book-match-grid">
         ${activity.pairs.map(([left], index) => {
           const key = `${activity.id}:${index}`;
           const value = editorialSelection(key, "");
@@ -676,7 +717,8 @@ function MatchingExercise(activity) {
             </label>
           `;
         }).join("")}
-      </div>
+        </div>
+      </details>
       <div class="editorial-action-row">
         <button type="button" data-editorial-check="${html(activity.id)}">Проверить</button>
         <button type="button" data-editorial-retry="${html(activity.id)}">Повторить</button>
@@ -776,21 +818,39 @@ function MultipleChoiceMiniExercise(activity) {
 
 function PhotoOrderingExercise(section) {
   const checked = editorialResult("listen-a");
+  const displayOrder = checked ? section.correct_order : state.editorialPhotoOrder;
   return `
     <div class="micro-task photo-order-task">
       <strong>a. Расставьте фото в правильном порядке.</strong>
+      <p class="photo-order-help">На desktop перетащите фото. На mobile выберите фото, затем номер.</p>
       <div class="photo-sequence">
-        ${state.editorialPhotoOrder.map((photoId, index) => `
-          <div class="sequence-card" draggable="true" data-editorial-drag-photo="${html(photoId)}">
-            <span>${checked ? section.correct_order.indexOf(photoId) + 1 : String.fromCharCode(65 + index)}</span>
+        ${displayOrder.map((photoId, index) => {
+          const assignedNumber = editorialSelection(`listen-a:${photoId}`, "");
+          return `
+          <div class="sequence-card ${state.editorialSelectedPhotoId === photoId ? "selected" : ""} ${assignedNumber ? "ordered" : ""}" role="button" tabindex="0" draggable="${checked ? "false" : "true"}" data-editorial-drag-photo="${html(photoId)}" data-editorial-photo-select="${html(photoId)}">
+            <span>${checked ? section.correct_order.indexOf(photoId) + 1 : assignedNumber || String.fromCharCode(65 + index)}</span>
             ${editorialPhoto(photoId, "sequence-photo")}
-            <select data-editorial-photo-order="${html(photoId)}" aria-label="Order for photo ${index + 1}">
-              <option value="">№</option>
-              ${section.correct_order.map((_, numberIndex) => `<option value="${numberIndex + 1}" ${Number(editorialSelection(`listen-a:${photoId}`, "")) === numberIndex + 1 ? "selected" : ""}>${numberIndex + 1}</option>`).join("")}
-            </select>
           </div>
-        `).join("")}
+        `;
+        }).join("")}
       </div>
+      <div class="photo-number-tray">
+        ${section.correct_order.map((_, numberIndex) => `<button class="${state.editorialSelectedPhotoId && Number(editorialSelection(`listen-a:${state.editorialSelectedPhotoId}`, 0)) === numberIndex + 1 ? "selected" : ""}" type="button" data-editorial-photo-number="${numberIndex + 1}" ${checked || !state.editorialSelectedPhotoId ? "disabled" : ""}>${numberIndex + 1}</button>`).join("")}
+      </div>
+      <details class="photo-order-fallback">
+        <summary>Клавиатурный вариант</summary>
+        <div class="photo-order-select-grid">
+          ${section.photos.map((photoId, index) => `
+            <label>
+              <span>${String.fromCharCode(65 + index)} · ${html(editorialPhotoById(photoId)?.title || photoId)}</span>
+              <select data-editorial-photo-order="${html(photoId)}" aria-label="Order for photo ${index + 1}">
+                <option value="">№</option>
+                ${section.correct_order.map((_, numberIndex) => `<option value="${numberIndex + 1}" ${Number(editorialSelection(`listen-a:${photoId}`, "")) === numberIndex + 1 ? "selected" : ""}>${numberIndex + 1}</option>`).join("")}
+              </select>
+            </label>
+          `).join("")}
+        </div>
+      </details>
       <div class="editorial-action-row">
         <button type="button" data-editorial-check="listen-a">Проверить</button>
         <button type="button" data-editorial-retry="listen-a">Повторить</button>
@@ -2189,7 +2249,10 @@ function handleClick(event) {
   const editorialAudio = event.target.closest("[data-editorial-audio]");
   if (editorialAudio) {
     const [id, action] = editorialAudio.dataset.editorialAudio.split(":");
-    state.editorialAudioActive = { ...state.editorialAudioActive, [id]: true };
+    state.editorialAudioActive = {
+      ...state.editorialAudioActive,
+      [id]: action ? true : !state.editorialAudioActive[id],
+    };
     if (action === "transcript") {
       state.editorialTranscriptOpen = { ...state.editorialTranscriptOpen, [id]: true };
     }
@@ -2214,6 +2277,47 @@ function handleClick(event) {
       ...state.editorialSelections,
       [editorialChoice.dataset.editorialChoice]: editorialChoice.dataset.value,
     };
+    render();
+    return;
+  }
+
+  const editorialMatchLeft = event.target.closest("[data-editorial-match-left]");
+  if (editorialMatchLeft) {
+    const key = `${editorialMatchLeft.dataset.editorialMatchLeft}:${editorialMatchLeft.dataset.index}`;
+    state.editorialSelectedMatchLeft = state.editorialSelectedMatchLeft === editorialMatchLeft.dataset.index ? null : editorialMatchLeft.dataset.index;
+    if (state.editorialSelections[key] && state.editorialSelectedMatchLeft === null) {
+      const next = { ...state.editorialSelections };
+      delete next[key];
+      state.editorialSelections = next;
+    }
+    render();
+    return;
+  }
+
+  const editorialMatchRight = event.target.closest("[data-editorial-match-right]");
+  if (editorialMatchRight) {
+    const selectedIndex = state.editorialSelectedMatchLeft;
+    if (selectedIndex !== null) {
+      const id = editorialMatchRight.dataset.editorialMatchRight;
+      const next = { ...state.editorialSelections };
+      Object.keys(next)
+        .filter((key) => key.startsWith(`${id}:`) && next[key] === editorialMatchRight.dataset.value)
+        .forEach((key) => delete next[key]);
+      next[`${id}:${selectedIndex}`] = editorialMatchRight.dataset.value;
+      state.editorialSelections = next;
+      state.editorialSelectedMatchLeft = null;
+    }
+    render();
+    return;
+  }
+
+  const editorialMatchClear = event.target.closest("[data-editorial-match-clear]");
+  if (editorialMatchClear) {
+    const key = `${editorialMatchClear.dataset.editorialMatchClear}:${editorialMatchClear.dataset.index}`;
+    const next = { ...state.editorialSelections };
+    delete next[key];
+    state.editorialSelections = next;
+    state.editorialSelectedMatchLeft = null;
     render();
     return;
   }
@@ -2251,6 +2355,30 @@ function handleClick(event) {
   if (editorialMc) {
     const key = `${editorialMc.dataset.editorialMc}:${editorialMc.dataset.index}`;
     state.editorialSelections = { ...state.editorialSelections, [key]: editorialMc.dataset.value };
+    render();
+    return;
+  }
+
+  const editorialPhotoSelect = event.target.closest("[data-editorial-photo-select]");
+  if (editorialPhotoSelect && !editorialResult("listen-a")) {
+    state.editorialSelectedPhotoId =
+      state.editorialSelectedPhotoId === editorialPhotoSelect.dataset.editorialPhotoSelect
+        ? null
+        : editorialPhotoSelect.dataset.editorialPhotoSelect;
+    render();
+    return;
+  }
+
+  const editorialPhotoNumber = event.target.closest("[data-editorial-photo-number]");
+  if (editorialPhotoNumber && state.editorialSelectedPhotoId && !editorialResult("listen-a")) {
+    const selectedPhoto = state.editorialSelectedPhotoId;
+    const next = { ...state.editorialSelections };
+    Object.keys(next)
+      .filter((key) => key.startsWith("listen-a:") && Number(next[key]) === Number(editorialPhotoNumber.dataset.editorialPhotoNumber))
+      .forEach((key) => delete next[key]);
+    next[`listen-a:${selectedPhoto}`] = editorialPhotoNumber.dataset.editorialPhotoNumber;
+    state.editorialSelections = next;
+    state.editorialSelectedPhotoId = null;
     render();
     return;
   }
