@@ -1,0 +1,1902 @@
+[
+  {
+    "asset_id": "dashboard-hero",
+    "screen": "platform",
+    "lesson_id": "",
+    "purpose": "Student Book or platform learning scene",
+    "characters": [
+      "anna",
+      "leo",
+      "maya"
+    ],
+    "location": "ulc-classroom",
+    "action": "dashboard hero",
+    "emotion": "confident and friendly",
+    "wardrobe": "match ULC character bible exactly; adult casual-smart clothes with restrained ULC accent color",
+    "props": [
+      "notebook",
+      "phone"
+    ],
+    "lighting": "natural daylight or soft warm indoor light, realistic skin texture",
+    "camera_angle": "slightly wide editorial angle",
+    "lens_style": "35mm or 50mm editorial photography, shallow but usable depth of field",
+    "composition": "subject clear, no text inside image, leave safe crop space for UI overlay",
+    "focal_point": "anna + leo + maya",
+    "desktop_ratio": "16:9 or 3:2",
+    "tablet_ratio": "4:3",
+    "mobile_ratio": "4:5 safe crop",
+    "continuity_requirements": [
+      "same face",
+      "same hair color and length",
+      "same wardrobe within one scene",
+      "same interior in sequence",
+      "same age impression"
+    ],
+    "instagram_references": [
+      "ulc_instagram_001",
+      "ulc_instagram_002",
+      "ulc_instagram_003"
+    ],
+    "right_brand_references": [
+      "ULC palette",
+      "Wix Madefor Display",
+      "Dela Gothic One accent",
+      "official illustration constructor only outside photo"
+    ],
+    "positive_prompt": "photorealistic editorial photography, adult language school, ULC visual identity, characters: anna, leo, maya, exact wardrobe from ULC character bible, location: ulc-classroom, action: dashboard hero, natural lighting, realistic skin texture, candid body language, premium educational campaign, Minsk contemporary European urban context, safe crop requirements, no embedded text, no logos inside photo",
+    "negative_prompt": "no illustration, no cartoon, no 3D render, no stick figures, no plastic stock smile, no child classroom, no distorted hands, no extra fingers, no duplicate people, no changed face, no inconsistent hairstyle, no inconsistent clothes, no watermark, no text, no logo, no oversaturated colors, no stretched faces, no warped furniture",
+    "status": "planned"
+  },
+  {
+    "asset_id": "unit-1-cover",
+    "screen": "platform",
+    "lesson_id": "",
+    "purpose": "LMS cover image",
+    "characters": [
+      "anna",
+      "leo",
+      "maya"
+    ],
+    "location": "ulc-reception",
+    "action": "unit 1 cover",
+    "emotion": "focused and curious",
+    "wardrobe": "match ULC character bible exactly; adult casual-smart clothes with restrained ULC accent color",
+    "props": [
+      "notebook",
+      "phone",
+      "coffee cup"
+    ],
+    "lighting": "natural daylight or soft warm indoor light, realistic skin texture",
+    "camera_angle": "eye-level medium shot",
+    "lens_style": "35mm or 50mm editorial photography, shallow but usable depth of field",
+    "composition": "subject clear, no text inside image, leave safe crop space for UI overlay",
+    "focal_point": "anna + leo + maya",
+    "desktop_ratio": "16:9 or 3:2",
+    "tablet_ratio": "4:3",
+    "mobile_ratio": "4:5 safe crop",
+    "continuity_requirements": [
+      "same face",
+      "same hair color and length",
+      "same wardrobe within one scene",
+      "same interior in sequence",
+      "same age impression"
+    ],
+    "instagram_references": [
+      "ulc_instagram_002",
+      "ulc_instagram_003",
+      "ulc_instagram_004"
+    ],
+    "right_brand_references": [
+      "ULC palette",
+      "Wix Madefor Display",
+      "Dela Gothic One accent",
+      "official illustration constructor only outside photo"
+    ],
+    "positive_prompt": "photorealistic editorial photography, adult language school, ULC visual identity, characters: anna, leo, maya, exact wardrobe from ULC character bible, location: ulc-reception, action: unit 1 cover, natural lighting, realistic skin texture, candid body language, premium educational campaign, Minsk contemporary European urban context, safe crop requirements, no embedded text, no logos inside photo",
+    "negative_prompt": "no illustration, no cartoon, no 3D render, no stick figures, no plastic stock smile, no child classroom, no distorted hands, no extra fingers, no duplicate people, no changed face, no inconsistent hairstyle, no inconsistent clothes, no watermark, no text, no logo, no oversaturated colors, no stretched faces, no warped furniture",
+    "status": "planned"
+  },
+  {
+    "asset_id": "lesson-1-cover",
+    "screen": "lesson/homework/review",
+    "lesson_id": "beg_u1_l1",
+    "purpose": "LMS cover image",
+    "characters": [
+      "anna",
+      "leo",
+      "maya"
+    ],
+    "location": "ulc-lounge",
+    "action": "lesson 1 cover",
+    "emotion": "warm and conversational",
+    "wardrobe": "match ULC character bible exactly; adult casual-smart clothes with restrained ULC accent color",
+    "props": [
+      "notebook",
+      "phone",
+      "coffee cup",
+      "ULC-neutral learning materials"
+    ],
+    "lighting": "natural daylight or soft warm indoor light, realistic skin texture",
+    "camera_angle": "slightly wide editorial angle",
+    "lens_style": "35mm or 50mm editorial photography, shallow but usable depth of field",
+    "composition": "subject clear, no text inside image, leave safe crop space for UI overlay",
+    "focal_point": "anna + leo + maya",
+    "desktop_ratio": "16:9 or 3:2",
+    "tablet_ratio": "4:3",
+    "mobile_ratio": "4:5 safe crop",
+    "continuity_requirements": [
+      "same face",
+      "same hair color and length",
+      "same wardrobe within one scene",
+      "same interior in sequence",
+      "same age impression"
+    ],
+    "instagram_references": [
+      "ulc_instagram_003",
+      "ulc_instagram_004",
+      "ulc_instagram_005"
+    ],
+    "right_brand_references": [
+      "ULC palette",
+      "Wix Madefor Display",
+      "Dela Gothic One accent",
+      "official illustration constructor only outside photo"
+    ],
+    "positive_prompt": "photorealistic editorial photography, adult language school, ULC visual identity, characters: anna, leo, maya, exact wardrobe from ULC character bible, location: ulc-lounge, action: lesson 1 cover, natural lighting, realistic skin texture, candid body language, premium educational campaign, Minsk contemporary European urban context, safe crop requirements, no embedded text, no logos inside photo",
+    "negative_prompt": "no illustration, no cartoon, no 3D render, no stick figures, no plastic stock smile, no child classroom, no distorted hands, no extra fingers, no duplicate people, no changed face, no inconsistent hairstyle, no inconsistent clothes, no watermark, no text, no logo, no oversaturated colors, no stretched faces, no warped furniture",
+    "status": "planned"
+  },
+  {
+    "asset_id": "lesson-2-cover",
+    "screen": "lesson/homework/review",
+    "lesson_id": "beg_u1_l2",
+    "purpose": "LMS cover image",
+    "characters": [
+      "anna",
+      "leo",
+      "maya"
+    ],
+    "location": "city-cafe",
+    "action": "lesson 2 cover",
+    "emotion": "confident and friendly",
+    "wardrobe": "match ULC character bible exactly; adult casual-smart clothes with restrained ULC accent color",
+    "props": [
+      "notebook",
+      "phone"
+    ],
+    "lighting": "natural daylight or soft warm indoor light, realistic skin texture",
+    "camera_angle": "eye-level medium shot",
+    "lens_style": "35mm or 50mm editorial photography, shallow but usable depth of field",
+    "composition": "subject clear, no text inside image, leave safe crop space for UI overlay",
+    "focal_point": "anna + leo + maya",
+    "desktop_ratio": "16:9 or 3:2",
+    "tablet_ratio": "4:3",
+    "mobile_ratio": "4:5 safe crop",
+    "continuity_requirements": [
+      "same face",
+      "same hair color and length",
+      "same wardrobe within one scene",
+      "same interior in sequence",
+      "same age impression"
+    ],
+    "instagram_references": [
+      "ulc_instagram_004",
+      "ulc_instagram_005",
+      "ulc_instagram_006"
+    ],
+    "right_brand_references": [
+      "ULC palette",
+      "Wix Madefor Display",
+      "Dela Gothic One accent",
+      "official illustration constructor only outside photo"
+    ],
+    "positive_prompt": "photorealistic editorial photography, adult language school, ULC visual identity, characters: anna, leo, maya, exact wardrobe from ULC character bible, location: city-cafe, action: lesson 2 cover, natural lighting, realistic skin texture, candid body language, premium educational campaign, Minsk contemporary European urban context, safe crop requirements, no embedded text, no logos inside photo",
+    "negative_prompt": "no illustration, no cartoon, no 3D render, no stick figures, no plastic stock smile, no child classroom, no distorted hands, no extra fingers, no duplicate people, no changed face, no inconsistent hairstyle, no inconsistent clothes, no watermark, no text, no logo, no oversaturated colors, no stretched faces, no warped furniture",
+    "status": "planned"
+  },
+  {
+    "asset_id": "lesson-3-cover",
+    "screen": "lesson/homework/review",
+    "lesson_id": "beg_u1_l3",
+    "purpose": "LMS cover image",
+    "characters": [
+      "anna",
+      "leo",
+      "maya"
+    ],
+    "location": "coworking",
+    "action": "lesson 3 cover",
+    "emotion": "focused and curious",
+    "wardrobe": "match ULC character bible exactly; adult casual-smart clothes with restrained ULC accent color",
+    "props": [
+      "notebook",
+      "phone",
+      "coffee cup"
+    ],
+    "lighting": "natural daylight or soft warm indoor light, realistic skin texture",
+    "camera_angle": "slightly wide editorial angle",
+    "lens_style": "35mm or 50mm editorial photography, shallow but usable depth of field",
+    "composition": "subject clear, no text inside image, leave safe crop space for UI overlay",
+    "focal_point": "anna + leo + maya",
+    "desktop_ratio": "16:9 or 3:2",
+    "tablet_ratio": "4:3",
+    "mobile_ratio": "4:5 safe crop",
+    "continuity_requirements": [
+      "same face",
+      "same hair color and length",
+      "same wardrobe within one scene",
+      "same interior in sequence",
+      "same age impression"
+    ],
+    "instagram_references": [
+      "ulc_instagram_005",
+      "ulc_instagram_006",
+      "ulc_instagram_007"
+    ],
+    "right_brand_references": [
+      "ULC palette",
+      "Wix Madefor Display",
+      "Dela Gothic One accent",
+      "official illustration constructor only outside photo"
+    ],
+    "positive_prompt": "photorealistic editorial photography, adult language school, ULC visual identity, characters: anna, leo, maya, exact wardrobe from ULC character bible, location: coworking, action: lesson 3 cover, natural lighting, realistic skin texture, candid body language, premium educational campaign, Minsk contemporary European urban context, safe crop requirements, no embedded text, no logos inside photo",
+    "negative_prompt": "no illustration, no cartoon, no 3D render, no stick figures, no plastic stock smile, no child classroom, no distorted hands, no extra fingers, no duplicate people, no changed face, no inconsistent hairstyle, no inconsistent clothes, no watermark, no text, no logo, no oversaturated colors, no stretched faces, no warped furniture",
+    "status": "planned"
+  },
+  {
+    "asset_id": "lesson-4-cover",
+    "screen": "lesson/homework/review",
+    "lesson_id": "beg_u1_l4",
+    "purpose": "LMS cover image",
+    "characters": [
+      "anna",
+      "leo",
+      "maya"
+    ],
+    "location": "minsk-street",
+    "action": "lesson 4 cover",
+    "emotion": "warm and conversational",
+    "wardrobe": "match ULC character bible exactly; adult casual-smart clothes with restrained ULC accent color",
+    "props": [
+      "notebook",
+      "phone",
+      "coffee cup",
+      "ULC-neutral learning materials"
+    ],
+    "lighting": "natural daylight or soft warm indoor light, realistic skin texture",
+    "camera_angle": "eye-level medium shot",
+    "lens_style": "35mm or 50mm editorial photography, shallow but usable depth of field",
+    "composition": "subject clear, no text inside image, leave safe crop space for UI overlay",
+    "focal_point": "anna + leo + maya",
+    "desktop_ratio": "16:9 or 3:2",
+    "tablet_ratio": "4:3",
+    "mobile_ratio": "4:5 safe crop",
+    "continuity_requirements": [
+      "same face",
+      "same hair color and length",
+      "same wardrobe within one scene",
+      "same interior in sequence",
+      "same age impression"
+    ],
+    "instagram_references": [
+      "ulc_instagram_006",
+      "ulc_instagram_007",
+      "ulc_instagram_008"
+    ],
+    "right_brand_references": [
+      "ULC palette",
+      "Wix Madefor Display",
+      "Dela Gothic One accent",
+      "official illustration constructor only outside photo"
+    ],
+    "positive_prompt": "photorealistic editorial photography, adult language school, ULC visual identity, characters: anna, leo, maya, exact wardrobe from ULC character bible, location: minsk-street, action: lesson 4 cover, natural lighting, realistic skin texture, candid body language, premium educational campaign, Minsk contemporary European urban context, safe crop requirements, no embedded text, no logos inside photo",
+    "negative_prompt": "no illustration, no cartoon, no 3D render, no stick figures, no plastic stock smile, no child classroom, no distorted hands, no extra fingers, no duplicate people, no changed face, no inconsistent hairstyle, no inconsistent clothes, no watermark, no text, no logo, no oversaturated colors, no stretched faces, no warped furniture",
+    "status": "planned"
+  },
+  {
+    "asset_id": "lesson-5-cover",
+    "screen": "lesson/homework/review",
+    "lesson_id": "beg_u1_l5",
+    "purpose": "LMS cover image",
+    "characters": [
+      "anna",
+      "leo",
+      "maya"
+    ],
+    "location": "airport",
+    "action": "lesson 5 cover",
+    "emotion": "confident and friendly",
+    "wardrobe": "match ULC character bible exactly; adult casual-smart clothes with restrained ULC accent color",
+    "props": [
+      "notebook",
+      "phone"
+    ],
+    "lighting": "natural daylight or soft warm indoor light, realistic skin texture",
+    "camera_angle": "slightly wide editorial angle",
+    "lens_style": "35mm or 50mm editorial photography, shallow but usable depth of field",
+    "composition": "subject clear, no text inside image, leave safe crop space for UI overlay",
+    "focal_point": "anna + leo + maya",
+    "desktop_ratio": "16:9 or 3:2",
+    "tablet_ratio": "4:3",
+    "mobile_ratio": "4:5 safe crop",
+    "continuity_requirements": [
+      "same face",
+      "same hair color and length",
+      "same wardrobe within one scene",
+      "same interior in sequence",
+      "same age impression"
+    ],
+    "instagram_references": [
+      "ulc_instagram_007",
+      "ulc_instagram_008",
+      "ulc_instagram_009"
+    ],
+    "right_brand_references": [
+      "ULC palette",
+      "Wix Madefor Display",
+      "Dela Gothic One accent",
+      "official illustration constructor only outside photo"
+    ],
+    "positive_prompt": "photorealistic editorial photography, adult language school, ULC visual identity, characters: anna, leo, maya, exact wardrobe from ULC character bible, location: airport, action: lesson 5 cover, natural lighting, realistic skin texture, candid body language, premium educational campaign, Minsk contemporary European urban context, safe crop requirements, no embedded text, no logos inside photo",
+    "negative_prompt": "no illustration, no cartoon, no 3D render, no stick figures, no plastic stock smile, no child classroom, no distorted hands, no extra fingers, no duplicate people, no changed face, no inconsistent hairstyle, no inconsistent clothes, no watermark, no text, no logo, no oversaturated colors, no stretched faces, no warped furniture",
+    "status": "planned"
+  },
+  {
+    "asset_id": "lesson-6-cover",
+    "screen": "lesson/homework/review",
+    "lesson_id": "beg_u1_l6",
+    "purpose": "LMS cover image",
+    "characters": [
+      "anna",
+      "leo",
+      "maya"
+    ],
+    "location": "hotel-reception",
+    "action": "lesson 6 cover",
+    "emotion": "focused and curious",
+    "wardrobe": "match ULC character bible exactly; adult casual-smart clothes with restrained ULC accent color",
+    "props": [
+      "notebook",
+      "phone",
+      "coffee cup"
+    ],
+    "lighting": "natural daylight or soft warm indoor light, realistic skin texture",
+    "camera_angle": "eye-level medium shot",
+    "lens_style": "35mm or 50mm editorial photography, shallow but usable depth of field",
+    "composition": "subject clear, no text inside image, leave safe crop space for UI overlay",
+    "focal_point": "anna + leo + maya",
+    "desktop_ratio": "16:9 or 3:2",
+    "tablet_ratio": "4:3",
+    "mobile_ratio": "4:5 safe crop",
+    "continuity_requirements": [
+      "same face",
+      "same hair color and length",
+      "same wardrobe within one scene",
+      "same interior in sequence",
+      "same age impression"
+    ],
+    "instagram_references": [
+      "ulc_instagram_008",
+      "ulc_instagram_009",
+      "ulc_instagram_010"
+    ],
+    "right_brand_references": [
+      "ULC palette",
+      "Wix Madefor Display",
+      "Dela Gothic One accent",
+      "official illustration constructor only outside photo"
+    ],
+    "positive_prompt": "photorealistic editorial photography, adult language school, ULC visual identity, characters: anna, leo, maya, exact wardrobe from ULC character bible, location: hotel-reception, action: lesson 6 cover, natural lighting, realistic skin texture, candid body language, premium educational campaign, Minsk contemporary European urban context, safe crop requirements, no embedded text, no logos inside photo",
+    "negative_prompt": "no illustration, no cartoon, no 3D render, no stick figures, no plastic stock smile, no child classroom, no distorted hands, no extra fingers, no duplicate people, no changed face, no inconsistent hairstyle, no inconsistent clothes, no watermark, no text, no logo, no oversaturated colors, no stretched faces, no warped furniture",
+    "status": "planned"
+  },
+  {
+    "asset_id": "homework-cover",
+    "screen": "lesson/homework/review",
+    "lesson_id": "",
+    "purpose": "LMS cover image",
+    "characters": [
+      "anna",
+      "leo",
+      "maya"
+    ],
+    "location": "restaurant",
+    "action": "homework cover",
+    "emotion": "warm and conversational",
+    "wardrobe": "match ULC character bible exactly; adult casual-smart clothes with restrained ULC accent color",
+    "props": [
+      "notebook",
+      "phone",
+      "coffee cup",
+      "ULC-neutral learning materials"
+    ],
+    "lighting": "natural daylight or soft warm indoor light, realistic skin texture",
+    "camera_angle": "slightly wide editorial angle",
+    "lens_style": "35mm or 50mm editorial photography, shallow but usable depth of field",
+    "composition": "subject clear, no text inside image, leave safe crop space for UI overlay",
+    "focal_point": "anna + leo + maya",
+    "desktop_ratio": "16:9 or 3:2",
+    "tablet_ratio": "4:3",
+    "mobile_ratio": "4:5 safe crop",
+    "continuity_requirements": [
+      "same face",
+      "same hair color and length",
+      "same wardrobe within one scene",
+      "same interior in sequence",
+      "same age impression"
+    ],
+    "instagram_references": [
+      "ulc_instagram_009",
+      "ulc_instagram_010",
+      "ulc_instagram_011"
+    ],
+    "right_brand_references": [
+      "ULC palette",
+      "Wix Madefor Display",
+      "Dela Gothic One accent",
+      "official illustration constructor only outside photo"
+    ],
+    "positive_prompt": "photorealistic editorial photography, adult language school, ULC visual identity, characters: anna, leo, maya, exact wardrobe from ULC character bible, location: restaurant, action: homework cover, natural lighting, realistic skin texture, candid body language, premium educational campaign, Minsk contemporary European urban context, safe crop requirements, no embedded text, no logos inside photo",
+    "negative_prompt": "no illustration, no cartoon, no 3D render, no stick figures, no plastic stock smile, no child classroom, no distorted hands, no extra fingers, no duplicate people, no changed face, no inconsistent hairstyle, no inconsistent clothes, no watermark, no text, no logo, no oversaturated colors, no stretched faces, no warped furniture",
+    "status": "planned"
+  },
+  {
+    "asset_id": "review-background",
+    "screen": "lesson/homework/review",
+    "lesson_id": "",
+    "purpose": "Student Book or platform learning scene",
+    "characters": [
+      "anna",
+      "leo",
+      "maya"
+    ],
+    "location": "office",
+    "action": "review background",
+    "emotion": "confident and friendly",
+    "wardrobe": "match ULC character bible exactly; adult casual-smart clothes with restrained ULC accent color",
+    "props": [
+      "notebook",
+      "phone"
+    ],
+    "lighting": "natural daylight or soft warm indoor light, realistic skin texture",
+    "camera_angle": "eye-level medium shot",
+    "lens_style": "35mm or 50mm editorial photography, shallow but usable depth of field",
+    "composition": "subject clear, no text inside image, leave safe crop space for UI overlay",
+    "focal_point": "anna + leo + maya",
+    "desktop_ratio": "16:9 or 3:2",
+    "tablet_ratio": "4:3",
+    "mobile_ratio": "4:5 safe crop",
+    "continuity_requirements": [
+      "same face",
+      "same hair color and length",
+      "same wardrobe within one scene",
+      "same interior in sequence",
+      "same age impression"
+    ],
+    "instagram_references": [
+      "ulc_instagram_010",
+      "ulc_instagram_011",
+      "ulc_instagram_012"
+    ],
+    "right_brand_references": [
+      "ULC palette",
+      "Wix Madefor Display",
+      "Dela Gothic One accent",
+      "official illustration constructor only outside photo"
+    ],
+    "positive_prompt": "photorealistic editorial photography, adult language school, ULC visual identity, characters: anna, leo, maya, exact wardrobe from ULC character bible, location: office, action: review background, natural lighting, realistic skin texture, candid body language, premium educational campaign, Minsk contemporary European urban context, safe crop requirements, no embedded text, no logos inside photo",
+    "negative_prompt": "no illustration, no cartoon, no 3D render, no stick figures, no plastic stock smile, no child classroom, no distorted hands, no extra fingers, no duplicate people, no changed face, no inconsistent hairstyle, no inconsistent clothes, no watermark, no text, no logo, no oversaturated colors, no stretched faces, no warped furniture",
+    "status": "planned"
+  },
+  {
+    "asset_id": "onboarding-01",
+    "screen": "character system",
+    "lesson_id": "",
+    "purpose": "Student Book or platform learning scene",
+    "characters": [
+      "anna",
+      "leo",
+      "maya"
+    ],
+    "location": "ulc-classroom",
+    "action": "onboarding 01",
+    "emotion": "focused and curious",
+    "wardrobe": "match ULC character bible exactly; adult casual-smart clothes with restrained ULC accent color",
+    "props": [
+      "notebook",
+      "phone",
+      "coffee cup"
+    ],
+    "lighting": "natural daylight or soft warm indoor light, realistic skin texture",
+    "camera_angle": "slightly wide editorial angle",
+    "lens_style": "35mm or 50mm editorial photography, shallow but usable depth of field",
+    "composition": "subject clear, no text inside image, leave safe crop space for UI overlay",
+    "focal_point": "anna + leo + maya",
+    "desktop_ratio": "16:9 or 3:2",
+    "tablet_ratio": "4:3",
+    "mobile_ratio": "4:5 safe crop",
+    "continuity_requirements": [
+      "same face",
+      "same hair color and length",
+      "same wardrobe within one scene",
+      "same interior in sequence",
+      "same age impression"
+    ],
+    "instagram_references": [
+      "ulc_instagram_011",
+      "ulc_instagram_012",
+      "ulc_instagram_013"
+    ],
+    "right_brand_references": [
+      "ULC palette",
+      "Wix Madefor Display",
+      "Dela Gothic One accent",
+      "official illustration constructor only outside photo"
+    ],
+    "positive_prompt": "photorealistic editorial photography, adult language school, ULC visual identity, characters: anna, leo, maya, exact wardrobe from ULC character bible, location: ulc-classroom, action: onboarding 01, natural lighting, realistic skin texture, candid body language, premium educational campaign, Minsk contemporary European urban context, safe crop requirements, no embedded text, no logos inside photo",
+    "negative_prompt": "no illustration, no cartoon, no 3D render, no stick figures, no plastic stock smile, no child classroom, no distorted hands, no extra fingers, no duplicate people, no changed face, no inconsistent hairstyle, no inconsistent clothes, no watermark, no text, no logo, no oversaturated colors, no stretched faces, no warped furniture",
+    "status": "planned"
+  },
+  {
+    "asset_id": "onboarding-02",
+    "screen": "character system",
+    "lesson_id": "",
+    "purpose": "Student Book or platform learning scene",
+    "characters": [
+      "anna",
+      "leo",
+      "maya"
+    ],
+    "location": "ulc-reception",
+    "action": "onboarding 02",
+    "emotion": "warm and conversational",
+    "wardrobe": "match ULC character bible exactly; adult casual-smart clothes with restrained ULC accent color",
+    "props": [
+      "notebook",
+      "phone",
+      "coffee cup",
+      "ULC-neutral learning materials"
+    ],
+    "lighting": "natural daylight or soft warm indoor light, realistic skin texture",
+    "camera_angle": "eye-level medium shot",
+    "lens_style": "35mm or 50mm editorial photography, shallow but usable depth of field",
+    "composition": "subject clear, no text inside image, leave safe crop space for UI overlay",
+    "focal_point": "anna + leo + maya",
+    "desktop_ratio": "16:9 or 3:2",
+    "tablet_ratio": "4:3",
+    "mobile_ratio": "4:5 safe crop",
+    "continuity_requirements": [
+      "same face",
+      "same hair color and length",
+      "same wardrobe within one scene",
+      "same interior in sequence",
+      "same age impression"
+    ],
+    "instagram_references": [
+      "ulc_instagram_012",
+      "ulc_instagram_013",
+      "ulc_instagram_014"
+    ],
+    "right_brand_references": [
+      "ULC palette",
+      "Wix Madefor Display",
+      "Dela Gothic One accent",
+      "official illustration constructor only outside photo"
+    ],
+    "positive_prompt": "photorealistic editorial photography, adult language school, ULC visual identity, characters: anna, leo, maya, exact wardrobe from ULC character bible, location: ulc-reception, action: onboarding 02, natural lighting, realistic skin texture, candid body language, premium educational campaign, Minsk contemporary European urban context, safe crop requirements, no embedded text, no logos inside photo",
+    "negative_prompt": "no illustration, no cartoon, no 3D render, no stick figures, no plastic stock smile, no child classroom, no distorted hands, no extra fingers, no duplicate people, no changed face, no inconsistent hairstyle, no inconsistent clothes, no watermark, no text, no logo, no oversaturated colors, no stretched faces, no warped furniture",
+    "status": "planned"
+  },
+  {
+    "asset_id": "anna-portrait",
+    "screen": "character system",
+    "lesson_id": "",
+    "purpose": "Character portrait for continuity",
+    "characters": [
+      "anna"
+    ],
+    "location": "ulc-lounge",
+    "action": "anna portrait",
+    "emotion": "confident and friendly",
+    "wardrobe": "match ULC character bible exactly; adult casual-smart clothes with restrained ULC accent color",
+    "props": [
+      "notebook",
+      "phone"
+    ],
+    "lighting": "natural daylight or soft warm indoor light, realistic skin texture",
+    "camera_angle": "slightly wide editorial angle",
+    "lens_style": "35mm or 50mm editorial photography, shallow but usable depth of field",
+    "composition": "subject clear, no text inside image, leave safe crop space for UI overlay",
+    "focal_point": "anna",
+    "desktop_ratio": "4:5",
+    "tablet_ratio": "4:3",
+    "mobile_ratio": "4:5",
+    "continuity_requirements": [
+      "same face",
+      "same hair color and length",
+      "same wardrobe within one scene",
+      "same interior in sequence",
+      "same age impression"
+    ],
+    "instagram_references": [
+      "ulc_instagram_013",
+      "ulc_instagram_014",
+      "ulc_instagram_015"
+    ],
+    "right_brand_references": [
+      "ULC palette",
+      "Wix Madefor Display",
+      "Dela Gothic One accent",
+      "official illustration constructor only outside photo"
+    ],
+    "positive_prompt": "photorealistic editorial photography, adult language school, ULC visual identity, characters: anna, exact wardrobe from ULC character bible, location: ulc-lounge, action: anna portrait, natural lighting, realistic skin texture, candid body language, premium educational campaign, Minsk contemporary European urban context, safe crop requirements, no embedded text, no logos inside photo",
+    "negative_prompt": "no illustration, no cartoon, no 3D render, no stick figures, no plastic stock smile, no child classroom, no distorted hands, no extra fingers, no duplicate people, no changed face, no inconsistent hairstyle, no inconsistent clothes, no watermark, no text, no logo, no oversaturated colors, no stretched faces, no warped furniture",
+    "status": "planned"
+  },
+  {
+    "asset_id": "leo-portrait",
+    "screen": "character system",
+    "lesson_id": "",
+    "purpose": "Character portrait for continuity",
+    "characters": [
+      "leo"
+    ],
+    "location": "city-cafe",
+    "action": "leo portrait",
+    "emotion": "focused and curious",
+    "wardrobe": "match ULC character bible exactly; adult casual-smart clothes with restrained ULC accent color",
+    "props": [
+      "notebook",
+      "phone",
+      "coffee cup"
+    ],
+    "lighting": "natural daylight or soft warm indoor light, realistic skin texture",
+    "camera_angle": "eye-level medium shot",
+    "lens_style": "35mm or 50mm editorial photography, shallow but usable depth of field",
+    "composition": "subject clear, no text inside image, leave safe crop space for UI overlay",
+    "focal_point": "leo",
+    "desktop_ratio": "4:5",
+    "tablet_ratio": "4:3",
+    "mobile_ratio": "4:5",
+    "continuity_requirements": [
+      "same face",
+      "same hair color and length",
+      "same wardrobe within one scene",
+      "same interior in sequence",
+      "same age impression"
+    ],
+    "instagram_references": [
+      "ulc_instagram_014",
+      "ulc_instagram_015",
+      "ulc_instagram_016"
+    ],
+    "right_brand_references": [
+      "ULC palette",
+      "Wix Madefor Display",
+      "Dela Gothic One accent",
+      "official illustration constructor only outside photo"
+    ],
+    "positive_prompt": "photorealistic editorial photography, adult language school, ULC visual identity, characters: leo, exact wardrobe from ULC character bible, location: city-cafe, action: leo portrait, natural lighting, realistic skin texture, candid body language, premium educational campaign, Minsk contemporary European urban context, safe crop requirements, no embedded text, no logos inside photo",
+    "negative_prompt": "no illustration, no cartoon, no 3D render, no stick figures, no plastic stock smile, no child classroom, no distorted hands, no extra fingers, no duplicate people, no changed face, no inconsistent hairstyle, no inconsistent clothes, no watermark, no text, no logo, no oversaturated colors, no stretched faces, no warped furniture",
+    "status": "planned"
+  },
+  {
+    "asset_id": "maya-portrait",
+    "screen": "character system",
+    "lesson_id": "",
+    "purpose": "Character portrait for continuity",
+    "characters": [
+      "maya"
+    ],
+    "location": "coworking",
+    "action": "maya portrait",
+    "emotion": "warm and conversational",
+    "wardrobe": "match ULC character bible exactly; adult casual-smart clothes with restrained ULC accent color",
+    "props": [
+      "notebook",
+      "phone",
+      "coffee cup",
+      "ULC-neutral learning materials"
+    ],
+    "lighting": "natural daylight or soft warm indoor light, realistic skin texture",
+    "camera_angle": "slightly wide editorial angle",
+    "lens_style": "35mm or 50mm editorial photography, shallow but usable depth of field",
+    "composition": "subject clear, no text inside image, leave safe crop space for UI overlay",
+    "focal_point": "maya",
+    "desktop_ratio": "4:5",
+    "tablet_ratio": "4:3",
+    "mobile_ratio": "4:5",
+    "continuity_requirements": [
+      "same face",
+      "same hair color and length",
+      "same wardrobe within one scene",
+      "same interior in sequence",
+      "same age impression"
+    ],
+    "instagram_references": [
+      "ulc_instagram_015",
+      "ulc_instagram_016",
+      "ulc_instagram_017"
+    ],
+    "right_brand_references": [
+      "ULC palette",
+      "Wix Madefor Display",
+      "Dela Gothic One accent",
+      "official illustration constructor only outside photo"
+    ],
+    "positive_prompt": "photorealistic editorial photography, adult language school, ULC visual identity, characters: maya, exact wardrobe from ULC character bible, location: coworking, action: maya portrait, natural lighting, realistic skin texture, candid body language, premium educational campaign, Minsk contemporary European urban context, safe crop requirements, no embedded text, no logos inside photo",
+    "negative_prompt": "no illustration, no cartoon, no 3D render, no stick figures, no plastic stock smile, no child classroom, no distorted hands, no extra fingers, no duplicate people, no changed face, no inconsistent hairstyle, no inconsistent clothes, no watermark, no text, no logo, no oversaturated colors, no stretched faces, no warped furniture",
+    "status": "planned"
+  },
+  {
+    "asset_id": "dima-portrait",
+    "screen": "character system",
+    "lesson_id": "",
+    "purpose": "Character portrait for continuity",
+    "characters": [
+      "dima"
+    ],
+    "location": "minsk-street",
+    "action": "dima portrait",
+    "emotion": "confident and friendly",
+    "wardrobe": "match ULC character bible exactly; adult casual-smart clothes with restrained ULC accent color",
+    "props": [
+      "notebook",
+      "phone"
+    ],
+    "lighting": "natural daylight or soft warm indoor light, realistic skin texture",
+    "camera_angle": "eye-level medium shot",
+    "lens_style": "35mm or 50mm editorial photography, shallow but usable depth of field",
+    "composition": "subject clear, no text inside image, leave safe crop space for UI overlay",
+    "focal_point": "dima",
+    "desktop_ratio": "4:5",
+    "tablet_ratio": "4:3",
+    "mobile_ratio": "4:5",
+    "continuity_requirements": [
+      "same face",
+      "same hair color and length",
+      "same wardrobe within one scene",
+      "same interior in sequence",
+      "same age impression"
+    ],
+    "instagram_references": [
+      "ulc_instagram_016",
+      "ulc_instagram_017",
+      "ulc_instagram_018"
+    ],
+    "right_brand_references": [
+      "ULC palette",
+      "Wix Madefor Display",
+      "Dela Gothic One accent",
+      "official illustration constructor only outside photo"
+    ],
+    "positive_prompt": "photorealistic editorial photography, adult language school, ULC visual identity, characters: dima, exact wardrobe from ULC character bible, location: minsk-street, action: dima portrait, natural lighting, realistic skin texture, candid body language, premium educational campaign, Minsk contemporary European urban context, safe crop requirements, no embedded text, no logos inside photo",
+    "negative_prompt": "no illustration, no cartoon, no 3D render, no stick figures, no plastic stock smile, no child classroom, no distorted hands, no extra fingers, no duplicate people, no changed face, no inconsistent hairstyle, no inconsistent clothes, no watermark, no text, no logo, no oversaturated colors, no stretched faces, no warped furniture",
+    "status": "planned"
+  },
+  {
+    "asset_id": "irina-teacher-portrait",
+    "screen": "character system",
+    "lesson_id": "",
+    "purpose": "Character portrait for continuity",
+    "characters": [
+      "irina"
+    ],
+    "location": "airport",
+    "action": "irina teacher portrait",
+    "emotion": "focused and curious",
+    "wardrobe": "match ULC character bible exactly; adult casual-smart clothes with restrained ULC accent color",
+    "props": [
+      "notebook",
+      "phone",
+      "coffee cup"
+    ],
+    "lighting": "natural daylight or soft warm indoor light, realistic skin texture",
+    "camera_angle": "slightly wide editorial angle",
+    "lens_style": "35mm or 50mm editorial photography, shallow but usable depth of field",
+    "composition": "subject clear, no text inside image, leave safe crop space for UI overlay",
+    "focal_point": "irina",
+    "desktop_ratio": "4:5",
+    "tablet_ratio": "4:3",
+    "mobile_ratio": "4:5",
+    "continuity_requirements": [
+      "same face",
+      "same hair color and length",
+      "same wardrobe within one scene",
+      "same interior in sequence",
+      "same age impression"
+    ],
+    "instagram_references": [
+      "ulc_instagram_017",
+      "ulc_instagram_018",
+      "ulc_instagram_019"
+    ],
+    "right_brand_references": [
+      "ULC palette",
+      "Wix Madefor Display",
+      "Dela Gothic One accent",
+      "official illustration constructor only outside photo"
+    ],
+    "positive_prompt": "photorealistic editorial photography, adult language school, ULC visual identity, characters: irina, exact wardrobe from ULC character bible, location: airport, action: irina teacher portrait, natural lighting, realistic skin texture, candid body language, premium educational campaign, Minsk contemporary European urban context, safe crop requirements, no embedded text, no logos inside photo",
+    "negative_prompt": "no illustration, no cartoon, no 3D render, no stick figures, no plastic stock smile, no child classroom, no distorted hands, no extra fingers, no duplicate people, no changed face, no inconsistent hairstyle, no inconsistent clothes, no watermark, no text, no logo, no oversaturated colors, no stretched faces, no warped furniture",
+    "status": "planned"
+  },
+  {
+    "asset_id": "michael-teacher-portrait",
+    "screen": "character system",
+    "lesson_id": "",
+    "purpose": "Character portrait for continuity",
+    "characters": [
+      "michael"
+    ],
+    "location": "hotel-reception",
+    "action": "michael teacher portrait",
+    "emotion": "warm and conversational",
+    "wardrobe": "match ULC character bible exactly; adult casual-smart clothes with restrained ULC accent color",
+    "props": [
+      "notebook",
+      "phone",
+      "coffee cup",
+      "ULC-neutral learning materials"
+    ],
+    "lighting": "natural daylight or soft warm indoor light, realistic skin texture",
+    "camera_angle": "eye-level medium shot",
+    "lens_style": "35mm or 50mm editorial photography, shallow but usable depth of field",
+    "composition": "subject clear, no text inside image, leave safe crop space for UI overlay",
+    "focal_point": "michael",
+    "desktop_ratio": "4:5",
+    "tablet_ratio": "4:3",
+    "mobile_ratio": "4:5",
+    "continuity_requirements": [
+      "same face",
+      "same hair color and length",
+      "same wardrobe within one scene",
+      "same interior in sequence",
+      "same age impression"
+    ],
+    "instagram_references": [
+      "ulc_instagram_018",
+      "ulc_instagram_019",
+      "ulc_instagram_020"
+    ],
+    "right_brand_references": [
+      "ULC palette",
+      "Wix Madefor Display",
+      "Dela Gothic One accent",
+      "official illustration constructor only outside photo"
+    ],
+    "positive_prompt": "photorealistic editorial photography, adult language school, ULC visual identity, characters: michael, exact wardrobe from ULC character bible, location: hotel-reception, action: michael teacher portrait, natural lighting, realistic skin texture, candid body language, premium educational campaign, Minsk contemporary European urban context, safe crop requirements, no embedded text, no logos inside photo",
+    "negative_prompt": "no illustration, no cartoon, no 3D render, no stick figures, no plastic stock smile, no child classroom, no distorted hands, no extra fingers, no duplicate people, no changed face, no inconsistent hairstyle, no inconsistent clothes, no watermark, no text, no logo, no oversaturated colors, no stretched faces, no warped furniture",
+    "status": "planned"
+  },
+  {
+    "asset_id": "olga-profile",
+    "screen": "character system",
+    "lesson_id": "",
+    "purpose": "Character portrait for continuity",
+    "characters": [
+      "anna"
+    ],
+    "location": "restaurant",
+    "action": "olga profile",
+    "emotion": "confident and friendly",
+    "wardrobe": "match ULC character bible exactly; adult casual-smart clothes with restrained ULC accent color",
+    "props": [
+      "notebook",
+      "phone"
+    ],
+    "lighting": "natural daylight or soft warm indoor light, realistic skin texture",
+    "camera_angle": "slightly wide editorial angle",
+    "lens_style": "35mm or 50mm editorial photography, shallow but usable depth of field",
+    "composition": "subject clear, no text inside image, leave safe crop space for UI overlay",
+    "focal_point": "anna",
+    "desktop_ratio": "4:5",
+    "tablet_ratio": "4:3",
+    "mobile_ratio": "4:5",
+    "continuity_requirements": [
+      "same face",
+      "same hair color and length",
+      "same wardrobe within one scene",
+      "same interior in sequence",
+      "same age impression"
+    ],
+    "instagram_references": [
+      "ulc_instagram_019",
+      "ulc_instagram_020",
+      "ulc_instagram_021"
+    ],
+    "right_brand_references": [
+      "ULC palette",
+      "Wix Madefor Display",
+      "Dela Gothic One accent",
+      "official illustration constructor only outside photo"
+    ],
+    "positive_prompt": "photorealistic editorial photography, adult language school, ULC visual identity, characters: anna, exact wardrobe from ULC character bible, location: restaurant, action: olga profile, natural lighting, realistic skin texture, candid body language, premium educational campaign, Minsk contemporary European urban context, safe crop requirements, no embedded text, no logos inside photo",
+    "negative_prompt": "no illustration, no cartoon, no 3D render, no stick figures, no plastic stock smile, no child classroom, no distorted hands, no extra fingers, no duplicate people, no changed face, no inconsistent hairstyle, no inconsistent clothes, no watermark, no text, no logo, no oversaturated colors, no stretched faces, no warped furniture",
+    "status": "planned"
+  },
+  {
+    "asset_id": "nina-profile",
+    "screen": "character system",
+    "lesson_id": "",
+    "purpose": "Character portrait for continuity",
+    "characters": [
+      "leo"
+    ],
+    "location": "office",
+    "action": "nina profile",
+    "emotion": "focused and curious",
+    "wardrobe": "match ULC character bible exactly; adult casual-smart clothes with restrained ULC accent color",
+    "props": [
+      "notebook",
+      "phone",
+      "coffee cup"
+    ],
+    "lighting": "natural daylight or soft warm indoor light, realistic skin texture",
+    "camera_angle": "eye-level medium shot",
+    "lens_style": "35mm or 50mm editorial photography, shallow but usable depth of field",
+    "composition": "subject clear, no text inside image, leave safe crop space for UI overlay",
+    "focal_point": "leo",
+    "desktop_ratio": "4:5",
+    "tablet_ratio": "4:3",
+    "mobile_ratio": "4:5",
+    "continuity_requirements": [
+      "same face",
+      "same hair color and length",
+      "same wardrobe within one scene",
+      "same interior in sequence",
+      "same age impression"
+    ],
+    "instagram_references": [
+      "ulc_instagram_020",
+      "ulc_instagram_021",
+      "ulc_instagram_022"
+    ],
+    "right_brand_references": [
+      "ULC palette",
+      "Wix Madefor Display",
+      "Dela Gothic One accent",
+      "official illustration constructor only outside photo"
+    ],
+    "positive_prompt": "photorealistic editorial photography, adult language school, ULC visual identity, characters: leo, exact wardrobe from ULC character bible, location: office, action: nina profile, natural lighting, realistic skin texture, candid body language, premium educational campaign, Minsk contemporary European urban context, safe crop requirements, no embedded text, no logos inside photo",
+    "negative_prompt": "no illustration, no cartoon, no 3D render, no stick figures, no plastic stock smile, no child classroom, no distorted hands, no extra fingers, no duplicate people, no changed face, no inconsistent hairstyle, no inconsistent clothes, no watermark, no text, no logo, no oversaturated colors, no stretched faces, no warped furniture",
+    "status": "planned"
+  },
+  {
+    "asset_id": "pavel-profile",
+    "screen": "character system",
+    "lesson_id": "",
+    "purpose": "Character portrait for continuity",
+    "characters": [
+      "maya"
+    ],
+    "location": "ulc-classroom",
+    "action": "pavel profile",
+    "emotion": "warm and conversational",
+    "wardrobe": "match ULC character bible exactly; adult casual-smart clothes with restrained ULC accent color",
+    "props": [
+      "notebook",
+      "phone",
+      "coffee cup",
+      "ULC-neutral learning materials"
+    ],
+    "lighting": "natural daylight or soft warm indoor light, realistic skin texture",
+    "camera_angle": "slightly wide editorial angle",
+    "lens_style": "35mm or 50mm editorial photography, shallow but usable depth of field",
+    "composition": "subject clear, no text inside image, leave safe crop space for UI overlay",
+    "focal_point": "maya",
+    "desktop_ratio": "4:5",
+    "tablet_ratio": "4:3",
+    "mobile_ratio": "4:5",
+    "continuity_requirements": [
+      "same face",
+      "same hair color and length",
+      "same wardrobe within one scene",
+      "same interior in sequence",
+      "same age impression"
+    ],
+    "instagram_references": [
+      "ulc_instagram_021",
+      "ulc_instagram_022",
+      "ulc_instagram_023"
+    ],
+    "right_brand_references": [
+      "ULC palette",
+      "Wix Madefor Display",
+      "Dela Gothic One accent",
+      "official illustration constructor only outside photo"
+    ],
+    "positive_prompt": "photorealistic editorial photography, adult language school, ULC visual identity, characters: maya, exact wardrobe from ULC character bible, location: ulc-classroom, action: pavel profile, natural lighting, realistic skin texture, candid body language, premium educational campaign, Minsk contemporary European urban context, safe crop requirements, no embedded text, no logos inside photo",
+    "negative_prompt": "no illustration, no cartoon, no 3D render, no stick figures, no plastic stock smile, no child classroom, no distorted hands, no extra fingers, no duplicate people, no changed face, no inconsistent hairstyle, no inconsistent clothes, no watermark, no text, no logo, no oversaturated colors, no stretched faces, no warped furniture",
+    "status": "planned"
+  },
+  {
+    "asset_id": "sara-profile",
+    "screen": "character system",
+    "lesson_id": "",
+    "purpose": "Character portrait for continuity",
+    "characters": [
+      "dima"
+    ],
+    "location": "ulc-reception",
+    "action": "sara profile",
+    "emotion": "confident and friendly",
+    "wardrobe": "match ULC character bible exactly; adult casual-smart clothes with restrained ULC accent color",
+    "props": [
+      "notebook",
+      "phone"
+    ],
+    "lighting": "natural daylight or soft warm indoor light, realistic skin texture",
+    "camera_angle": "eye-level medium shot",
+    "lens_style": "35mm or 50mm editorial photography, shallow but usable depth of field",
+    "composition": "subject clear, no text inside image, leave safe crop space for UI overlay",
+    "focal_point": "dima",
+    "desktop_ratio": "4:5",
+    "tablet_ratio": "4:3",
+    "mobile_ratio": "4:5",
+    "continuity_requirements": [
+      "same face",
+      "same hair color and length",
+      "same wardrobe within one scene",
+      "same interior in sequence",
+      "same age impression"
+    ],
+    "instagram_references": [
+      "ulc_instagram_022",
+      "ulc_instagram_023",
+      "ulc_instagram_024"
+    ],
+    "right_brand_references": [
+      "ULC palette",
+      "Wix Madefor Display",
+      "Dela Gothic One accent",
+      "official illustration constructor only outside photo"
+    ],
+    "positive_prompt": "photorealistic editorial photography, adult language school, ULC visual identity, characters: dima, exact wardrobe from ULC character bible, location: ulc-reception, action: sara profile, natural lighting, realistic skin texture, candid body language, premium educational campaign, Minsk contemporary European urban context, safe crop requirements, no embedded text, no logos inside photo",
+    "negative_prompt": "no illustration, no cartoon, no 3D render, no stick figures, no plastic stock smile, no child classroom, no distorted hands, no extra fingers, no duplicate people, no changed face, no inconsistent hairstyle, no inconsistent clothes, no watermark, no text, no logo, no oversaturated colors, no stretched faces, no warped furniture",
+    "status": "planned"
+  },
+  {
+    "asset_id": "meeting-scene-wide",
+    "screen": "Student Book",
+    "lesson_id": "",
+    "purpose": "Student Book or platform learning scene",
+    "characters": [
+      "irina"
+    ],
+    "location": "ulc-lounge",
+    "action": "meeting scene wide",
+    "emotion": "focused and curious",
+    "wardrobe": "match ULC character bible exactly; adult casual-smart clothes with restrained ULC accent color",
+    "props": [
+      "notebook",
+      "phone",
+      "coffee cup"
+    ],
+    "lighting": "natural daylight or soft warm indoor light, realistic skin texture",
+    "camera_angle": "slightly wide editorial angle",
+    "lens_style": "35mm or 50mm editorial photography, shallow but usable depth of field",
+    "composition": "subject clear, no text inside image, leave safe crop space for UI overlay",
+    "focal_point": "irina",
+    "desktop_ratio": "16:9 or 3:2",
+    "tablet_ratio": "4:3",
+    "mobile_ratio": "4:5 safe crop",
+    "continuity_requirements": [
+      "same face",
+      "same hair color and length",
+      "same wardrobe within one scene",
+      "same interior in sequence",
+      "same age impression"
+    ],
+    "instagram_references": [
+      "ulc_instagram_023",
+      "ulc_instagram_024",
+      "ulc_instagram_025"
+    ],
+    "right_brand_references": [
+      "ULC palette",
+      "Wix Madefor Display",
+      "Dela Gothic One accent",
+      "official illustration constructor only outside photo"
+    ],
+    "positive_prompt": "photorealistic editorial photography, adult language school, ULC visual identity, characters: irina, exact wardrobe from ULC character bible, location: ulc-lounge, action: meeting scene wide, natural lighting, realistic skin texture, candid body language, premium educational campaign, Minsk contemporary European urban context, safe crop requirements, no embedded text, no logos inside photo",
+    "negative_prompt": "no illustration, no cartoon, no 3D render, no stick figures, no plastic stock smile, no child classroom, no distorted hands, no extra fingers, no duplicate people, no changed face, no inconsistent hairstyle, no inconsistent clothes, no watermark, no text, no logo, no oversaturated colors, no stretched faces, no warped furniture",
+    "status": "planned"
+  },
+  {
+    "asset_id": "first-dialogue-sequence-01",
+    "screen": "Student Book",
+    "lesson_id": "",
+    "purpose": "Student Book or platform learning scene",
+    "characters": [
+      "michael"
+    ],
+    "location": "city-cafe",
+    "action": "first dialogue sequence 01",
+    "emotion": "warm and conversational",
+    "wardrobe": "match ULC character bible exactly; adult casual-smart clothes with restrained ULC accent color",
+    "props": [
+      "notebook",
+      "phone",
+      "coffee cup",
+      "ULC-neutral learning materials"
+    ],
+    "lighting": "natural daylight or soft warm indoor light, realistic skin texture",
+    "camera_angle": "eye-level medium shot",
+    "lens_style": "35mm or 50mm editorial photography, shallow but usable depth of field",
+    "composition": "subject clear, no text inside image, leave safe crop space for UI overlay",
+    "focal_point": "michael",
+    "desktop_ratio": "16:9 or 3:2",
+    "tablet_ratio": "4:3",
+    "mobile_ratio": "4:5 safe crop",
+    "continuity_requirements": [
+      "same face",
+      "same hair color and length",
+      "same wardrobe within one scene",
+      "same interior in sequence",
+      "same age impression"
+    ],
+    "instagram_references": [
+      "ulc_instagram_024",
+      "ulc_instagram_025",
+      "ulc_instagram_026"
+    ],
+    "right_brand_references": [
+      "ULC palette",
+      "Wix Madefor Display",
+      "Dela Gothic One accent",
+      "official illustration constructor only outside photo"
+    ],
+    "positive_prompt": "photorealistic editorial photography, adult language school, ULC visual identity, characters: michael, exact wardrobe from ULC character bible, location: city-cafe, action: first dialogue sequence 01, natural lighting, realistic skin texture, candid body language, premium educational campaign, Minsk contemporary European urban context, safe crop requirements, no embedded text, no logos inside photo",
+    "negative_prompt": "no illustration, no cartoon, no 3D render, no stick figures, no plastic stock smile, no child classroom, no distorted hands, no extra fingers, no duplicate people, no changed face, no inconsistent hairstyle, no inconsistent clothes, no watermark, no text, no logo, no oversaturated colors, no stretched faces, no warped furniture",
+    "status": "planned"
+  },
+  {
+    "asset_id": "first-dialogue-sequence-02",
+    "screen": "Student Book",
+    "lesson_id": "",
+    "purpose": "Student Book or platform learning scene",
+    "characters": [
+      "anna"
+    ],
+    "location": "coworking",
+    "action": "first dialogue sequence 02",
+    "emotion": "confident and friendly",
+    "wardrobe": "match ULC character bible exactly; adult casual-smart clothes with restrained ULC accent color",
+    "props": [
+      "notebook",
+      "phone"
+    ],
+    "lighting": "natural daylight or soft warm indoor light, realistic skin texture",
+    "camera_angle": "slightly wide editorial angle",
+    "lens_style": "35mm or 50mm editorial photography, shallow but usable depth of field",
+    "composition": "subject clear, no text inside image, leave safe crop space for UI overlay",
+    "focal_point": "anna",
+    "desktop_ratio": "16:9 or 3:2",
+    "tablet_ratio": "4:3",
+    "mobile_ratio": "4:5 safe crop",
+    "continuity_requirements": [
+      "same face",
+      "same hair color and length",
+      "same wardrobe within one scene",
+      "same interior in sequence",
+      "same age impression"
+    ],
+    "instagram_references": [
+      "ulc_instagram_025",
+      "ulc_instagram_026",
+      "ulc_instagram_027"
+    ],
+    "right_brand_references": [
+      "ULC palette",
+      "Wix Madefor Display",
+      "Dela Gothic One accent",
+      "official illustration constructor only outside photo"
+    ],
+    "positive_prompt": "photorealistic editorial photography, adult language school, ULC visual identity, characters: anna, exact wardrobe from ULC character bible, location: coworking, action: first dialogue sequence 02, natural lighting, realistic skin texture, candid body language, premium educational campaign, Minsk contemporary European urban context, safe crop requirements, no embedded text, no logos inside photo",
+    "negative_prompt": "no illustration, no cartoon, no 3D render, no stick figures, no plastic stock smile, no child classroom, no distorted hands, no extra fingers, no duplicate people, no changed face, no inconsistent hairstyle, no inconsistent clothes, no watermark, no text, no logo, no oversaturated colors, no stretched faces, no warped furniture",
+    "status": "planned"
+  },
+  {
+    "asset_id": "first-dialogue-sequence-03",
+    "screen": "Student Book",
+    "lesson_id": "",
+    "purpose": "Student Book or platform learning scene",
+    "characters": [
+      "leo"
+    ],
+    "location": "minsk-street",
+    "action": "first dialogue sequence 03",
+    "emotion": "focused and curious",
+    "wardrobe": "match ULC character bible exactly; adult casual-smart clothes with restrained ULC accent color",
+    "props": [
+      "notebook",
+      "phone",
+      "coffee cup"
+    ],
+    "lighting": "natural daylight or soft warm indoor light, realistic skin texture",
+    "camera_angle": "eye-level medium shot",
+    "lens_style": "35mm or 50mm editorial photography, shallow but usable depth of field",
+    "composition": "subject clear, no text inside image, leave safe crop space for UI overlay",
+    "focal_point": "leo",
+    "desktop_ratio": "16:9 or 3:2",
+    "tablet_ratio": "4:3",
+    "mobile_ratio": "4:5 safe crop",
+    "continuity_requirements": [
+      "same face",
+      "same hair color and length",
+      "same wardrobe within one scene",
+      "same interior in sequence",
+      "same age impression"
+    ],
+    "instagram_references": [
+      "ulc_instagram_026",
+      "ulc_instagram_027",
+      "ulc_instagram_028"
+    ],
+    "right_brand_references": [
+      "ULC palette",
+      "Wix Madefor Display",
+      "Dela Gothic One accent",
+      "official illustration constructor only outside photo"
+    ],
+    "positive_prompt": "photorealistic editorial photography, adult language school, ULC visual identity, characters: leo, exact wardrobe from ULC character bible, location: minsk-street, action: first dialogue sequence 03, natural lighting, realistic skin texture, candid body language, premium educational campaign, Minsk contemporary European urban context, safe crop requirements, no embedded text, no logos inside photo",
+    "negative_prompt": "no illustration, no cartoon, no 3D render, no stick figures, no plastic stock smile, no child classroom, no distorted hands, no extra fingers, no duplicate people, no changed face, no inconsistent hairstyle, no inconsistent clothes, no watermark, no text, no logo, no oversaturated colors, no stretched faces, no warped furniture",
+    "status": "planned"
+  },
+  {
+    "asset_id": "listening-scene-01",
+    "screen": "Student Book",
+    "lesson_id": "",
+    "purpose": "Student Book or platform learning scene",
+    "characters": [
+      "maya"
+    ],
+    "location": "airport",
+    "action": "listening scene 01",
+    "emotion": "warm and conversational",
+    "wardrobe": "match ULC character bible exactly; adult casual-smart clothes with restrained ULC accent color",
+    "props": [
+      "notebook",
+      "phone",
+      "coffee cup",
+      "ULC-neutral learning materials"
+    ],
+    "lighting": "natural daylight or soft warm indoor light, realistic skin texture",
+    "camera_angle": "slightly wide editorial angle",
+    "lens_style": "35mm or 50mm editorial photography, shallow but usable depth of field",
+    "composition": "subject clear, no text inside image, leave safe crop space for UI overlay",
+    "focal_point": "maya",
+    "desktop_ratio": "16:9 or 3:2",
+    "tablet_ratio": "4:3",
+    "mobile_ratio": "4:5 safe crop",
+    "continuity_requirements": [
+      "same face",
+      "same hair color and length",
+      "same wardrobe within one scene",
+      "same interior in sequence",
+      "same age impression"
+    ],
+    "instagram_references": [
+      "ulc_instagram_027",
+      "ulc_instagram_028",
+      "ulc_instagram_029"
+    ],
+    "right_brand_references": [
+      "ULC palette",
+      "Wix Madefor Display",
+      "Dela Gothic One accent",
+      "official illustration constructor only outside photo"
+    ],
+    "positive_prompt": "photorealistic editorial photography, adult language school, ULC visual identity, characters: maya, exact wardrobe from ULC character bible, location: airport, action: listening scene 01, natural lighting, realistic skin texture, candid body language, premium educational campaign, Minsk contemporary European urban context, safe crop requirements, no embedded text, no logos inside photo",
+    "negative_prompt": "no illustration, no cartoon, no 3D render, no stick figures, no plastic stock smile, no child classroom, no distorted hands, no extra fingers, no duplicate people, no changed face, no inconsistent hairstyle, no inconsistent clothes, no watermark, no text, no logo, no oversaturated colors, no stretched faces, no warped furniture",
+    "status": "planned"
+  },
+  {
+    "asset_id": "listening-scene-02",
+    "screen": "Student Book",
+    "lesson_id": "",
+    "purpose": "Student Book or platform learning scene",
+    "characters": [
+      "dima"
+    ],
+    "location": "hotel-reception",
+    "action": "listening scene 02",
+    "emotion": "confident and friendly",
+    "wardrobe": "match ULC character bible exactly; adult casual-smart clothes with restrained ULC accent color",
+    "props": [
+      "notebook",
+      "phone"
+    ],
+    "lighting": "natural daylight or soft warm indoor light, realistic skin texture",
+    "camera_angle": "eye-level medium shot",
+    "lens_style": "35mm or 50mm editorial photography, shallow but usable depth of field",
+    "composition": "subject clear, no text inside image, leave safe crop space for UI overlay",
+    "focal_point": "dima",
+    "desktop_ratio": "16:9 or 3:2",
+    "tablet_ratio": "4:3",
+    "mobile_ratio": "4:5 safe crop",
+    "continuity_requirements": [
+      "same face",
+      "same hair color and length",
+      "same wardrobe within one scene",
+      "same interior in sequence",
+      "same age impression"
+    ],
+    "instagram_references": [
+      "ulc_instagram_028",
+      "ulc_instagram_029",
+      "ulc_instagram_030"
+    ],
+    "right_brand_references": [
+      "ULC palette",
+      "Wix Madefor Display",
+      "Dela Gothic One accent",
+      "official illustration constructor only outside photo"
+    ],
+    "positive_prompt": "photorealistic editorial photography, adult language school, ULC visual identity, characters: dima, exact wardrobe from ULC character bible, location: hotel-reception, action: listening scene 02, natural lighting, realistic skin texture, candid body language, premium educational campaign, Minsk contemporary European urban context, safe crop requirements, no embedded text, no logos inside photo",
+    "negative_prompt": "no illustration, no cartoon, no 3D render, no stick figures, no plastic stock smile, no child classroom, no distorted hands, no extra fingers, no duplicate people, no changed face, no inconsistent hairstyle, no inconsistent clothes, no watermark, no text, no logo, no oversaturated colors, no stretched faces, no warped furniture",
+    "status": "planned"
+  },
+  {
+    "asset_id": "listening-scene-03",
+    "screen": "Student Book",
+    "lesson_id": "",
+    "purpose": "Student Book or platform learning scene",
+    "characters": [
+      "irina"
+    ],
+    "location": "restaurant",
+    "action": "listening scene 03",
+    "emotion": "focused and curious",
+    "wardrobe": "match ULC character bible exactly; adult casual-smart clothes with restrained ULC accent color",
+    "props": [
+      "notebook",
+      "phone",
+      "coffee cup"
+    ],
+    "lighting": "natural daylight or soft warm indoor light, realistic skin texture",
+    "camera_angle": "slightly wide editorial angle",
+    "lens_style": "35mm or 50mm editorial photography, shallow but usable depth of field",
+    "composition": "subject clear, no text inside image, leave safe crop space for UI overlay",
+    "focal_point": "irina",
+    "desktop_ratio": "16:9 or 3:2",
+    "tablet_ratio": "4:3",
+    "mobile_ratio": "4:5 safe crop",
+    "continuity_requirements": [
+      "same face",
+      "same hair color and length",
+      "same wardrobe within one scene",
+      "same interior in sequence",
+      "same age impression"
+    ],
+    "instagram_references": [
+      "ulc_instagram_029",
+      "ulc_instagram_030"
+    ],
+    "right_brand_references": [
+      "ULC palette",
+      "Wix Madefor Display",
+      "Dela Gothic One accent",
+      "official illustration constructor only outside photo"
+    ],
+    "positive_prompt": "photorealistic editorial photography, adult language school, ULC visual identity, characters: irina, exact wardrobe from ULC character bible, location: restaurant, action: listening scene 03, natural lighting, realistic skin texture, candid body language, premium educational campaign, Minsk contemporary European urban context, safe crop requirements, no embedded text, no logos inside photo",
+    "negative_prompt": "no illustration, no cartoon, no 3D render, no stick figures, no plastic stock smile, no child classroom, no distorted hands, no extra fingers, no duplicate people, no changed face, no inconsistent hairstyle, no inconsistent clothes, no watermark, no text, no logo, no oversaturated colors, no stretched faces, no warped furniture",
+    "status": "planned"
+  },
+  {
+    "asset_id": "speaking-prompt-01",
+    "screen": "Student Book",
+    "lesson_id": "",
+    "purpose": "Student Book or platform learning scene",
+    "characters": [
+      "michael"
+    ],
+    "location": "office",
+    "action": "speaking prompt 01",
+    "emotion": "warm and conversational",
+    "wardrobe": "match ULC character bible exactly; adult casual-smart clothes with restrained ULC accent color",
+    "props": [
+      "notebook",
+      "phone",
+      "coffee cup",
+      "ULC-neutral learning materials"
+    ],
+    "lighting": "natural daylight or soft warm indoor light, realistic skin texture",
+    "camera_angle": "eye-level medium shot",
+    "lens_style": "35mm or 50mm editorial photography, shallow but usable depth of field",
+    "composition": "subject clear, no text inside image, leave safe crop space for UI overlay",
+    "focal_point": "michael",
+    "desktop_ratio": "16:9 or 3:2",
+    "tablet_ratio": "4:3",
+    "mobile_ratio": "4:5 safe crop",
+    "continuity_requirements": [
+      "same face",
+      "same hair color and length",
+      "same wardrobe within one scene",
+      "same interior in sequence",
+      "same age impression"
+    ],
+    "instagram_references": [
+      "ulc_instagram_030"
+    ],
+    "right_brand_references": [
+      "ULC palette",
+      "Wix Madefor Display",
+      "Dela Gothic One accent",
+      "official illustration constructor only outside photo"
+    ],
+    "positive_prompt": "photorealistic editorial photography, adult language school, ULC visual identity, characters: michael, exact wardrobe from ULC character bible, location: office, action: speaking prompt 01, natural lighting, realistic skin texture, candid body language, premium educational campaign, Minsk contemporary European urban context, safe crop requirements, no embedded text, no logos inside photo",
+    "negative_prompt": "no illustration, no cartoon, no 3D render, no stick figures, no plastic stock smile, no child classroom, no distorted hands, no extra fingers, no duplicate people, no changed face, no inconsistent hairstyle, no inconsistent clothes, no watermark, no text, no logo, no oversaturated colors, no stretched faces, no warped furniture",
+    "status": "planned"
+  },
+  {
+    "asset_id": "speaking-prompt-02",
+    "screen": "Student Book",
+    "lesson_id": "",
+    "purpose": "Student Book or platform learning scene",
+    "characters": [
+      "anna"
+    ],
+    "location": "ulc-classroom",
+    "action": "speaking prompt 02",
+    "emotion": "confident and friendly",
+    "wardrobe": "match ULC character bible exactly; adult casual-smart clothes with restrained ULC accent color",
+    "props": [
+      "notebook",
+      "phone"
+    ],
+    "lighting": "natural daylight or soft warm indoor light, realistic skin texture",
+    "camera_angle": "slightly wide editorial angle",
+    "lens_style": "35mm or 50mm editorial photography, shallow but usable depth of field",
+    "composition": "subject clear, no text inside image, leave safe crop space for UI overlay",
+    "focal_point": "anna",
+    "desktop_ratio": "16:9 or 3:2",
+    "tablet_ratio": "4:3",
+    "mobile_ratio": "4:5 safe crop",
+    "continuity_requirements": [
+      "same face",
+      "same hair color and length",
+      "same wardrobe within one scene",
+      "same interior in sequence",
+      "same age impression"
+    ],
+    "instagram_references": [
+      "ulc_instagram_001",
+      "ulc_instagram_002",
+      "ulc_instagram_003"
+    ],
+    "right_brand_references": [
+      "ULC palette",
+      "Wix Madefor Display",
+      "Dela Gothic One accent",
+      "official illustration constructor only outside photo"
+    ],
+    "positive_prompt": "photorealistic editorial photography, adult language school, ULC visual identity, characters: anna, exact wardrobe from ULC character bible, location: ulc-classroom, action: speaking prompt 02, natural lighting, realistic skin texture, candid body language, premium educational campaign, Minsk contemporary European urban context, safe crop requirements, no embedded text, no logos inside photo",
+    "negative_prompt": "no illustration, no cartoon, no 3D render, no stick figures, no plastic stock smile, no child classroom, no distorted hands, no extra fingers, no duplicate people, no changed face, no inconsistent hairstyle, no inconsistent clothes, no watermark, no text, no logo, no oversaturated colors, no stretched faces, no warped furniture",
+    "status": "planned"
+  },
+  {
+    "asset_id": "spelling-email-scene",
+    "screen": "Student Book",
+    "lesson_id": "",
+    "purpose": "Student Book or platform learning scene",
+    "characters": [
+      "leo"
+    ],
+    "location": "ulc-reception",
+    "action": "spelling email scene",
+    "emotion": "focused and curious",
+    "wardrobe": "match ULC character bible exactly; adult casual-smart clothes with restrained ULC accent color",
+    "props": [
+      "notebook",
+      "phone",
+      "coffee cup"
+    ],
+    "lighting": "natural daylight or soft warm indoor light, realistic skin texture",
+    "camera_angle": "eye-level medium shot",
+    "lens_style": "35mm or 50mm editorial photography, shallow but usable depth of field",
+    "composition": "subject clear, no text inside image, leave safe crop space for UI overlay",
+    "focal_point": "leo",
+    "desktop_ratio": "16:9 or 3:2",
+    "tablet_ratio": "4:3",
+    "mobile_ratio": "4:5 safe crop",
+    "continuity_requirements": [
+      "same face",
+      "same hair color and length",
+      "same wardrobe within one scene",
+      "same interior in sequence",
+      "same age impression"
+    ],
+    "instagram_references": [
+      "ulc_instagram_002",
+      "ulc_instagram_003",
+      "ulc_instagram_004"
+    ],
+    "right_brand_references": [
+      "ULC palette",
+      "Wix Madefor Display",
+      "Dela Gothic One accent",
+      "official illustration constructor only outside photo"
+    ],
+    "positive_prompt": "photorealistic editorial photography, adult language school, ULC visual identity, characters: leo, exact wardrobe from ULC character bible, location: ulc-reception, action: spelling email scene, natural lighting, realistic skin texture, candid body language, premium educational campaign, Minsk contemporary European urban context, safe crop requirements, no embedded text, no logos inside photo",
+    "negative_prompt": "no illustration, no cartoon, no 3D render, no stick figures, no plastic stock smile, no child classroom, no distorted hands, no extra fingers, no duplicate people, no changed face, no inconsistent hairstyle, no inconsistent clothes, no watermark, no text, no logo, no oversaturated colors, no stretched faces, no warped furniture",
+    "status": "planned"
+  },
+  {
+    "asset_id": "phone-number-scene",
+    "screen": "Student Book",
+    "lesson_id": "",
+    "purpose": "Student Book or platform learning scene",
+    "characters": [
+      "maya"
+    ],
+    "location": "ulc-lounge",
+    "action": "phone number scene",
+    "emotion": "warm and conversational",
+    "wardrobe": "match ULC character bible exactly; adult casual-smart clothes with restrained ULC accent color",
+    "props": [
+      "notebook",
+      "phone",
+      "coffee cup",
+      "ULC-neutral learning materials"
+    ],
+    "lighting": "natural daylight or soft warm indoor light, realistic skin texture",
+    "camera_angle": "slightly wide editorial angle",
+    "lens_style": "35mm or 50mm editorial photography, shallow but usable depth of field",
+    "composition": "subject clear, no text inside image, leave safe crop space for UI overlay",
+    "focal_point": "maya",
+    "desktop_ratio": "16:9 or 3:2",
+    "tablet_ratio": "4:3",
+    "mobile_ratio": "4:5 safe crop",
+    "continuity_requirements": [
+      "same face",
+      "same hair color and length",
+      "same wardrobe within one scene",
+      "same interior in sequence",
+      "same age impression"
+    ],
+    "instagram_references": [
+      "ulc_instagram_003",
+      "ulc_instagram_004",
+      "ulc_instagram_005"
+    ],
+    "right_brand_references": [
+      "ULC palette",
+      "Wix Madefor Display",
+      "Dela Gothic One accent",
+      "official illustration constructor only outside photo"
+    ],
+    "positive_prompt": "photorealistic editorial photography, adult language school, ULC visual identity, characters: maya, exact wardrobe from ULC character bible, location: ulc-lounge, action: phone number scene, natural lighting, realistic skin texture, candid body language, premium educational campaign, Minsk contemporary European urban context, safe crop requirements, no embedded text, no logos inside photo",
+    "negative_prompt": "no illustration, no cartoon, no 3D render, no stick figures, no plastic stock smile, no child classroom, no distorted hands, no extra fingers, no duplicate people, no changed face, no inconsistent hairstyle, no inconsistent clothes, no watermark, no text, no logo, no oversaturated colors, no stretched faces, no warped furniture",
+    "status": "planned"
+  },
+  {
+    "asset_id": "job-introduction-scene",
+    "screen": "Student Book",
+    "lesson_id": "",
+    "purpose": "Student Book or platform learning scene",
+    "characters": [
+      "dima"
+    ],
+    "location": "city-cafe",
+    "action": "job introduction scene",
+    "emotion": "confident and friendly",
+    "wardrobe": "match ULC character bible exactly; adult casual-smart clothes with restrained ULC accent color",
+    "props": [
+      "notebook",
+      "phone"
+    ],
+    "lighting": "natural daylight or soft warm indoor light, realistic skin texture",
+    "camera_angle": "eye-level medium shot",
+    "lens_style": "35mm or 50mm editorial photography, shallow but usable depth of field",
+    "composition": "subject clear, no text inside image, leave safe crop space for UI overlay",
+    "focal_point": "dima",
+    "desktop_ratio": "16:9 or 3:2",
+    "tablet_ratio": "4:3",
+    "mobile_ratio": "4:5 safe crop",
+    "continuity_requirements": [
+      "same face",
+      "same hair color and length",
+      "same wardrobe within one scene",
+      "same interior in sequence",
+      "same age impression"
+    ],
+    "instagram_references": [
+      "ulc_instagram_004",
+      "ulc_instagram_005",
+      "ulc_instagram_006"
+    ],
+    "right_brand_references": [
+      "ULC palette",
+      "Wix Madefor Display",
+      "Dela Gothic One accent",
+      "official illustration constructor only outside photo"
+    ],
+    "positive_prompt": "photorealistic editorial photography, adult language school, ULC visual identity, characters: dima, exact wardrobe from ULC character bible, location: city-cafe, action: job introduction scene, natural lighting, realistic skin texture, candid body language, premium educational campaign, Minsk contemporary European urban context, safe crop requirements, no embedded text, no logos inside photo",
+    "negative_prompt": "no illustration, no cartoon, no 3D render, no stick figures, no plastic stock smile, no child classroom, no distorted hands, no extra fingers, no duplicate people, no changed face, no inconsistent hairstyle, no inconsistent clothes, no watermark, no text, no logo, no oversaturated colors, no stretched faces, no warped furniture",
+    "status": "planned"
+  },
+  {
+    "asset_id": "country-city-scene",
+    "screen": "Student Book",
+    "lesson_id": "",
+    "purpose": "Student Book or platform learning scene",
+    "characters": [
+      "irina"
+    ],
+    "location": "coworking",
+    "action": "country city scene",
+    "emotion": "focused and curious",
+    "wardrobe": "match ULC character bible exactly; adult casual-smart clothes with restrained ULC accent color",
+    "props": [
+      "notebook",
+      "phone",
+      "coffee cup"
+    ],
+    "lighting": "natural daylight or soft warm indoor light, realistic skin texture",
+    "camera_angle": "slightly wide editorial angle",
+    "lens_style": "35mm or 50mm editorial photography, shallow but usable depth of field",
+    "composition": "subject clear, no text inside image, leave safe crop space for UI overlay",
+    "focal_point": "irina",
+    "desktop_ratio": "16:9 or 3:2",
+    "tablet_ratio": "4:3",
+    "mobile_ratio": "4:5 safe crop",
+    "continuity_requirements": [
+      "same face",
+      "same hair color and length",
+      "same wardrobe within one scene",
+      "same interior in sequence",
+      "same age impression"
+    ],
+    "instagram_references": [
+      "ulc_instagram_005",
+      "ulc_instagram_006",
+      "ulc_instagram_007"
+    ],
+    "right_brand_references": [
+      "ULC palette",
+      "Wix Madefor Display",
+      "Dela Gothic One accent",
+      "official illustration constructor only outside photo"
+    ],
+    "positive_prompt": "photorealistic editorial photography, adult language school, ULC visual identity, characters: irina, exact wardrobe from ULC character bible, location: coworking, action: country city scene, natural lighting, realistic skin texture, candid body language, premium educational campaign, Minsk contemporary European urban context, safe crop requirements, no embedded text, no logos inside photo",
+    "negative_prompt": "no illustration, no cartoon, no 3D render, no stick figures, no plastic stock smile, no child classroom, no distorted hands, no extra fingers, no duplicate people, no changed face, no inconsistent hairstyle, no inconsistent clothes, no watermark, no text, no logo, no oversaturated colors, no stretched faces, no warped furniture",
+    "status": "planned"
+  },
+  {
+    "asset_id": "teacher-live-wide",
+    "screen": "Student Book",
+    "lesson_id": "",
+    "purpose": "Teacher/school scene",
+    "characters": [
+      "michael"
+    ],
+    "location": "minsk-street",
+    "action": "teacher live wide",
+    "emotion": "warm and conversational",
+    "wardrobe": "match ULC character bible exactly; adult casual-smart clothes with restrained ULC accent color",
+    "props": [
+      "notebook",
+      "phone",
+      "coffee cup",
+      "ULC-neutral learning materials"
+    ],
+    "lighting": "natural daylight or soft warm indoor light, realistic skin texture",
+    "camera_angle": "eye-level medium shot",
+    "lens_style": "35mm or 50mm editorial photography, shallow but usable depth of field",
+    "composition": "subject clear, no text inside image, leave safe crop space for UI overlay",
+    "focal_point": "michael",
+    "desktop_ratio": "16:9 or 3:2",
+    "tablet_ratio": "4:3",
+    "mobile_ratio": "4:5 safe crop",
+    "continuity_requirements": [
+      "same face",
+      "same hair color and length",
+      "same wardrobe within one scene",
+      "same interior in sequence",
+      "same age impression"
+    ],
+    "instagram_references": [
+      "ulc_instagram_006",
+      "ulc_instagram_007",
+      "ulc_instagram_008"
+    ],
+    "right_brand_references": [
+      "ULC palette",
+      "Wix Madefor Display",
+      "Dela Gothic One accent",
+      "official illustration constructor only outside photo"
+    ],
+    "positive_prompt": "photorealistic editorial photography, adult language school, ULC visual identity, characters: michael, exact wardrobe from ULC character bible, location: minsk-street, action: teacher live wide, natural lighting, realistic skin texture, candid body language, premium educational campaign, Minsk contemporary European urban context, safe crop requirements, no embedded text, no logos inside photo",
+    "negative_prompt": "no illustration, no cartoon, no 3D render, no stick figures, no plastic stock smile, no child classroom, no distorted hands, no extra fingers, no duplicate people, no changed face, no inconsistent hairstyle, no inconsistent clothes, no watermark, no text, no logo, no oversaturated colors, no stretched faces, no warped furniture",
+    "status": "planned"
+  },
+  {
+    "asset_id": "group-lesson-wide",
+    "screen": "teacher and school",
+    "lesson_id": "",
+    "purpose": "Student Book or platform learning scene",
+    "characters": [
+      "anna"
+    ],
+    "location": "airport",
+    "action": "group lesson wide",
+    "emotion": "confident and friendly",
+    "wardrobe": "match ULC character bible exactly; adult casual-smart clothes with restrained ULC accent color",
+    "props": [
+      "notebook",
+      "phone"
+    ],
+    "lighting": "natural daylight or soft warm indoor light, realistic skin texture",
+    "camera_angle": "slightly wide editorial angle",
+    "lens_style": "35mm or 50mm editorial photography, shallow but usable depth of field",
+    "composition": "subject clear, no text inside image, leave safe crop space for UI overlay",
+    "focal_point": "anna",
+    "desktop_ratio": "16:9 or 3:2",
+    "tablet_ratio": "4:3",
+    "mobile_ratio": "4:5 safe crop",
+    "continuity_requirements": [
+      "same face",
+      "same hair color and length",
+      "same wardrobe within one scene",
+      "same interior in sequence",
+      "same age impression"
+    ],
+    "instagram_references": [
+      "ulc_instagram_007",
+      "ulc_instagram_008",
+      "ulc_instagram_009"
+    ],
+    "right_brand_references": [
+      "ULC palette",
+      "Wix Madefor Display",
+      "Dela Gothic One accent",
+      "official illustration constructor only outside photo"
+    ],
+    "positive_prompt": "photorealistic editorial photography, adult language school, ULC visual identity, characters: anna, exact wardrobe from ULC character bible, location: airport, action: group lesson wide, natural lighting, realistic skin texture, candid body language, premium educational campaign, Minsk contemporary European urban context, safe crop requirements, no embedded text, no logos inside photo",
+    "negative_prompt": "no illustration, no cartoon, no 3D render, no stick figures, no plastic stock smile, no child classroom, no distorted hands, no extra fingers, no duplicate people, no changed face, no inconsistent hairstyle, no inconsistent clothes, no watermark, no text, no logo, no oversaturated colors, no stretched faces, no warped furniture",
+    "status": "planned"
+  },
+  {
+    "asset_id": "pair-work-table",
+    "screen": "teacher and school",
+    "lesson_id": "",
+    "purpose": "Student Book or platform learning scene",
+    "characters": [
+      "leo"
+    ],
+    "location": "hotel-reception",
+    "action": "pair work table",
+    "emotion": "focused and curious",
+    "wardrobe": "match ULC character bible exactly; adult casual-smart clothes with restrained ULC accent color",
+    "props": [
+      "notebook",
+      "phone",
+      "coffee cup"
+    ],
+    "lighting": "natural daylight or soft warm indoor light, realistic skin texture",
+    "camera_angle": "eye-level medium shot",
+    "lens_style": "35mm or 50mm editorial photography, shallow but usable depth of field",
+    "composition": "subject clear, no text inside image, leave safe crop space for UI overlay",
+    "focal_point": "leo",
+    "desktop_ratio": "16:9 or 3:2",
+    "tablet_ratio": "4:3",
+    "mobile_ratio": "4:5 safe crop",
+    "continuity_requirements": [
+      "same face",
+      "same hair color and length",
+      "same wardrobe within one scene",
+      "same interior in sequence",
+      "same age impression"
+    ],
+    "instagram_references": [
+      "ulc_instagram_008",
+      "ulc_instagram_009",
+      "ulc_instagram_010"
+    ],
+    "right_brand_references": [
+      "ULC palette",
+      "Wix Madefor Display",
+      "Dela Gothic One accent",
+      "official illustration constructor only outside photo"
+    ],
+    "positive_prompt": "photorealistic editorial photography, adult language school, ULC visual identity, characters: leo, exact wardrobe from ULC character bible, location: hotel-reception, action: pair work table, natural lighting, realistic skin texture, candid body language, premium educational campaign, Minsk contemporary European urban context, safe crop requirements, no embedded text, no logos inside photo",
+    "negative_prompt": "no illustration, no cartoon, no 3D render, no stick figures, no plastic stock smile, no child classroom, no distorted hands, no extra fingers, no duplicate people, no changed face, no inconsistent hairstyle, no inconsistent clothes, no watermark, no text, no logo, no oversaturated colors, no stretched faces, no warped furniture",
+    "status": "planned"
+  },
+  {
+    "asset_id": "classroom-interaction",
+    "screen": "teacher and school",
+    "lesson_id": "",
+    "purpose": "Student Book or platform learning scene",
+    "characters": [
+      "maya"
+    ],
+    "location": "restaurant",
+    "action": "classroom interaction",
+    "emotion": "warm and conversational",
+    "wardrobe": "match ULC character bible exactly; adult casual-smart clothes with restrained ULC accent color",
+    "props": [
+      "notebook",
+      "phone",
+      "coffee cup",
+      "ULC-neutral learning materials"
+    ],
+    "lighting": "natural daylight or soft warm indoor light, realistic skin texture",
+    "camera_angle": "slightly wide editorial angle",
+    "lens_style": "35mm or 50mm editorial photography, shallow but usable depth of field",
+    "composition": "subject clear, no text inside image, leave safe crop space for UI overlay",
+    "focal_point": "maya",
+    "desktop_ratio": "16:9 or 3:2",
+    "tablet_ratio": "4:3",
+    "mobile_ratio": "4:5 safe crop",
+    "continuity_requirements": [
+      "same face",
+      "same hair color and length",
+      "same wardrobe within one scene",
+      "same interior in sequence",
+      "same age impression"
+    ],
+    "instagram_references": [
+      "ulc_instagram_009",
+      "ulc_instagram_010",
+      "ulc_instagram_011"
+    ],
+    "right_brand_references": [
+      "ULC palette",
+      "Wix Madefor Display",
+      "Dela Gothic One accent",
+      "official illustration constructor only outside photo"
+    ],
+    "positive_prompt": "photorealistic editorial photography, adult language school, ULC visual identity, characters: maya, exact wardrobe from ULC character bible, location: restaurant, action: classroom interaction, natural lighting, realistic skin texture, candid body language, premium educational campaign, Minsk contemporary European urban context, safe crop requirements, no embedded text, no logos inside photo",
+    "negative_prompt": "no illustration, no cartoon, no 3D render, no stick figures, no plastic stock smile, no child classroom, no distorted hands, no extra fingers, no duplicate people, no changed face, no inconsistent hairstyle, no inconsistent clothes, no watermark, no text, no logo, no oversaturated colors, no stretched faces, no warped furniture",
+    "status": "planned"
+  },
+  {
+    "asset_id": "certificate-review-scene",
+    "screen": "teacher and school",
+    "lesson_id": "",
+    "purpose": "Student Book or platform learning scene",
+    "characters": [
+      "dima"
+    ],
+    "location": "office",
+    "action": "certificate review scene",
+    "emotion": "confident and friendly",
+    "wardrobe": "match ULC character bible exactly; adult casual-smart clothes with restrained ULC accent color",
+    "props": [
+      "notebook",
+      "phone"
+    ],
+    "lighting": "natural daylight or soft warm indoor light, realistic skin texture",
+    "camera_angle": "eye-level medium shot",
+    "lens_style": "35mm or 50mm editorial photography, shallow but usable depth of field",
+    "composition": "subject clear, no text inside image, leave safe crop space for UI overlay",
+    "focal_point": "dima",
+    "desktop_ratio": "16:9 or 3:2",
+    "tablet_ratio": "4:3",
+    "mobile_ratio": "4:5 safe crop",
+    "continuity_requirements": [
+      "same face",
+      "same hair color and length",
+      "same wardrobe within one scene",
+      "same interior in sequence",
+      "same age impression"
+    ],
+    "instagram_references": [
+      "ulc_instagram_010",
+      "ulc_instagram_011",
+      "ulc_instagram_012"
+    ],
+    "right_brand_references": [
+      "ULC palette",
+      "Wix Madefor Display",
+      "Dela Gothic One accent",
+      "official illustration constructor only outside photo"
+    ],
+    "positive_prompt": "photorealistic editorial photography, adult language school, ULC visual identity, characters: dima, exact wardrobe from ULC character bible, location: office, action: certificate review scene, natural lighting, realistic skin texture, candid body language, premium educational campaign, Minsk contemporary European urban context, safe crop requirements, no embedded text, no logos inside photo",
+    "negative_prompt": "no illustration, no cartoon, no 3D render, no stick figures, no plastic stock smile, no child classroom, no distorted hands, no extra fingers, no duplicate people, no changed face, no inconsistent hairstyle, no inconsistent clothes, no watermark, no text, no logo, no oversaturated colors, no stretched faces, no warped furniture",
+    "status": "planned"
+  }
+]
